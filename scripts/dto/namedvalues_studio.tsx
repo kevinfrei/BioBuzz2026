@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { atom } from 'jotai';
+import { atom, useAtom } from 'jotai';
 
 import {
   AlertTriangle,
@@ -22,25 +22,8 @@ import {
   ZoomIn,
   ZoomOut,
 } from 'lucide-react';
-import { hasField, isDefined } from '@freik/typechk';
 
-import {
-  chkConstInterp,
-  chkFacePtInterp,
-  chkLinearInterp,
-  chkPieceWiseInterp,
-  chkRef,
-  chkTangentInterp,
-  InterpPiece,
-  InterpRef,
-  NamedValues,
-  PoseRef,
-  ResolvedInterpolator,
-  ResolvedPose,
-  ResolvedValue,
-  SymbolTable,
-  ValRef,
-} from './dto_schema';
+import { NamedValues } from './dto_schema';
 
 const SAMPLE_AUTONOMOUS_PRESET: NamedValues = {
   values: {
@@ -144,129 +127,6 @@ const visualizerSettingsAtom = atom({
   pathResolution: 30,
 });
 const toastAtom = atom(null);
-
-function resolveValRef(
-  valRef: ValRef,
-  dict: SymbolTable,
-  seen = new Set<string>(),
-): ResolvedValue {
-  if (chkRef(valRef)) {
-    if (seen.has(valRef.ref)) {
-      return { err: `Circular value reference detected :${valRef.ref}` };
-    }
-    seen.add(valRef.ref);
-    const lkup = dict.values.get(valRef.ref);
-    return isDefined(lkup)
-      ? resolveValRef(lkup, dict, seen)
-      : { err: `Missing value reference: ${valRef.ref}` };
-  }
-  // The ValRef's val is the resolved value
-  return valRef.val;
-}
-
-function resolvePoseRef(
-  poseRef: PoseRef,
-  dict: SymbolTable,
-  seen = new Set<string>(),
-): ResolvedPose {
-  if (chkRef(poseRef)) {
-    if (seen.has(poseRef.ref)) {
-      return { err: `Circular pose reference detected :${poseRef.ref}` };
-    }
-    seen.add(poseRef.ref);
-    const lkup = dict.poses.get(poseRef.ref);
-    return isDefined(lkup)
-      ? resolvePoseRef(lkup, dict, seen)
-      : { err: `Missing pose reference: ${poseRef.ref}` };
-  }
-  // Resolve the PoseRef's individual components:
-  const X = resolveValRef(poseRef.X, dict);
-  const Y = resolveValRef(poseRef.Y, dict);
-  if (hasField(poseRef, 'Heading') && isDefined(poseRef.Heading)) {
-    let Heading = resolveValRef(poseRef.Heading, dict);
-    if (hasField(Heading, 'err')) {
-      return { X, Y, Heading };
-    }
-    if (!poseRef.inRadians) {
-      Heading = (Math.PI * Heading) / 180.0;
-    }
-    return { X, Y, Heading };
-  } else {
-    return { X, Y };
-  }
-}
-
-function resolveInterpRef(
-  interpRef: InterpRef,
-  dict: SymbolTable,
-  seen = new Set<string>(),
-): ResolvedInterpolator {
-  if (chkRef(interpRef)) {
-    if (seen.has(interpRef.ref)) {
-      return {
-        err: `Circular interpolator reference detected :${interpRef.ref}`,
-      };
-    }
-    seen.add(interpRef.ref);
-    const lkup = dict.interpolations.get(interpRef.ref);
-    return isDefined(lkup)
-      ? resolveInterpRef(lkup, dict, seen)
-      : { err: `Missing interpolator reference: ${interpRef.ref}` };
-  }
-  // Resolve the Interpolator, since it's not a reference
-  if (chkTangentInterp(interpRef)) {
-    // Tangent's are dumb: it's literally just
-    // "yup, it's tangent: Maybe it's reversed?"
-    return interpRef;
-  } else if (chkConstInterp(interpRef)) {
-    return { heading: resolveValRef(interpRef.heading, dict) };
-  } else if (chkFacePtInterp(interpRef)) {
-    return { point: resolvePoseRef(interpRef.point, dict) };
-  } else if (chkLinearInterp(interpRef)) {
-    return {
-      startHeading: resolveValRef(interpRef.startHeading, dict),
-      endHeading: resolveValRef(interpRef.endHeading, dict),
-      longWay: interpRef.longWay,
-    };
-  } else if (chkPieceWiseInterp(interpRef)) {
-    return {
-      pieces: interpRef.pieces.map((piece: InterpPiece) => ({
-        until: resolveValRef(piece.until, dict),
-        interpolater: resolveInterpRef(piece.interpolator, dict, seen),
-      })),
-    };
-  }
-  return { err: `Unknown interpolator type ${interpRef}` };
-}
-
-function resolveCurveRef(curveRef, namedValues, depth = 0) {
-  if (!curveRef || depth > 10) return null;
-  if ('ref' in curveRef) {
-    const key = curveRef.ref;
-    const target = namedValues.curves?.[key];
-    if (!target) return { refKey: key, missing: true, points: [] };
-    const res = resolveCurveRef(target, namedValues, depth + 1);
-    return res ? { ...res, refKey: key } : null;
-  }
-
-  const points = (curveRef.points || []).map((pRef) =>
-    resolvePoseRef(pRef, namedValues),
-  );
-  const interpolation = resolveInterpRef(curveRef.interpolation, namedValues);
-
-  return {
-    points,
-    interpolation,
-    raw: curveRef,
-  };
-}
-
-function resolvePath(path, namedValues) {
-  if (!path || !path.curves) return [];
-  return path.curves
-    .map((cRef) => resolveCurveRef(cRef, namedValues))
-    .filter(Boolean);
-}
 
 function NotificationToast() {
   const [toast, setToast] = useAtom(toastAtom);
