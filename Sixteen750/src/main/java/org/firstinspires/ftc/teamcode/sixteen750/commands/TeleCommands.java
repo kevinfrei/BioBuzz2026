@@ -45,4 +45,6 @@ public class TeleCommands {
     public static Command GateClose(Robot r) {
         return Command.create(r.intakeSubsystem::GateClose);
     }
+
+    public static Command Launch (Robot r) {return Command.create(r.turretsubsystem::Launch);}
 }

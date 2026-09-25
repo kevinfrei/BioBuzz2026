@@ -6,6 +6,7 @@ import com.technototes.library.util.Alliance;
 import org.firstinspires.ftc.teamcode.sixteen750.helpers.StartingPosition;
 import org.firstinspires.ftc.teamcode.sixteen750.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.sixteen750.subsystems.LimelightSubsystem;
+import org.firstinspires.ftc.teamcode.sixteen750.subsystems.TurretSubsystem;
 
 public class Robot implements Loggable {
 
@@ -16,6 +17,7 @@ public class Robot implements Loggable {
 
     public IntakeSubsystem intakeSubsystem;
     public LimelightSubsystem limelightSubsystem;
+    public TurretSubsystem turretsubsystem;
     public Follower follower;
     private Hardware hardware;
 
@@ -33,6 +35,9 @@ public class Robot implements Loggable {
         }
         if (Setup.Connected.DRIVEBASE) {
             follower = PedroConstants.create(hw.map);
+        }
+        if (Setup.Connected.TURRETSUBSYSTEM) {
+            this.turretsubsystem = new TurretSubsystem(hw);
         }
     }
 
