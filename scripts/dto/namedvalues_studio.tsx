@@ -1,4 +1,11 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, {
+  ReactElement,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { atom, useAtom } from 'jotai';
 
 import {
@@ -23,110 +30,8 @@ import {
   ZoomOut,
 } from 'lucide-react';
 
-import { NamedValues } from './dto_schema';
-
-const SAMPLE_AUTONOMOUS_PRESET: NamedValues = {
-  values: {
-    startX: { val: -5.0 },
-    startY: { val: -2.0 },
-    startHeading: { val: 0.0 },
-    targetX: { val: 4.5 },
-    targetY: { val: 3.2 },
-    targetHeading: { val: 90.0 },
-    midpointX: { val: 0.0 },
-    midpointY: { val: 1.5 },
-    cutoffStep: { val: 0.5 },
-  },
-  poses: {
-    startPose: {
-      X: { ref: 'startX' },
-      Y: { ref: 'startY' },
-      Heading: { ref: 'startHeading' },
-      inRadians: false,
-    },
-    waypointPose: {
-      X: { ref: 'midpointX' },
-      Y: { ref: 'midpointY' },
-      Heading: { val: 45.0 },
-      inRadians: false,
-    },
-    targetPose: {
-      X: { ref: 'targetX' },
-      Y: { ref: 'targetY' },
-      Heading: { ref: 'targetHeading' },
-      inRadians: false,
-    },
-  },
-  interpolations: {
-    tangentInterp: { reversed: false },
-    linearHeadingInterp: {
-      startHeading: { ref: 'startHeading' },
-      endHeading: { ref: 'targetHeading' },
-      longWay: false,
-    },
-    faceTargetInterp: {
-      point: { ref: 'targetPose' },
-    },
-    piecewiseInterp: {
-      pieces: [
-        {
-          until: { ref: 'cutoffStep' },
-          interpolator: { ref: 'tangentInterp' },
-        },
-        {
-          until: { val: 1.0 },
-          interpolator: { ref: 'linearHeadingInterp' },
-        },
-      ],
-    },
-  },
-  curves: {
-    approachCurve: {
-      points: [{ ref: 'startPose' }, { ref: 'waypointPose' }],
-      interpolation: { ref: 'tangentInterp' },
-    },
-    finishCurve: {
-      points: [{ ref: 'waypointPose' }, { ref: 'targetPose' }],
-      interpolation: { ref: 'linearHeadingInterp' },
-    },
-  },
-  paths: {
-    mainAutoPath: {
-      curves: [{ ref: 'approachCurve' }, { ref: 'finishCurve' }],
-      globalInterpolator: { ref: 'tangentInterp' },
-    },
-  },
-};
-
-const EMPTY_WORKSPACE_PRESET: NamedValues = {
-  values: {},
-  poses: {},
-  interpolations: {},
-  curves: {},
-  paths: {},
-};
-
-const namedValuesAtom = atom<NamedValues>(SAMPLE_AUTONOMOUS_PRESET);
-const activeTabAtom = atom<
-  | 'values'
-  | 'poses'
-  | 'interpolations'
-  | 'curves'
-  | 'paths'
-  | 'visualizer'
-  | 'json'
->('values');
-const selectedKeyAtom = atom({ store: 'values', key: 'startX' });
-const searchFilterAtom = atom('');
-const themeAtom = atom<'dark' | 'light'>('dark');
-const visualizerSettingsAtom = atom({
-  showGrid: true,
-  showLabels: true,
-  showVectors: true,
-  gridStep: 1.0,
-  pathResolution: 30,
-});
-const toastAtom = atom(null);
+import { chkRef, NamedValues, ValRef } from './dto_schema';
+import { toastAtom } from './state';
 
 function NotificationToast() {
   const [toast, setToast] = useAtom(toastAtom);
@@ -148,9 +53,19 @@ function NotificationToast() {
 }
 
 // ValRef Control: Switch between Inline ({ val }) and Ref ({ ref })
-function ValRefControl({ label, value, onChange, availableKeys = [] }) {
+function ValRefControl({
+  label,
+  value,
+  onChange,
+  availableKeys = [],
+}: {
+  label: string;
+  value: ValRef;
+  onChange: () => void;
+  availableKeys: unknown[];
+}): ReactElement {
   const [namedValues] = useAtom(namedValuesAtom);
-  const isRef = Boolean(value && 'ref' in value);
+  const isRef = chkRef(value);
   const resolved = resolveValRef(value, namedValues.values || {});
 
   const toggleType = (toRef) => {
@@ -245,7 +160,7 @@ function ValRefControl({ label, value, onChange, availableKeys = [] }) {
 }
 
 // PoseRef Control: Switch between Inline ({ X, Y, Heading, inRadians }) and Ref ({ ref })
-function PoseRefControl({ label, value, onChange }) {
+function PoseRefControl({ label, value, onChange }): ReactElement {
   const [namedValues] = useAtom(namedValuesAtom);
   const poseKeys = Object.keys(namedValues.poses || {});
   const valueKeys = Object.keys(namedValues.values || {});
