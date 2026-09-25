@@ -45,17 +45,6 @@ public class PedroDrivebase {
         public static String RLMOTOR = "rl";
         public static String RRMOTOR = "rr";
 
-        public static MecanumConfig drivetrainConfig = new MecanumConfig(c -> {
-            c.frontLeftName.set(FLMOTOR);
-            c.frontRightName.set(FRMOTOR);
-            c.backLeftName.set(RLMOTOR);
-            c.backRightName.set(RRMOTOR);
-            c.frontLeftDirection.set(DcMotorSimple.Direction.REVERSE);
-            c.frontRightDirection.set(DcMotorSimple.Direction.FORWARD);
-            c.backLeftDirection.set(DcMotorSimple.Direction.REVERSE);
-            c.backRightDirection.set(DcMotorSimple.Direction.FORWARD);
-        });
-
         // Max power scaling for translational driving:
         public static double SNAIL_SPEED = 0.40;
         public static double NORMAL_SPEED = 0.8;
@@ -69,29 +58,18 @@ public class PedroDrivebase {
 
         public static double STICK_DEAD_ZONE = 0.05;
 
-        // The amount to multiply the 'default' rotation by to turn the bot to
-        // face the apriltag for the target. This is effectively "P" in a PID,
-        // but we don't have I or D implemented
-        public static double TAG_ALIGNMENT_GAIN = 2.0;
-
         /**** Stuff for the PedroPathing follower ****/
 
-        // The percent of a path that must be complete for Pedro to decide it's done
-        public static double tValueContraint = 0.99;
-
-        // Time, in *milliseconds*, to let the follower algorithm correct
-        // before the path is considered "complete".
-        public static double timeoutConstraint = 250;
-
-        // The maximum velocity (in inches/second) the bot can be moving while still
-        // saying the path is complete.
-        public static double acceptableVelocity = 1.0;
-        // The maximum distance (in inches) the bot can be from the path end
-        // while still saying the path is complete.
-        public static double acceptableDistance = 2.0;
-        // The maximum heading error (in degrees) the bot can be from the path end
-        // while still saying the path is complete.
-        public static double acceptableHeading = 2.5;
+        public static MecanumConfig drivetrainConfig = new MecanumConfig(c -> {
+            c.frontLeftName.set(FLMOTOR);
+            c.frontRightName.set(FRMOTOR);
+            c.backLeftName.set(RLMOTOR);
+            c.backRightName.set(RRMOTOR);
+            c.frontLeftDirection.set(DcMotorSimple.Direction.REVERSE);
+            c.frontRightDirection.set(DcMotorSimple.Direction.FORWARD);
+            c.backLeftDirection.set(DcMotorSimple.Direction.REVERSE);
+            c.backRightDirection.set(DcMotorSimple.Direction.FORWARD);
+        });
 
         public static OctoQuadConfig localizerConfig = new OctoQuadConfig(c -> {
             c.name.set(Setup.HardwareNames.OCTOQUAD_MK2);
@@ -246,7 +224,11 @@ public class PedroDrivebase {
 
             @Override
             public void execute() {
-                getFollower().drivetrain.drive(p, true);
+                Follower f = getFollower();
+                // If we don't have a drive base connected, we don't get a follower
+                if (f != null) {
+                    f.drivetrain.drive(p, true);
+                }
             }
         }
 
@@ -321,20 +303,29 @@ public class PedroDrivebase {
 
             @Override
             public void initialize() {
-                if (currentPose) {
-                    getFollower().setPose(begin == null ? getFollower().pose() : begin);
+                Follower f = getFollower();
+                if (f == null) {
+                    // No drivebase connected...
+                    return;
                 }
-                getFollower().follow(path);
+                if (currentPose) {
+                    f.setPose(begin == null ? f.pose() : begin);
+                }
+                f.follow(path);
             }
 
             @Override
             public boolean isFinished() {
-                return !getFollower().isBusy();
+                Follower f = getFollower();
+                return f == null || !f.isBusy();
             }
 
             @Override
             public void execute() {
-                getFollower().update();
+                Follower f = getFollower();
+                if (f != null) {
+                    f.update();
+                }
             }
         }
     }

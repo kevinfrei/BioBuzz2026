@@ -4,10 +4,7 @@ import com.pedropathing.follower.Follower;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
-import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.technototes.library.hardware.motor.EncodedMotor;
 import com.technototes.library.hardware.sensor.IGyro;
 import com.technototes.library.hardware.sensor.IMU;
 import com.technototes.library.hardware.servo.Servo;
@@ -26,7 +23,6 @@ public class Hardware implements Loggable {
     public IGyro imu;
     public AllianceDetection allianceDetection;
     public Limelight3A limelight;
-    public SparkFunOTOS odo;
     public Follower follower;
     public Servo yawServo, pitchServo;
 
@@ -35,11 +31,10 @@ public class Hardware implements Loggable {
     public Hardware(HardwareMap hwmap) {
         map = hwmap;
         hubs = hwmap.getAll(LynxModule.class);
-        // imu = new AdafruitIMU(HardwareNames.EXTERNALIMU, AdafruitIMU.Orientation.Pitch);
         imu = new IMU(
-            Setup.HardwareNames.IMU,
-            RevHubOrientationOnRobot.LogoFacingDirection.UP,
-            RevHubOrientationOnRobot.UsbFacingDirection.BACKWARD
+            HardwareNames.IMU,
+            RevHubOrientationOnRobot.LogoFacingDirection.FORWARD,
+            RevHubOrientationOnRobot.UsbFacingDirection.UP
         );
         if (Setup.Connected.DRIVEBASE) {
             follower = PedroDrivebase.createFollower(hwmap);

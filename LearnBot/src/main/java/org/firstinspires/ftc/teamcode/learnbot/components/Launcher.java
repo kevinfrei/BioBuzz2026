@@ -106,19 +106,19 @@ public class Launcher {
         // This command is a "while" thing: It sets it once.
         // If you want to keep it going, use AutoVelocity instead
         public static Command Launch() {
-            return Command.create(component::autoSetVelocityTarget);
+            return component::autoSetVelocityTarget;
         }
 
         public static Command StopLaunch() {
-            return Command.create(component::stop);
+            return component::stop;
         }
 
         public static Command IncreaseVelocity() {
-            return Command.create(component::increasePower);
+            return component::increasePower;
         }
 
         public static Command DecreaseVelocity() {
-            return Command.create(component::decreasePower);
+            return component::decreasePower;
         }
 
         // This is just to make all commands look the same to the 'outside' user:
@@ -168,7 +168,7 @@ public class Launcher {
         @Log.Number(name = "AutoAim Velocity")
         public double autoVelocity;
 
-        // This the PIDF controller that's used manage the power power.
+        // This the PIDF controller that's used manage the power.
         // The PIDF values are set in the Config class above.
         private final PIDFController pidfController;
 
@@ -201,7 +201,7 @@ public class Launcher {
             // A quick wander around google comes up with something like this for motor feedfwd:
 
             // launcherMyPID = new PIDFController(Config.launcherPID, target ->
-            //    (Config.kStaticFriction + Config.kVelocityConstant * target) / voltage.getAsDouble());
+            //    (frictionConstant + velocityConstant * target) / voltage);
 
             // The point is that motor RPM scales linearly with voltage, so to compensate, you should
             // divide by voltage: Don't try to scale something by a delta from peak. Just divide.
@@ -247,7 +247,6 @@ public class Launcher {
 
         // Set the velocity target based on the TargetAcquisition interface
         public void autoSetVelocityTarget() {
-            // Spin the motors pid goes here
             setVelocityTarget(calculateVelocityTarget()); //change to auto aim velocity
         }
 
@@ -410,7 +409,7 @@ public class Launcher {
         double dynamicFriction = 0.001;
         double velocityConstant = 0;
 
-        double frictionStep = 0.001;
+        double frictionStep = 0.0002;
         MovingStatistics velocityConstantStats = new MovingStatistics(50);
         double vel = 0;
         double peakVel = 0;

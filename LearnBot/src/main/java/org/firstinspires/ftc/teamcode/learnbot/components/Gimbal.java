@@ -14,6 +14,7 @@ import com.technototes.library.structure.ValidationOpMode;
 import com.technototes.library.subsystem.Subsystem;
 import com.technototes.library.subsystem.TargetAcquisition;
 import com.technototes.library.util.MathUtils;
+import org.firstinspires.ftc.teamcode.learnbot.Setup;
 
 public class Gimbal {
 
@@ -60,9 +61,9 @@ public class Gimbal {
     public static class Config {
 
         // Hardware Configuration:
-        public static String YAW_SERVO = "yaw";
+        public static String YAW_SERVO = Setup.HardwareNames.YAW_SERVO;
         public static ServoInfo Yaw = new ServoInfo(0.0, 0.95, 0.475, 100.0, false);
-        public static String PITCH_SERVO = "pitch";
+        public static String PITCH_SERVO = Setup.HardwareNames.PITCH_SERVO;
         public static ServoInfo Pitch = new ServoInfo(0.05, 1.0, 0.15, 80.0, true);
 
         // Stuff for TargetAcquisition

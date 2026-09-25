@@ -23,6 +23,8 @@ public class Setup {
         public static String ALLIANCE_SWITCH_RED = "asr";
         public static String ALLIANCE_SWITCH_BLUE = "asb";
         public static String OCTOQUAD_MK2 = "octoquad";
+        public static String YAW_SERVO = "yaw";
+        public static String PITCH_SERVO = "pitch";
     }
 
     @Configurable
