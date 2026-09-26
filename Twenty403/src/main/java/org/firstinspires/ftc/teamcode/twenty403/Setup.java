@@ -27,7 +27,8 @@ public class Setup {
         public static String IMU = "imu";
         public static String EXTERNALIMU = "adafruit-imu";
         public static String OCTOQUAD = "octoquad";
-        public static String LAUNCHER = "top";
+        public static String LAUNCHER = "launch";
+        public static String SPIN = "spin";
         public static String LEFTINTAKESERVO = "lintake";
         public static String RIGHTINTAKESERVO = "rintake";
         public static String INTAKEMOTOR = "intake";
