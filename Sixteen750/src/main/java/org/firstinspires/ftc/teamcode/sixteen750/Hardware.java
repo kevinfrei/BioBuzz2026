@@ -55,8 +55,8 @@ public class Hardware implements Loggable {
             intake = new Motor<DcMotorEx>(Setup.HardwareNames.INTAKE_MOTOR);
         }
         if (Setup.Connected.LAUNCHERSUBSYSTEM) {
-            launcher1 = new EncodedMotor<DcMotorEx>(Setup.HardwareNames.LAUNCHER_MOTOR1);
-            gate = new Servo(Setup.HardwareNames.GATE_SERVO);
+            launcher1 = new EncodedMotor<DcMotorEx>(Setup.HardwareNames.LAUNCHER_MOTOR);
+            gate = new Servo(Setup.HardwareNames.HOOD_SERVO);
         }
 
         if (Setup.Connected.VISIONSUBSYSTEM) {

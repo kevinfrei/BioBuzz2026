@@ -1,14 +1,13 @@
-package org.firstinspires.ftc.sixteen750.validators;
+package org.firstinspires.ftc.teamcode.sixteen750.validators;
 
 import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.technototes.library.structure.ValidationOpMode;
-import org.firstinspires.ftc.sixteen750.Setup;
+import org.firstinspires.ftc.teamcode.sixteen750.Setup;
 
 @Configurable
-@TeleOp
+@TeleOp(name = "intake", group = "validators")
 public class IntakeValidator extends ValidationOpMode {
 
     // theres 2 motors , each spinning one direction, or maybe same direction , depending where the motors is
