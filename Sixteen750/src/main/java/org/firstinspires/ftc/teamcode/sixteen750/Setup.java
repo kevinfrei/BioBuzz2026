@@ -29,9 +29,17 @@ public class Setup {
         public static String EXTERNAL_IMU = "adafruit-imu";
 
         public static String INTAKE_MOTOR = "intake/odo";
-        public static String LAUNCHER_MOTOR1 = "launcher1";
 
-        public static String GATE_SERVO = "gate";
+        public static String TRANSFERMOTOR1 = "transfermotor1";
+        public static String TRANSFERMOTOR2 = "transfermotor2";
+        public static String LAUNCHER_MOTOR = "launcher1";
+        //   public static String LAUNCHER_MOTOR2 = "launcher2";
+        public static String ROTATINGSERVO1 = "rotatingservo1";
+
+        public static String ROTATINGSERVO2 = "rotatingservo2";
+        public static String BRAKE_SERVO = "brake";
+        public static String HOOD_SERVO = "hood";
+        public static String LEVER_SERVO = "lever";
         public static String TESTSERVO = "testservo";
         public static String TESTMOTOR = "testmotor";
         public static String TESTCRSERVO = "testcrservo";
