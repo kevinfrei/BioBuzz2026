@@ -1,4 +1,4 @@
-import simpleGit, { PushResult } from 'simple-git';
+import { PushResult, simpleGit } from 'simple-git';
 
 import { DEFAULT_BRANCH_NAME, ReadBranchName } from './branch.js';
 import { hasGithubAccess, onlyRobotConnection } from './connectivity.js';

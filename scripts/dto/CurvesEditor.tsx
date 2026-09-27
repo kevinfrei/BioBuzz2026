@@ -30,11 +30,14 @@ import {
   ZoomOut,
 } from 'lucide-react';
 
-import { resolvePoseRef } from './dto_schema';
+import { CurveRefControl } from './CurveRefControl';
+import { Curve, CurveRef, resolvePoseRef } from './dto_schema';
 import {
   EMPTY_WORKSPACE_PRESET,
   namedValuesAtom,
   SAMPLE_AUTONOMOUS_PRESET,
+  searchFilterAtom,
+  selectedKeyAtom,
   symbolTableAtom,
   toastAtom,
 } from './state';
@@ -81,7 +84,7 @@ export function CurvesEditor(): ReactElement {
     setToast(`Added curve "${newKey}"`);
   };
 
-  const handleRename = (oldKey, newKey) => {
+  const handleRename = (oldKey: string, newKey: string) => {
     if (!newKey || oldKey === newKey || curves[newKey]) return;
     const newDict = { ...curves };
     newDict[newKey] = newDict[oldKey];
@@ -91,7 +94,7 @@ export function CurvesEditor(): ReactElement {
     setSelected({ store: 'curves', key: newKey });
   };
 
-  const handleDelete = (keyToDelete) => {
+  const handleDelete = (keyToDelete: string) => {
     const newDict = { ...curves };
     delete newDict[keyToDelete];
     setNamedValues({ ...namedValues, curves: newDict });
@@ -182,7 +185,7 @@ export function CurvesEditor(): ReactElement {
             <CurveRefControl
               label="Curve Definition"
               value={activeCurve}
-              onChange={(updatedCurve) => {
+              onChange={(updatedCurve: Curve) => {
                 setNamedValues({
                   ...namedValues,
                   curves: { ...curves, [activeKey]: updatedCurve },
