@@ -2,7 +2,7 @@ import { atom } from 'jotai';
 
 import { NamedValues, SymbolTable } from './dto_schema';
 
-const SAMPLE_AUTONOMOUS_PRESET: NamedValues = {
+export const SAMPLE_AUTONOMOUS_PRESET: NamedValues = {
   values: {
     startX: { val: -5.0 },
     startY: { val: -2.0 },
@@ -75,7 +75,7 @@ const SAMPLE_AUTONOMOUS_PRESET: NamedValues = {
   },
 };
 
-const EMPTY_WORKSPACE_PRESET: NamedValues = {
+export const EMPTY_WORKSPACE_PRESET: NamedValues = {
   values: {},
   poses: {},
   interpolations: {},

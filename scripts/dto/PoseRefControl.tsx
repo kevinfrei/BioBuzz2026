@@ -30,7 +30,7 @@ import {
   ZoomOut,
 } from 'lucide-react';
 
-import { resolvePoseRef } from './dto_schema';
+import { chkErr, chkRef, PoseRef, resolvePoseRef } from './dto_schema';
 import {
   EMPTY_WORKSPACE_PRESET,
   namedValuesAtom,
@@ -38,17 +38,28 @@ import {
   symbolTableAtom,
   toastAtom,
 } from './state';
+import { ValRefControl } from './ValRefControl';
+
+export type PoseRefControlProps = {
+  label: string;
+  pose: PoseRef;
+  onChange: (npr: PoseRef) => void;
+};
 
 // PoseRef Control: Switch between Inline ({ X, Y, Heading, inRadians }) and Ref ({ ref })
-export function PoseRefControl({ label, value, onChange }): ReactElement {
-  const [namedValues] = useAtom(namedValuesAtom);
-  const poseKeys = Object.keys(namedValues.poses || {});
-  const valueKeys = Object.keys(namedValues.values || {});
+export function PoseRefControl({
+  label,
+  pose,
+  onChange,
+}: PoseRefControlProps): ReactElement {
+  const symbolTable = useAtomValue(symbolTableAtom);
+  const poseKeys = [...symbolTable.poses.keys()];
+  const valueKeys = [...symbolTable.values.keys()];
 
-  const isRef = Boolean(value && 'ref' in value);
-  const resolved = resolvePoseRef(value, namedValues);
+  const isRef = chkRef(pose);
+  const resolved = resolvePoseRef(pose, symbolTable);
 
-  const toggleType = (toRef) => {
+  const setToRef = (toRef: boolean) => {
     if (toRef) {
       onChange({ ref: poseKeys[0] || '' });
     } else {
@@ -70,7 +81,7 @@ export function PoseRefControl({ label, value, onChange }): ReactElement {
         <div className="flex items-center bg-neutral-200 dark:bg-neutral-800 p-0.5 rounded-md text-xs">
           <button
             type="button"
-            onClick={() => toggleType(false)}
+            onClick={() => setToRef(false)}
             className={`px-2 py-0.5 rounded ${
               !isRef
                 ? 'bg-white dark:bg-neutral-700 text-sky-600 dark:text-sky-400 font-medium shadow-sm'
@@ -80,7 +91,7 @@ export function PoseRefControl({ label, value, onChange }): ReactElement {
           </button>
           <button
             type="button"
-            onClick={() => toggleType(true)}
+            onClick={() => setToRef(true)}
             className={`px-2 py-0.5 rounded ${
               isRef
                 ? 'bg-white dark:bg-neutral-700 text-sky-600 dark:text-sky-400 font-medium shadow-sm'
@@ -94,7 +105,7 @@ export function PoseRefControl({ label, value, onChange }): ReactElement {
       {isRef ? (
         <div className="space-y-2">
           <select
-            value={value?.ref || ''}
+            value={pose?.ref || ''}
             onChange={(e) => onChange({ ref: e.target.value })}
             className="w-full px-3 py-1.5 text-sm rounded-md border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 focus:ring-2 focus:ring-sky-500 outline-none">
             <option value="" disabled>
@@ -106,10 +117,10 @@ export function PoseRefControl({ label, value, onChange }): ReactElement {
               </option>
             ))}
           </select>
-          {resolved.missing && (
+          {chkErr(resolved) && (
             <div className="flex items-center gap-1.5 text-xs text-rose-500 dark:text-rose-400">
               <AlertTriangle className="w-3.5 h-3.5" />
-              <span>Missing pose reference: "{value?.ref}"</span>
+              <span>Missing pose reference: "{pose?.ref}"</span>
             </div>
           )}
         </div>
@@ -117,21 +128,18 @@ export function PoseRefControl({ label, value, onChange }): ReactElement {
         <div className="space-y-3 pl-1 border-l-2 border-sky-500/30">
           <ValRefControl
             label="X Coordinate"
-            value={value?.X || { val: 0 }}
-            onChange={(X) => onChange({ ...value, X })}
-            availableKeys={valueKeys}
+            value={pose?.X || { val: 0 }}
+            onChange={(X) => onChange({ ...pose, X })}
           />
           <ValRefControl
             label="Y Coordinate"
-            value={value?.Y || { val: 0 }}
-            onChange={(Y) => onChange({ ...value, Y })}
-            availableKeys={valueKeys}
+            value={pose?.Y || { val: 0 }}
+            onChange={(Y) => onChange({ ...pose, Y })}
           />
           <ValRefControl
             label="Heading Angle"
-            value={value?.Heading || { val: 0 }}
-            onChange={(Heading) => onChange({ ...value, Heading })}
-            availableKeys={valueKeys}
+            value={pose?.Heading || { val: 0 }}
+            onChange={(Heading) => onChange({ ...pose, Heading })}
           />
 
           <div className="flex items-center justify-between pt-1">
@@ -141,15 +149,15 @@ export function PoseRefControl({ label, value, onChange }): ReactElement {
             <label className="relative inline-flex items-center cursor-pointer">
               <input
                 type="checkbox"
-                checked={Boolean(value?.inRadians)}
+                checked={Boolean(pose?.inRadians)}
                 onChange={(e) =>
-                  onChange({ ...value, inRadians: e.target.checked })
+                  onChange({ ...pose, inRadians: e.target.checked })
                 }
                 className="sr-only peer"
               />
               <div className="w-9 h-5 bg-neutral-300 peer-focus:outline-none rounded-full peer dark:bg-neutral-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-neutral-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:peer-checked:after:border-neutral-700 peer-checked:bg-sky-600"></div>
               <span className="ml-2 text-xs font-mono font-medium text-neutral-800 dark:text-neutral-200">
-                {value?.inRadians ? 'Radians (rad)' : 'Degrees (°)'}
+                {pose?.inRadians ? 'Radians (rad)' : 'Degrees (°)'}
               </span>
             </label>
           </div>

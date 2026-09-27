@@ -10,7 +10,6 @@ export type ValRefControlProps = {
   label: string;
   value: ValRef;
   onChange: (valRef: ValRef) => void;
-  availableKeys: string[];
 };
 
 // ValRef Control: Switch between Inline ({ val }) and Ref ({ ref })
@@ -18,16 +17,15 @@ export function ValRefControl({
   label,
   value,
   onChange,
-  availableKeys = [],
 }: ValRefControlProps): ReactElement {
-  const namedValues = useAtomValue(namedValuesAtom);
   const symbolTable = useAtomValue(symbolTableAtom);
+  const valueKeys = [...symbolTable.values.keys()];
   const isRef = chkRef(value);
   const resolved = resolveValRef(value, symbolTable);
 
   const setToRef = (toRef: boolean) => {
     if (toRef) {
-      const firstKey = availableKeys[0] || '';
+      const firstKey = valueKeys[0] || '';
       onChange({ ref: firstKey });
     } else {
       onChange({ val: chkErr(resolved) ? 0 : resolved });
@@ -83,9 +81,9 @@ export function ValRefControl({
             <option value="" disabled>
               Select Value Reference...
             </option>
-            {availableKeys.map((k) => (
+            {valueKeys.map((k) => (
               <option key={k} value={k}>
-                {k} (val: {namedValues.values?.[k]?.val})
+                {k} (val: {symbolTable.values.get(k)?.val})
               </option>
             ))}
           </select>

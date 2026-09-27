@@ -35,6 +35,8 @@ import {
   EMPTY_WORKSPACE_PRESET,
   namedValuesAtom,
   SAMPLE_AUTONOMOUS_PRESET,
+  searchFilterAtom,
+  selectedKeyAtom,
   symbolTableAtom,
   toastAtom,
 } from './state';
@@ -68,7 +70,7 @@ export function ValuesEditor(): ReactElement {
     setToast(`Added value "${newKey}"`);
   };
 
-  const handleRename = (oldKey, newKey) => {
+  const handleRename = (oldKey: string, newKey: string) => {
     if (!newKey || oldKey === newKey || values[newKey]) return;
     const newDict = { ...values };
     newDict[newKey] = newDict[oldKey];
@@ -78,7 +80,7 @@ export function ValuesEditor(): ReactElement {
     setSelected({ store: 'values', key: newKey });
   };
 
-  const handleDelete = (keyToDelete) => {
+  const handleDelete = (keyToDelete: string) => {
     const newDict = { ...values };
     delete newDict[keyToDelete];
     setNamedValues({ ...namedValues, values: newDict });
