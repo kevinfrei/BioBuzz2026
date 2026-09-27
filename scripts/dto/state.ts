@@ -1,6 +1,6 @@
 import { atom } from 'jotai';
 
-import { NamedValues } from './dto_schema';
+import { NamedValues, SymbolTable } from './dto_schema';
 
 const SAMPLE_AUTONOMOUS_PRESET: NamedValues = {
   values: {
@@ -86,8 +86,21 @@ const EMPTY_WORKSPACE_PRESET: NamedValues = {
 export const themeAtom = atom<'dark' | 'light'>('dark');
 export const toastAtom = atom<string | null>(null);
 export const namedValuesAtom = atom<NamedValues>(SAMPLE_AUTONOMOUS_PRESET);
+function MakeMap<T>(obj: Record<string, T> | undefined): Map<string, T> {
+  return new Map<string, T>(
+    obj ? Object.keys(obj).map((val) => [val, obj[val]]) : [],
+  );
+}
 export const symbolTableAtom = atom((get) => {
-  const namedVals = get(namedValuesAtom);
+  const obj = get(namedValuesAtom);
+  const res: SymbolTable = {
+    values: MakeMap(obj.values),
+    poses: MakeMap(obj.poses),
+    interpolations: MakeMap(obj.interpolations),
+    curves: MakeMap(obj.curves),
+    paths: MakeMap(obj.paths),
+  };
+  return res;
 });
 export const activeTabAtom = atom<
   | 'values'

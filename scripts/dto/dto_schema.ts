@@ -94,6 +94,7 @@ export type SymbolTable = {
 };
 
 // Type checkers:
+export const chkErr = chkObjectOfExactType<Err>({ err: isString });
 export const chkRef = chkObjectOfExactType<Ref>({ ref: isString });
 export const chkValue = chkObjectOfExactType<Value>({ val: isNumber });
 export const chkValRef = chkAnyOf(chkRef, chkValue);
