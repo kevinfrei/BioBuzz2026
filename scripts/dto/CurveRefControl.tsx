@@ -1,0 +1,184 @@
+import {
+  ReactElement,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+import { useAtom, useAtomValue } from 'jotai';
+
+import {
+  AlertTriangle,
+  ArrowRight,
+  Code,
+  Compass,
+  Copy,
+  Eye,
+  FileDown,
+  FileUp,
+  Layers,
+  Moon,
+  Move,
+  Plus,
+  RefreshCw,
+  Search,
+  Sparkles,
+  Sun,
+  Trash2,
+  ZoomIn,
+  ZoomOut,
+} from 'lucide-react';
+
+import { resolvePoseRef } from './dto_schema';
+import { InterpRefControl } from './InterpRefControl';
+import { PoseRefControl } from './PoseRefControl';
+import {
+  EMPTY_WORKSPACE_PRESET,
+  namedValuesAtom,
+  SAMPLE_AUTONOMOUS_PRESET,
+  symbolTableAtom,
+  toastAtom,
+} from './state';
+
+// CurveRef Control: Inline Curve vs Ref ({ ref })
+export function CurveRefControl({ label, value, onChange }): ReactElement {
+  const [namedValues] = useAtom(namedValuesAtom);
+  const curveKeys = Object.keys(namedValues.curves || {});
+  const isRef = Boolean(value && 'ref' in value);
+
+  const toggleType = (toRef) => {
+    if (toRef) {
+      onChange({ ref: curveKeys[0] || '' });
+    } else {
+      onChange({
+        points: [
+          {
+            X: { val: 0 },
+            Y: { val: 0 },
+            Heading: { val: 0 },
+            inRadians: false,
+          },
+        ],
+        interpolation: { reversed: false },
+      });
+    }
+  };
+
+  return (
+    <div className="p-4 rounded-lg border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900/60 space-y-3">
+      <div className="flex items-center justify-between">
+        <label className="text-xs font-semibold text-neutral-700 dark:text-neutral-300 uppercase tracking-wider">
+          {label}
+        </label>
+        <div className="flex items-center bg-neutral-200 dark:bg-neutral-800 p-0.5 rounded-md text-xs">
+          <button
+            type="button"
+            onClick={() => toggleType(false)}
+            className={`px-2 py-0.5 rounded ${
+              !isRef
+                ? 'bg-white dark:bg-neutral-700 text-sky-600 dark:text-sky-400 font-medium shadow-sm'
+                : 'text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-200'
+            }`}>
+            Inline Curve
+          </button>
+          <button
+            type="button"
+            onClick={() => toggleType(true)}
+            className={`px-2 py-0.5 rounded ${
+              isRef
+                ? 'bg-white dark:bg-neutral-700 text-sky-600 dark:text-sky-400 font-medium shadow-sm'
+                : 'text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-200'
+            }`}>
+            Reference
+          </button>
+        </div>
+      </div>
+
+      {isRef ? (
+        <select
+          value={value?.ref || ''}
+          onChange={(e) => onChange({ ref: e.target.value })}
+          className="w-full px-3 py-1.5 text-sm rounded-md border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 focus:ring-2 focus:ring-sky-500 outline-none">
+          <option value="" disabled>
+            Select Curve Reference...
+          </option>
+          {curveKeys.map((k) => (
+            <option key={k} value={k}>
+              {k}
+            </option>
+          ))}
+        </select>
+      ) : (
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-medium text-neutral-700 dark:text-neutral-300">
+                Curve Points (Poses)
+              </span>
+              <button
+                type="button"
+                onClick={() => {
+                  const pts = value?.points || [];
+                  onChange({
+                    ...value,
+                    points: [
+                      ...pts,
+                      {
+                        X: { val: 0 },
+                        Y: { val: 0 },
+                        Heading: { val: 0 },
+                        inRadians: false,
+                      },
+                    ],
+                  });
+                }}
+                className="px-2 py-0.5 text-xs rounded bg-sky-600 hover:bg-sky-500 text-white flex items-center gap-1 font-medium">
+                <Plus className="w-3 h-3" /> Add Pose
+              </button>
+            </div>
+
+            {(value?.points || []).map((pt, pIdx) => (
+              <div key={pIdx} className="relative pt-1">
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-xs font-semibold text-neutral-500">
+                    Pose #{pIdx + 1}
+                  </span>
+                  {(value?.points || []).length > 1 && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const newPts = value.points.filter(
+                          (_, i) => i !== pIdx,
+                        );
+                        onChange({ ...value, points: newPts });
+                      }}
+                      className="text-neutral-400 hover:text-rose-500 transition-colors"
+                      title="Remove Pose Point">
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  )}
+                </div>
+                <PoseRefControl
+                  label={`Point ${pIdx + 1}`}
+                  value={pt}
+                  onChange={(newPt) => {
+                    const newPts = [...value.points];
+                    newPts[pIdx] = newPt;
+                    onChange({ ...value, points: newPts });
+                  }}
+                />
+              </div>
+            ))}
+          </div>
+
+          <InterpRefControl
+            label="Curve Interpolator"
+            value={value?.interpolation || { reversed: false }}
+            onChange={(interpolation) => onChange({ ...value, interpolation })}
+          />
+        </div>
+      )}
+    </div>
+  );
+}
