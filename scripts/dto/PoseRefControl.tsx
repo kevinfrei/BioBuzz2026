@@ -29,6 +29,7 @@ import {
   ZoomIn,
   ZoomOut,
 } from 'lucide-react';
+import { isDefined } from '@freik/typechk';
 
 import { chkErr, chkRef, PoseRef, resolvePoseRef } from './dto_schema';
 import {
@@ -168,8 +169,27 @@ export function PoseRefControl({
       <div className="flex items-center justify-between pt-1 text-xs font-mono text-neutral-600 dark:text-neutral-400 border-t border-neutral-200 dark:border-neutral-800">
         <span>Computed Position:</span>
         <span className="font-semibold text-neutral-900 dark:text-neutral-100">
-          X: {resolved.x.toFixed(2)}, Y: {resolved.y.toFixed(2)}, θ:{' '}
-          {resolved.headingDeg.toFixed(1)}°
+          {chkErr(resolved) || (
+            <>
+              X:{' '}
+              {chkErr(resolved.X)
+                ? `Error: ${resolved.X.err}`
+                : resolved.X.toFixed(2)}
+              , Y:{' '}
+              {chkErr(resolved.Y)
+                ? `Error: ${resolved.Y.err}`
+                : resolved.Y.toFixed(2)}
+              {isDefined(resolved.Heading) && (
+                <>
+                  θ:{' '}
+                  {chkErr(resolved.Heading)
+                    ? `Error: ${resolved.Heading.err}`
+                    : ((resolved.Heading! * 180) / Math.PI).toFixed(1)}
+                  °
+                </>
+              )}
+            </>
+          )}
         </span>
       </div>
     </div>
