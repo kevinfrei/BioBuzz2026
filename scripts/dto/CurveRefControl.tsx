@@ -161,7 +161,7 @@ export function CurveRefControl({ label, value, onChange }): ReactElement {
                 </div>
                 <PoseRefControl
                   label={`Point ${pIdx + 1}`}
-                  value={pt}
+                  pose={pt}
                   onChange={(newPt) => {
                     const newPts = [...value.points];
                     newPts[pIdx] = newPt;
