@@ -1,41 +1,14 @@
-import {
-  ReactElement,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
-import { useAtom, useAtomValue } from 'jotai';
+import { ReactElement } from 'react';
+import { useAtom } from 'jotai';
 
-import {
-  AlertTriangle,
-  ArrowRight,
-  Code,
-  Compass,
-  Copy,
-  Eye,
-  FileDown,
-  FileUp,
-  Layers,
-  Moon,
-  Move,
-  Plus,
-  RefreshCw,
-  Search,
-  Sparkles,
-  Sun,
-  Trash2,
-  ZoomIn,
-  ZoomOut,
-} from 'lucide-react';
+import { Plus, Search, Trash2 } from 'lucide-react';
 
-import { resolvePoseRef } from './dto_schema';
+import { getInterpType } from './dto_schema';
+import { InterpRefControl } from './InterpRefs';
 import {
-  EMPTY_WORKSPACE_PRESET,
   namedValuesAtom,
-  SAMPLE_AUTONOMOUS_PRESET,
-  symbolTableAtom,
+  searchFilterAtom,
+  selectedKeyAtom,
   toastAtom,
 } from './state';
 
@@ -72,7 +45,7 @@ export function InterpolatorsEditor(): ReactElement {
     setToast(`Added interpolator "${newKey}"`);
   };
 
-  const handleRename = (oldKey, newKey) => {
+  const handleRename = (oldKey: string, newKey: string) => {
     if (!newKey || oldKey === newKey || interpolations[newKey]) return;
     const newDict = { ...interpolations };
     newDict[newKey] = newDict[oldKey];
@@ -82,7 +55,7 @@ export function InterpolatorsEditor(): ReactElement {
     setSelected({ store: 'interpolations', key: newKey });
   };
 
-  const handleDelete = (keyToDelete) => {
+  const handleDelete = (keyToDelete: string) => {
     const newDict = { ...interpolations };
     delete newDict[keyToDelete];
     setNamedValues({ ...namedValues, interpolations: newDict });
@@ -136,7 +109,7 @@ export function InterpolatorsEditor(): ReactElement {
                 }`}>
                 <span className="truncate">{k}</span>
                 <span className="font-mono text-xs text-sky-600 dark:text-sky-400 font-normal">
-                  {getInterpolatorType(interpolations[k])}
+                  {getInterpType(interpolations[k])}
                 </span>
               </div>
             ))
@@ -172,7 +145,7 @@ export function InterpolatorsEditor(): ReactElement {
 
             <InterpRefControl
               label="Interpolator Definition"
-              value={activeInterp}
+              interp={activeInterp}
               onChange={(updatedInterp) => {
                 setNamedValues({
                   ...namedValues,

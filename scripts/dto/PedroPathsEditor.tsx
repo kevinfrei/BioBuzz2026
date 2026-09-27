@@ -30,14 +30,22 @@ import {
   ZoomOut,
 } from 'lucide-react';
 
-import { resolvePoseRef } from './dto_schema';
+import { CurvesEditor } from './CurvesEditor';
+import { NamedValues } from './dto_schema';
+import { InterpolatorsEditor } from './InterpolatorsEditor';
+import { NotificationToast } from './NotificationToast';
+import { PathsEditor } from './PathsEditor';
+import { PosesEditor } from './PosesEditor';
 import {
+  activeTabAtom,
   EMPTY_WORKSPACE_PRESET,
   namedValuesAtom,
   SAMPLE_AUTONOMOUS_PRESET,
   symbolTableAtom,
+  themeAtom,
   toastAtom,
 } from './state';
+import { ValuesEditor } from './ValuesEditor';
 
 export function PedroPathsEditor(): ReactElement {
   const [namedValues, setNamedValues] = useAtom(namedValuesAtom);
@@ -57,7 +65,7 @@ export function PedroPathsEditor(): ReactElement {
     [namedValues],
   );
 
-  const loadPreset = (preset, name) => {
+  const loadPreset = (preset: NamedValues, name: string) => {
     setNamedValues(preset);
     setToast(`Loaded ${name} preset!`);
   };
@@ -206,11 +214,11 @@ export function PedroPathsEditor(): ReactElement {
 
         {/* Workspace Body */}
         <main className="flex-grow p-6 overflow-hidden flex flex-col max-w-7xl w-full mx-auto">
-          {activeTab === 'values' && <ValuesStoreEditor />}
-          {activeTab === 'poses' && <PosesStoreEditor />}
-          {activeTab === 'interpolations' && <InterpolatorsStoreEditor />}
-          {activeTab === 'curves' && <CurvesStoreEditor />}
-          {activeTab === 'paths' && <PathsStoreEditor />}
+          {activeTab === 'values' && <ValuesEditor />}
+          {activeTab === 'poses' && <PosesEditor />}
+          {activeTab === 'interpolations' && <InterpolatorsEditor />}
+          {activeTab === 'curves' && <CurvesEditor />}
+          {activeTab === 'paths' && <PathsEditor />}
           {activeTab === 'visualizer' && <CanvasVisualizer />}
           {activeTab === 'json' && <JsonViewEditor />}
         </main>

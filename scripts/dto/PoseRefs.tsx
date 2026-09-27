@@ -1,45 +1,13 @@
-import {
-  ReactElement,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
-import { useAtom, useAtomValue } from 'jotai';
+import { ReactElement } from 'react';
+import { useAtomValue } from 'jotai';
 
-import {
-  AlertTriangle,
-  ArrowRight,
-  Code,
-  Compass,
-  Copy,
-  Eye,
-  FileDown,
-  FileUp,
-  Layers,
-  Moon,
-  Move,
-  Plus,
-  RefreshCw,
-  Search,
-  Sparkles,
-  Sun,
-  Trash2,
-  ZoomIn,
-  ZoomOut,
-} from 'lucide-react';
-import { isDefined } from '@freik/typechk';
+import { AlertTriangle } from 'lucide-react';
+import { hasField, isDefined, isUndefined } from '@freik/typechk';
 
-import { chkErr, chkRef, PoseRef, resolvePoseRef } from './dto_schema';
-import {
-  EMPTY_WORKSPACE_PRESET,
-  namedValuesAtom,
-  SAMPLE_AUTONOMOUS_PRESET,
-  symbolTableAtom,
-  toastAtom,
-} from './state';
-import { ValRefControl } from './ValRefControl';
+import { chkErr, chkRef, PoseRef, ResolvedPose } from './dto_schema';
+import { resolvePoseRef } from './Resolvers';
+import { symbolTableAtom } from './state';
+import { ResolvedValueInline, ValRefControl, ValRefInline } from './ValRefs';
 
 export type PoseRefControlProps = {
   label: string;
@@ -169,29 +137,72 @@ export function PoseRefControl({
       <div className="flex items-center justify-between pt-1 text-xs font-mono text-neutral-600 dark:text-neutral-400 border-t border-neutral-200 dark:border-neutral-800">
         <span>Computed Position:</span>
         <span className="font-semibold text-neutral-900 dark:text-neutral-100">
-          {chkErr(resolved) || (
-            <>
-              X:{' '}
-              {chkErr(resolved.X)
-                ? `Error: ${resolved.X.err}`
-                : resolved.X.toFixed(2)}
-              , Y:{' '}
-              {chkErr(resolved.Y)
-                ? `Error: ${resolved.Y.err}`
-                : resolved.Y.toFixed(2)}
-              {isDefined(resolved.Heading) && (
-                <>
-                  θ:{' '}
-                  {chkErr(resolved.Heading)
-                    ? `Error: ${resolved.Heading.err}`
-                    : ((resolved.Heading! * 180) / Math.PI).toFixed(1)}
-                  °
-                </>
-              )}
-            </>
-          )}
+          <ResolvedPose pose={resolved} />
         </span>
       </div>
     </div>
+  );
+}
+
+export function ResolvedPose({ pose }: { pose: ResolvedPose }): ReactElement {
+  if (chkErr(pose)) {
+    return <>Not Found</>;
+  }
+  const coord = (
+    <>
+      (X:
+      <ResolvedValueInline value={pose.X} />, Y:
+      <ResolvedValueInline value={pose.Y} />)
+    </>
+  );
+  const heading = isDefined(pose.Heading) ? (
+    <>
+      , @<ResolvedValueInline value={pose.Heading} />°
+    </>
+  ) : (
+    <></>
+  );
+  return (
+    <>
+      {coord}
+      {heading}
+    </>
+  );
+}
+
+export function PoseRefInline({
+  poseref,
+}: {
+  poseref: PoseRef | undefined;
+}): ReactElement {
+  if (isUndefined(poseref)) {
+    return <>Not found</>;
+  }
+  if (chkRef(poseref)) {
+    return (
+      <>
+        Ref <code>{poseref.ref}</code>
+      </>
+    );
+  }
+  const coord = (
+    <>
+      X: <ValRefInline valref={poseref.X} />, Y:{' '}
+      <ValRefInline valref={poseref.Y} />
+    </>
+  );
+  const heading = hasField(poseref, 'Heading') ? (
+    <>
+      θ: <ValRefInline valref={poseref.Heading} />
+      {poseref.inRadians ? ' in radians' : ' in degrees'}
+    </>
+  ) : (
+    <></>
+  );
+  return (
+    <>
+      {coord}
+      {heading}
+    </>
   );
 }

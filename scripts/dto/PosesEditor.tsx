@@ -1,40 +1,14 @@
-import {
-  ReactElement,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import { ReactElement } from 'react';
 import { useAtom, useAtomValue } from 'jotai';
 
-import {
-  AlertTriangle,
-  ArrowRight,
-  Code,
-  Compass,
-  Copy,
-  Eye,
-  FileDown,
-  FileUp,
-  Layers,
-  Moon,
-  Move,
-  Plus,
-  RefreshCw,
-  Search,
-  Sparkles,
-  Sun,
-  Trash2,
-  ZoomIn,
-  ZoomOut,
-} from 'lucide-react';
+import { Plus, Search, Trash2 } from 'lucide-react';
 
-import { resolvePoseRef } from './dto_schema';
+import { PoseRefControl, ResolvedPose } from './PoseRefs';
+import { resolvePoseRef } from './Resolvers';
 import {
-  EMPTY_WORKSPACE_PRESET,
   namedValuesAtom,
-  SAMPLE_AUTONOMOUS_PRESET,
+  searchFilterAtom,
+  selectedKeyAtom,
   symbolTableAtom,
   toastAtom,
 } from './state';
@@ -42,6 +16,7 @@ import {
 // Poses Store Editor
 export function PosesEditor(): ReactElement {
   const [namedValues, setNamedValues] = useAtom(namedValuesAtom);
+  const symbolTable = useAtomValue(symbolTableAtom);
   const [selected, setSelected] = useAtom(selectedKeyAtom);
   const [search, setSearch] = useAtom(searchFilterAtom);
   const [, setToast] = useAtom(toastAtom);
@@ -76,7 +51,7 @@ export function PosesEditor(): ReactElement {
     setToast(`Added pose "${newKey}"`);
   };
 
-  const handleRename = (oldKey, newKey) => {
+  const handleRename = (oldKey: string, newKey: string) => {
     if (!newKey || oldKey === newKey || poses[newKey]) return;
     const newDict = { ...poses };
     newDict[newKey] = newDict[oldKey];
@@ -86,7 +61,7 @@ export function PosesEditor(): ReactElement {
     setSelected({ store: 'poses', key: newKey });
   };
 
-  const handleDelete = (keyToDelete) => {
+  const handleDelete = (keyToDelete: string) => {
     const newDict = { ...poses };
     delete newDict[keyToDelete];
     setNamedValues({ ...namedValues, poses: newDict });
@@ -130,7 +105,7 @@ export function PosesEditor(): ReactElement {
             </div>
           ) : (
             keys.map((k) => {
-              const res = resolvePoseRef({ ref: k }, namedValues);
+              const res = resolvePoseRef({ ref: k }, symbolTable);
               return (
                 <div
                   key={k}
@@ -142,7 +117,7 @@ export function PosesEditor(): ReactElement {
                   }`}>
                   <span className="truncate">{k}</span>
                   <span className="font-mono text-neutral-500 dark:text-neutral-400">
-                    ({res.x.toFixed(1)}, {res.y.toFixed(1)})
+                    <ResolvedPose pose={res} />
                   </span>
                 </div>
               );
@@ -179,7 +154,7 @@ export function PosesEditor(): ReactElement {
 
             <PoseRefControl
               label="Pose Coordinates & Heading"
-              value={activePose}
+              pose={activePose}
               onChange={(updatedPose) => {
                 setNamedValues({
                   ...namedValues,

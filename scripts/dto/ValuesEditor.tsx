@@ -1,45 +1,16 @@
-import {
-  ReactElement,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
-import { useAtom, useAtomValue } from 'jotai';
+import { ReactElement } from 'react';
+import { useAtom } from 'jotai';
 
-import {
-  AlertTriangle,
-  ArrowRight,
-  Code,
-  Compass,
-  Copy,
-  Eye,
-  FileDown,
-  FileUp,
-  Layers,
-  Moon,
-  Move,
-  Plus,
-  RefreshCw,
-  Search,
-  Sparkles,
-  Sun,
-  Trash2,
-  ZoomIn,
-  ZoomOut,
-} from 'lucide-react';
+import { Plus, Search, Trash2 } from 'lucide-react';
 
-import { resolvePoseRef } from './dto_schema';
+import { chkRef } from './dto_schema';
 import {
-  EMPTY_WORKSPACE_PRESET,
   namedValuesAtom,
-  SAMPLE_AUTONOMOUS_PRESET,
   searchFilterAtom,
   selectedKeyAtom,
-  symbolTableAtom,
   toastAtom,
 } from './state';
+import { ValRefInline } from './ValRefs';
 
 // Values Editor
 export function ValuesEditor(): ReactElement {
@@ -134,7 +105,7 @@ export function ValuesEditor(): ReactElement {
                 }`}>
                 <span className="truncate">{k}</span>
                 <span className="font-mono text-neutral-500 dark:text-neutral-400">
-                  {values[k]?.val}
+                  <ValRefInline valref={values[k]} />
                 </span>
               </div>
             ))
@@ -176,7 +147,9 @@ export function ValuesEditor(): ReactElement {
                 <input
                   type="number"
                   step="any"
-                  value={activeValue.val}
+                  value={
+                    chkRef(activeValue) ? activeValue.ref : activeValue.val
+                  }
                   onChange={(e) => {
                     const newVal = parseFloat(e.target.value) || 0;
                     setNamedValues({

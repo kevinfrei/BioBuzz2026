@@ -2,9 +2,7 @@ import {
   chkAnyOf,
   chkArrayOf,
   chkObjectOfExactType,
-  hasField,
   isBoolean,
-  isDefined,
   isNumber,
   isString,
   typecheck,
@@ -79,19 +77,52 @@ export type ResolvedPath = {
 };
 
 export type NamedValues = {
-  values?: Record<string, Value>;
-  poses?: Record<string, Pose>;
-  interpolations?: Record<string, Interpolator>;
-  curves?: Record<string, Curve>;
-  paths?: Record<string, Path>;
+  values: Record<string, ValRef>;
+  poses: Record<string, PoseRef>;
+  interpolations: Record<string, InterpRef>;
+  curves: Record<string, CurveRef>;
+  paths: Record<string, Path>;
 };
+
 export type SymbolTable = {
-  values: Map<string, Value>;
-  poses: Map<string, Pose>;
-  interpolations: Map<string, Interpolator>;
-  curves: Map<string, Curve>;
+  values: Map<string, ValRef>;
+  poses: Map<string, PoseRef>;
+  interpolations: Map<string, InterpRef>;
+  curves: Map<string, CurveRef>;
   paths: Map<string, Path>;
 };
+
+export const InterpNamesArray = [
+  'Constant',
+  'Facing',
+  'Linear',
+  'Tangent',
+  'PieceWise',
+  'Reference',
+] as const;
+export type InterpNames = (typeof InterpNamesArray)[number];
+
+export function getInterpType(interp: InterpRef): InterpNames {
+  if (chkRef(interp)) {
+    return 'Reference';
+  }
+  if (chkConstInterp(interp)) {
+    return 'Constant';
+  }
+  if (chkFacePtInterp(interp)) {
+    return 'Facing';
+  }
+  if (chkLinearInterp(interp)) {
+    return 'Linear';
+  }
+  if (chkTangentInterp(interp)) {
+    return 'Tangent';
+  }
+  if (chkPieceWiseInterp(interp)) {
+    return 'PieceWise';
+  }
+  throw new Error('Invalid Interpolator...');
+}
 
 // Type checkers:
 export const chkErr = chkObjectOfExactType<Err>({ err: isString });
@@ -153,143 +184,10 @@ export const chkPath = chkObjectOfExactType<Path>(
   { globalInterpolator: chkInterpRef },
 );
 
-export const chkNamedValues = chkObjectOfExactType<NamedValues>(
-  {},
-  {
-    values: chkArrayOf(chkValue),
-    poses: chkArrayOf(chkPose),
-    curves: chkArrayOf(chkCurve),
-    interpolations: chkArrayOf(chkInterpolator),
-    paths: chkArrayOf(chkPath),
-  },
-);
-
-// Resolvers:
-
-export function resolveValRef(
-  valRef: ValRef,
-  dict: SymbolTable,
-  seen = new Set<string>(),
-): ResolvedValue {
-  if (chkRef(valRef)) {
-    if (seen.has(valRef.ref)) {
-      return { err: `Circular value reference detected :${valRef.ref}` };
-    }
-    seen.add(valRef.ref);
-    const lkup = dict.values.get(valRef.ref);
-    return isDefined(lkup)
-      ? resolveValRef(lkup, dict, seen)
-      : { err: `Missing value reference: ${valRef.ref}` };
-  }
-  // The ValRef's val is the resolved value
-  return valRef.val;
-}
-
-export function resolvePoseRef(
-  poseRef: PoseRef,
-  dict: SymbolTable,
-  seen = new Set<string>(),
-): ResolvedPose {
-  if (chkRef(poseRef)) {
-    if (seen.has(poseRef.ref)) {
-      return { err: `Circular pose reference detected :${poseRef.ref}` };
-    }
-    seen.add(poseRef.ref);
-    const lkup = dict.poses.get(poseRef.ref);
-    return isDefined(lkup)
-      ? resolvePoseRef(lkup, dict, seen)
-      : { err: `Missing pose reference: ${poseRef.ref}` };
-  }
-  // Resolve the PoseRef's individual components:
-  const X = resolveValRef(poseRef.X, dict);
-  const Y = resolveValRef(poseRef.Y, dict);
-  if (hasField(poseRef, 'Heading')) {
-    let Heading = resolveValRef(poseRef.Heading!, dict);
-    if (hasField(Heading, 'err')) {
-      return { X, Y, Heading };
-    }
-    if (!poseRef.inRadians) {
-      Heading = (Math.PI * Heading) / 180.0;
-    }
-    return { X, Y, Heading };
-  } else {
-    return { X, Y };
-  }
-}
-
-export function resolveInterpRef(
-  interpRef: InterpRef,
-  dict: SymbolTable,
-  seen = new Set<string>(),
-): ResolvedInterpolator {
-  if (chkRef(interpRef)) {
-    if (seen.has(interpRef.ref)) {
-      return {
-        err: `Circular interpolator reference detected :${interpRef.ref}`,
-      };
-    }
-    seen.add(interpRef.ref);
-    const lkup = dict.interpolations.get(interpRef.ref);
-    return isDefined(lkup)
-      ? resolveInterpRef(lkup, dict, seen)
-      : { err: `Missing interpolator reference: ${interpRef.ref}` };
-  }
-  // Resolve the Interpolator, since it's not a reference
-  if (chkTangentInterp(interpRef)) {
-    // Tangent's are dumb: it's literally just
-    // "yup, it's tangent: Maybe it's reversed?"
-    return interpRef;
-  } else if (chkConstInterp(interpRef)) {
-    return { heading: resolveValRef(interpRef.heading, dict) };
-  } else if (chkFacePtInterp(interpRef)) {
-    return { point: resolvePoseRef(interpRef.point, dict) };
-  } else if (chkLinearInterp(interpRef)) {
-    return {
-      startHeading: resolveValRef(interpRef.startHeading, dict),
-      endHeading: resolveValRef(interpRef.endHeading, dict),
-      longWay: interpRef.longWay,
-    };
-  } else if (chkPieceWiseInterp(interpRef)) {
-    return {
-      pieces: interpRef.pieces.map((piece: InterpPiece) => ({
-        until: resolveValRef(piece.until, dict),
-        interpolater: resolveInterpRef(piece.interpolator, dict, seen),
-      })),
-    };
-  }
-  return { err: `Unknown interpolator type ${interpRef}` };
-}
-
-export function resolveCurveRef(
-  curveRef: CurveRef,
-  dict: SymbolTable,
-  seen = new Set<string>(),
-): ResolvedCurve {
-  if (chkRef(curveRef)) {
-    if (seen.has(curveRef.ref)) {
-      return {
-        err: `Circular curve reference detected :${curveRef.ref}`,
-      };
-    }
-    seen.add(curveRef.ref);
-    const lkup = dict.curves.get(curveRef.ref);
-    return isDefined(lkup)
-      ? resolveCurveRef(lkup, dict, seen)
-      : { err: `Missing interpolator reference: ${curveRef.ref}` };
-  }
-  return {
-    points: curveRef.points.map((poseRef) => resolvePoseRef(poseRef, dict)),
-    interpolation: resolveInterpRef(curveRef.interpolation, dict),
-  };
-}
-
-export function resolvePath(path: Path, dict: SymbolTable) {
-  const curves = path.curves.map((curveRef) => resolveCurveRef(curveRef, dict));
-  if (hasField(path, 'globalInterpolator')) {
-    return {
-      curves,
-      globalInterpolator: resolveInterpRef(path.globalInterpolator!, dict),
-    };
-  }
-  return { curves };
-}
+export const chkNamedValues = chkObjectOfExactType<NamedValues>({
+  values: chkArrayOf(chkValRef),
+  poses: chkArrayOf(chkPoseRef),
+  curves: chkArrayOf(chkCurveRef),
+  interpolations: chkArrayOf(chkInterpRef),
+  paths: chkArrayOf(chkPath),
+});

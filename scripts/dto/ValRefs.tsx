@@ -2,9 +2,11 @@ import { ReactElement } from 'react';
 import { useAtomValue } from 'jotai';
 
 import { AlertTriangle } from 'lucide-react';
+import { isUndefined } from '@freik/typechk';
 
-import { chkErr, chkRef, resolveValRef, ValRef } from './dto_schema';
-import { namedValuesAtom, symbolTableAtom } from './state';
+import { chkErr, chkRef, ResolvedValue, ValRef } from './dto_schema';
+import { resolveValRef } from './Resolvers';
+import { symbolTableAtom } from './state';
 
 export type ValRefControlProps = {
   label: string;
@@ -83,7 +85,7 @@ export function ValRefControl({
             </option>
             {valueKeys.map((k) => (
               <option key={k} value={k}>
-                {k} (val: {symbolTable.values.get(k)?.val})
+                {k} <ValRefInline valref={symbolTable.values.get(k)} />
               </option>
             ))}
           </select>
@@ -106,10 +108,36 @@ export function ValRefControl({
           }`}>
           <span>Resolved:</span>
           <strong className="font-bold">
-            {chkErr(resolved) ? 'NaN' : resolved}
+            <ResolvedValueInline value={resolved} />
           </strong>
         </span>
       </div>
     </div>
+  );
+}
+
+export function ResolvedValueInline({
+  value,
+}: {
+  value: ResolvedValue;
+}): ReactElement {
+  return <>{chkErr(value) ? `Error: ${value.err}` : value.toFixed(2)}</>;
+}
+
+export function ValRefInline({
+  valref,
+}: {
+  valref?: ValRef | undefined;
+}): ReactElement {
+  if (isUndefined(valref)) {
+    return <>Not found</>;
+  }
+  const isRef = chkRef(valref);
+  const title = isRef ? 'Ref' : 'Value';
+  const data = isRef ? valref.ref : valref.val.toFixed(1);
+  return (
+    <>
+      {title} <code>{data}</code>
+    </>
   );
 }

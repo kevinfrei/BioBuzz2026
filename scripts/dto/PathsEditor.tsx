@@ -30,11 +30,14 @@ import {
   ZoomOut,
 } from 'lucide-react';
 
-import { resolvePoseRef } from './dto_schema';
+import { CurveRefControl } from './CurveRefs';
+import { InterpRefControl } from './InterpRefs';
 import {
   EMPTY_WORKSPACE_PRESET,
   namedValuesAtom,
   SAMPLE_AUTONOMOUS_PRESET,
+  searchFilterAtom,
+  selectedKeyAtom,
   symbolTableAtom,
   toastAtom,
 } from './state';
@@ -73,7 +76,7 @@ export function PathsEditor(): ReactElement {
     setToast(`Added path "${newKey}"`);
   };
 
-  const handleRename = (oldKey, newKey) => {
+  const handleRename = (oldKey: string, newKey: string) => {
     if (!newKey || oldKey === newKey || paths[newKey]) return;
     const newDict = { ...paths };
     newDict[newKey] = newDict[oldKey];
@@ -83,7 +86,7 @@ export function PathsEditor(): ReactElement {
     setSelected({ store: 'paths', key: newKey });
   };
 
-  const handleDelete = (keyToDelete) => {
+  const handleDelete = (keyToDelete: string) => {
     const newDict = { ...paths };
     delete newDict[keyToDelete];
     setNamedValues({ ...namedValues, paths: newDict });
@@ -234,7 +237,7 @@ export function PathsEditor(): ReactElement {
                   </div>
                   <CurveRefControl
                     label={`Segment ${cIdx + 1}`}
-                    value={cRef}
+                    curve={cRef}
                     onChange={(newCRef) => {
                       const newCurves = [...activePath.curves];
                       newCurves[cIdx] = newCRef;
@@ -253,7 +256,7 @@ export function PathsEditor(): ReactElement {
               <div className="pt-2 border-t border-neutral-200 dark:border-neutral-800">
                 <InterpRefControl
                   label="Global Path Override Interpolator (Optional)"
-                  value={activePath.globalInterpolator || { reversed: false }}
+                  interp={activePath.globalInterpolator || { reversed: false }}
                   onChange={(globalInterpolator) => {
                     setNamedValues({
                       ...namedValues,

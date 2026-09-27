@@ -1,60 +1,48 @@
-import {
-  ReactElement,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
-import { useAtom, useAtomValue } from 'jotai';
+import { ReactElement } from 'react';
+import { useAtom } from 'jotai';
+
+import { Plus, Trash2 } from 'lucide-react';
 
 import {
-  AlertTriangle,
-  ArrowRight,
-  Code,
-  Compass,
-  Copy,
-  Eye,
-  FileDown,
-  FileUp,
-  Layers,
-  Moon,
-  Move,
-  Plus,
-  RefreshCw,
-  Search,
-  Sparkles,
-  Sun,
-  Trash2,
-  ZoomIn,
-  ZoomOut,
-} from 'lucide-react';
+  chkConstInterp,
+  chkFacePtInterp,
+  chkLinearInterp,
+  chkPieceWiseInterp,
+  chkRef,
+  chkTangentInterp,
+  getInterpType,
+  InterpNames,
+  InterpRef,
+} from './dto_schema';
+import { PoseRefControl } from './PoseRefs';
+import { namedValuesAtom } from './state';
+import { ValRefControl } from './ValRefs';
 
-import { resolvePoseRef } from './dto_schema';
-import {
-  EMPTY_WORKSPACE_PRESET,
-  namedValuesAtom,
-  SAMPLE_AUTONOMOUS_PRESET,
-  symbolTableAtom,
-  toastAtom,
-} from './state';
-
-export function InterpRefControl({ label, value, onChange }): ReactElement {
+export type InterpRefControlProps = {
+  label: string;
+  interp: InterpRef;
+  onChange: (interp: InterpRef) => void;
+};
+export function InterpRefControl({
+  label,
+  interp,
+  onChange,
+}: InterpRefControlProps): ReactElement {
   const [namedValues] = useAtom(namedValuesAtom);
   const interpKeys = Object.keys(namedValues.interpolations || {});
   const valueKeys = Object.keys(namedValues.values || {});
 
-  const currentType = getInterpolatorType(value);
+  const currentType = getInterpType(interp);
 
-  const handleTypeChange = (newType) => {
+  const handleTypeChange = (newType: InterpNames) => {
     switch (newType) {
       case 'Reference':
         onChange({ ref: interpKeys[0] || '' });
         break;
-      case 'ConstInterp':
+      case 'Constant':
         onChange({ heading: { val: 0 } });
         break;
-      case 'FacePtInterp':
+      case 'Facing':
         onChange({
           point: {
             X: { val: 0 },
@@ -64,17 +52,17 @@ export function InterpRefControl({ label, value, onChange }): ReactElement {
           },
         });
         break;
-      case 'LinearInterp':
+      case 'Linear':
         onChange({
           startHeading: { val: 0 },
           endHeading: { val: 180 },
           longWay: false,
         });
         break;
-      case 'TangentInterp':
+      case 'Tangent':
         onChange({ reversed: false });
         break;
-      case 'PieceWiseInterp':
+      case 'PieceWise':
         onChange({
           pieces: [
             {
@@ -83,8 +71,6 @@ export function InterpRefControl({ label, value, onChange }): ReactElement {
             },
           ],
         });
-        break;
-      default:
         break;
     }
   };
@@ -97,23 +83,21 @@ export function InterpRefControl({ label, value, onChange }): ReactElement {
         </label>
         <select
           value={currentType}
-          onChange={(e) => handleTypeChange(e.target.value)}
+          onChange={(e) => handleTypeChange(e.target.value as InterpNames)}
           className="px-2.5 py-1 text-xs rounded-md border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-sky-600 dark:text-sky-400 font-semibold outline-none focus:ring-2 focus:ring-sky-500">
-          <option value="ConstInterp">ConstInterp (Fixed Heading)</option>
-          <option value="FacePtInterp">FacePtInterp (Point at Pose)</option>
-          <option value="LinearInterp">LinearInterp (Heading Range)</option>
-          <option value="TangentInterp">TangentInterp (Along Path)</option>
-          <option value="PieceWiseInterp">
-            PieceWiseInterp (Multi-Segment)
-          </option>
+          <option value="Constant">Constant (Fixed Heading)</option>
+          <option value="Facing">Facing (Point at Pose)</option>
+          <option value="Linear">Linear (Heading Range)</option>
+          <option value="Tangent">Tangent (Along the Path)</option>
+          <option value="PieceWise">Piecewise (Multi-Segment)</option>
           <option value="Reference">Reference (from Interpolations)</option>
         </select>
       </div>
 
-      {currentType === 'Reference' && (
+      {chkRef(interp) && (
         <div className="space-y-2">
           <select
-            value={value?.ref || ''}
+            value={interp?.ref || ''}
             onChange={(e) => onChange({ ref: e.target.value })}
             className="w-full px-3 py-1.5 text-sm rounded-md border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 focus:ring-2 focus:ring-sky-500 outline-none">
             <option value="" disabled>
@@ -121,27 +105,26 @@ export function InterpRefControl({ label, value, onChange }): ReactElement {
             </option>
             {interpKeys.map((k) => (
               <option key={k} value={k}>
-                {k} ({getInterpolatorType(namedValues.interpolations?.[k])})
+                {k} ({getInterpType(namedValues.interpolations?.[k])})
               </option>
             ))}
           </select>
         </div>
       )}
 
-      {currentType === 'ConstInterp' && (
+      {chkConstInterp(interp) && (
         <ValRefControl
           label="Heading Value"
-          value={value?.heading || { val: 0 }}
+          value={interp.heading || { val: 0 }}
           onChange={(heading) => onChange({ heading })}
-          availableKeys={valueKeys}
         />
       )}
 
-      {currentType === 'FacePtInterp' && (
+      {chkFacePtInterp(interp) && (
         <PoseRefControl
           label="Target Point Pose"
-          value={
-            value?.point || {
+          pose={
+            interp?.point || {
               X: { val: 0 },
               Y: { val: 0 },
               Heading: { val: 0 },
@@ -152,19 +135,17 @@ export function InterpRefControl({ label, value, onChange }): ReactElement {
         />
       )}
 
-      {currentType === 'LinearInterp' && (
+      {chkLinearInterp(interp) && (
         <div className="space-y-3">
           <ValRefControl
             label="Start Heading"
-            value={value?.startHeading || { val: 0 }}
-            onChange={(startHeading) => onChange({ ...value, startHeading })}
-            availableKeys={valueKeys}
+            value={interp.startHeading || { val: 0 }}
+            onChange={(startHeading) => onChange({ ...interp, startHeading })}
           />
           <ValRefControl
             label="End Heading"
-            value={value?.endHeading || { val: 180 }}
-            onChange={(endHeading) => onChange({ ...value, endHeading })}
-            availableKeys={valueKeys}
+            value={interp?.endHeading || { val: 180 }}
+            onChange={(endHeading) => onChange({ ...interp, endHeading })}
           />
           <div className="flex items-center justify-between">
             <span className="text-xs text-neutral-600 dark:text-neutral-400">
@@ -172,9 +153,9 @@ export function InterpRefControl({ label, value, onChange }): ReactElement {
             </span>
             <input
               type="checkbox"
-              checked={Boolean(value?.longWay)}
+              checked={Boolean(interp?.longWay)}
               onChange={(e) =>
-                onChange({ ...value, longWay: e.target.checked })
+                onChange({ ...interp, longWay: e.target.checked })
               }
               className="w-4 h-4 text-sky-600 rounded border-neutral-300 focus:ring-sky-500"
             />
@@ -182,21 +163,21 @@ export function InterpRefControl({ label, value, onChange }): ReactElement {
         </div>
       )}
 
-      {currentType === 'TangentInterp' && (
+      {chkTangentInterp(interp) && (
         <div className="flex items-center justify-between py-1">
           <span className="text-xs text-neutral-600 dark:text-neutral-400">
             Reversed Path Heading
           </span>
           <input
             type="checkbox"
-            checked={Boolean(value?.reversed)}
+            checked={Boolean(interp?.reversed)}
             onChange={(e) => onChange({ reversed: e.target.checked })}
             className="w-4 h-4 text-sky-600 rounded border-neutral-300 focus:ring-sky-500"
           />
         </div>
       )}
 
-      {currentType === 'PieceWiseInterp' && (
+      {chkPieceWiseInterp(interp) && (
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-neutral-600 dark:text-neutral-400">
@@ -205,7 +186,7 @@ export function InterpRefControl({ label, value, onChange }): ReactElement {
             <button
               type="button"
               onClick={() => {
-                const pieces = value?.pieces || [];
+                const pieces = interp?.pieces || [];
                 onChange({
                   pieces: [
                     ...pieces,
@@ -218,7 +199,7 @@ export function InterpRefControl({ label, value, onChange }): ReactElement {
             </button>
           </div>
 
-          {(value?.pieces || []).map((piece, idx) => (
+          {(interp?.pieces || []).map((piece, idx) => (
             <div
               key={idx}
               className="p-3 rounded-md border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 space-y-3 relative group">
@@ -229,7 +210,7 @@ export function InterpRefControl({ label, value, onChange }): ReactElement {
                 <button
                   type="button"
                   onClick={() => {
-                    const newPieces = value.pieces.filter((_, i) => i !== idx);
+                    const newPieces = interp.pieces.filter((_, i) => i !== idx);
                     onChange({ pieces: newPieces });
                   }}
                   className="text-neutral-400 hover:text-rose-500 transition-colors"
@@ -242,18 +223,17 @@ export function InterpRefControl({ label, value, onChange }): ReactElement {
                 label="Until Param (t)"
                 value={piece.until}
                 onChange={(until) => {
-                  const newPieces = [...value.pieces];
+                  const newPieces = [...interp.pieces];
                   newPieces[idx] = { ...newPieces[idx], until };
                   onChange({ pieces: newPieces });
                 }}
-                availableKeys={valueKeys}
               />
 
               <InterpRefControl
                 label="Segment Interpolator"
-                value={piece.interpolator}
+                interp={piece.interpolator}
                 onChange={(interpolator) => {
-                  const newPieces = [...value.pieces];
+                  const newPieces = [...interp.pieces];
                   newPieces[idx] = { ...newPieces[idx], interpolator };
                   onChange({ pieces: newPieces });
                 }}
