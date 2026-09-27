@@ -102,15 +102,7 @@ export const symbolTableAtom = atom((get) => {
   };
   return res;
 });
-export const activeTabAtom = atom<
-  | 'values'
-  | 'poses'
-  | 'interpolations'
-  | 'curves'
-  | 'paths'
-  | 'visualizer'
-  | 'json'
->('values');
+export const activeTabAtom = atom('values');
 export const selectedKeyAtom = atom({ store: 'values', key: 'startX' });
 export const searchFilterAtom = atom('');
 export const visualizerSettingsAtom = atom({

@@ -6,37 +6,15 @@ import {
   useRef,
   useState,
 } from 'react';
-import { useAtom, useAtomValue } from 'jotai';
+import { useAtom } from 'jotai';
 
-import {
-  AlertTriangle,
-  ArrowRight,
-  Code,
-  Compass,
-  Copy,
-  Eye,
-  FileDown,
-  FileUp,
-  Layers,
-  Moon,
-  Move,
-  Plus,
-  RefreshCw,
-  Search,
-  Sparkles,
-  Sun,
-  Trash2,
-  ZoomIn,
-  ZoomOut,
-} from 'lucide-react';
+import { RefreshCw, ZoomIn, ZoomOut } from 'lucide-react';
 
-import { resolvePoseRef } from './dto_schema';
+import { resolveCurveRef, resolvePath, resolvePoseRef } from './Resolvers';
 import {
-  EMPTY_WORKSPACE_PRESET,
   namedValuesAtom,
-  SAMPLE_AUTONOMOUS_PRESET,
-  symbolTableAtom,
-  toastAtom,
+  selectedKeyAtom,
+  visualizerSettingsAtom,
 } from './state';
 
 export function FieldVisualizer(): ReactElement {

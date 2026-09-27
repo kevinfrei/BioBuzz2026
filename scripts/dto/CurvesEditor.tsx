@@ -1,44 +1,15 @@
-import {
-  ReactElement,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
-import { useAtom, useAtomValue } from 'jotai';
+import { ReactElement } from 'react';
+import { useAtom } from 'jotai';
 
-import {
-  AlertTriangle,
-  ArrowRight,
-  Code,
-  Compass,
-  Copy,
-  Eye,
-  FileDown,
-  FileUp,
-  Layers,
-  Moon,
-  Move,
-  Plus,
-  RefreshCw,
-  Search,
-  Sparkles,
-  Sun,
-  Trash2,
-  ZoomIn,
-  ZoomOut,
-} from 'lucide-react';
+import { Plus, Search, Trash2 } from 'lucide-react';
+import { isUndefined } from '@freik/typechk';
 
-import { CurveRefControl } from './CurveRefControl';
-import { Curve, CurveRef, resolvePoseRef } from './dto_schema';
+import { CurveRefControl } from './CurveRefs';
+import { chkRef, CurveRef } from './dto_schema';
 import {
-  EMPTY_WORKSPACE_PRESET,
   namedValuesAtom,
-  SAMPLE_AUTONOMOUS_PRESET,
   searchFilterAtom,
   selectedKeyAtom,
-  symbolTableAtom,
   toastAtom,
 } from './state';
 
@@ -148,7 +119,7 @@ export function CurvesEditor(): ReactElement {
                 }`}>
                 <span className="truncate">{k}</span>
                 <span className="font-mono text-neutral-500 dark:text-neutral-400">
-                  {curves[k]?.points?.length || 0} pts
+                  <CurveRefPointCount curveref={curves[k]} />
                 </span>
               </div>
             ))
@@ -184,8 +155,8 @@ export function CurvesEditor(): ReactElement {
 
             <CurveRefControl
               label="Curve Definition"
-              value={activeCurve}
-              onChange={(updatedCurve: Curve) => {
+              curve={activeCurve}
+              onChange={(updatedCurve: CurveRef) => {
                 setNamedValues({
                   ...namedValues,
                   curves: { ...curves, [activeKey]: updatedCurve },
@@ -201,4 +172,22 @@ export function CurvesEditor(): ReactElement {
       </div>
     </div>
   );
+}
+
+export function CurveRefPointCount({
+  curveref,
+}: {
+  curveref: CurveRef | undefined;
+}): ReactElement {
+  if (isUndefined(curveref)) {
+    return <>Not found!</>;
+  }
+  if (chkRef(curveref)) {
+    return (
+      <>
+        Reference to <code>{curveref.ref}</code>
+      </>
+    );
+  }
+  return <>{curveref.points.length} pts</>;
 }

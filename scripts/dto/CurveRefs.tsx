@@ -1,61 +1,43 @@
-import {
-  ReactElement,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
-import { useAtom, useAtomValue } from 'jotai';
+import { ReactElement } from 'react';
+import { useAtom } from 'jotai';
 
-import {
-  AlertTriangle,
-  ArrowRight,
-  Code,
-  Compass,
-  Copy,
-  Eye,
-  FileDown,
-  FileUp,
-  Layers,
-  Moon,
-  Move,
-  Plus,
-  RefreshCw,
-  Search,
-  Sparkles,
-  Sun,
-  Trash2,
-  ZoomIn,
-  ZoomOut,
-} from 'lucide-react';
+import { Plus, Trash2 } from 'lucide-react';
 
-import { resolvePoseRef } from './dto_schema';
-import { InterpRefControl } from './InterpRefControl';
-import { PoseRefControl } from './PoseRefControl';
-import {
-  EMPTY_WORKSPACE_PRESET,
-  namedValuesAtom,
-  SAMPLE_AUTONOMOUS_PRESET,
-  symbolTableAtom,
-  toastAtom,
-} from './state';
+import { chkRef, CurveRef, InterpRef } from './dto_schema';
+import { InterpRefControl } from './InterpRefs';
+import { PoseRefControl } from './PoseRefs';
+import { namedValuesAtom } from './state';
 
+export type CurveRefControlProps = {
+  label: string;
+  curve: CurveRef;
+  onChange: (ncr: CurveRef) => void;
+};
 // CurveRef Control: Inline Curve vs Ref ({ ref })
-export function CurveRefControl({ label, value, onChange }): ReactElement {
+export function CurveRefControl({
+  label,
+  curve,
+  onChange,
+}: CurveRefControlProps): ReactElement {
   const [namedValues] = useAtom(namedValuesAtom);
   const curveKeys = Object.keys(namedValues.curves || {});
-  const isRef = Boolean(value && 'ref' in value);
+  const isRef = chkRef(curve);
 
-  const toggleType = (toRef) => {
+  const setToRef = (toRef: boolean) => {
     if (toRef) {
       onChange({ ref: curveKeys[0] || '' });
     } else {
       onChange({
         points: [
           {
-            X: { val: 0 },
-            Y: { val: 0 },
+            X: { val: 10 },
+            Y: { val: 10 },
+            Heading: { val: 0 },
+            inRadians: false,
+          },
+          {
+            X: { val: 20 },
+            Y: { val: 20 },
             Heading: { val: 0 },
             inRadians: false,
           },
@@ -74,7 +56,7 @@ export function CurveRefControl({ label, value, onChange }): ReactElement {
         <div className="flex items-center bg-neutral-200 dark:bg-neutral-800 p-0.5 rounded-md text-xs">
           <button
             type="button"
-            onClick={() => toggleType(false)}
+            onClick={() => setToRef(false)}
             className={`px-2 py-0.5 rounded ${
               !isRef
                 ? 'bg-white dark:bg-neutral-700 text-sky-600 dark:text-sky-400 font-medium shadow-sm'
@@ -84,7 +66,7 @@ export function CurveRefControl({ label, value, onChange }): ReactElement {
           </button>
           <button
             type="button"
-            onClick={() => toggleType(true)}
+            onClick={() => setToRef(true)}
             className={`px-2 py-0.5 rounded ${
               isRef
                 ? 'bg-white dark:bg-neutral-700 text-sky-600 dark:text-sky-400 font-medium shadow-sm'
@@ -97,7 +79,7 @@ export function CurveRefControl({ label, value, onChange }): ReactElement {
 
       {isRef ? (
         <select
-          value={value?.ref || ''}
+          value={chkRef(curve) ? curve.ref : ''}
           onChange={(e) => onChange({ ref: e.target.value })}
           className="w-full px-3 py-1.5 text-sm rounded-md border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 focus:ring-2 focus:ring-sky-500 outline-none">
           <option value="" disabled>
@@ -119,9 +101,9 @@ export function CurveRefControl({ label, value, onChange }): ReactElement {
               <button
                 type="button"
                 onClick={() => {
-                  const pts = value?.points || [];
+                  const pts = curve?.points || [];
                   onChange({
-                    ...value,
+                    ...curve,
                     points: [
                       ...pts,
                       {
@@ -138,20 +120,20 @@ export function CurveRefControl({ label, value, onChange }): ReactElement {
               </button>
             </div>
 
-            {(value?.points || []).map((pt, pIdx) => (
+            {(curve?.points || []).map((pt, pIdx) => (
               <div key={pIdx} className="relative pt-1">
                 <div className="flex items-center justify-between mb-1">
                   <span className="text-xs font-semibold text-neutral-500">
                     Pose #{pIdx + 1}
                   </span>
-                  {(value?.points || []).length > 1 && (
+                  {(curve?.points || []).length > 1 && (
                     <button
                       type="button"
                       onClick={() => {
-                        const newPts = value.points.filter(
+                        const newPts = curve.points.filter(
                           (_, i) => i !== pIdx,
                         );
-                        onChange({ ...value, points: newPts });
+                        onChange({ ...curve, points: newPts });
                       }}
                       className="text-neutral-400 hover:text-rose-500 transition-colors"
                       title="Remove Pose Point">
@@ -163,9 +145,9 @@ export function CurveRefControl({ label, value, onChange }): ReactElement {
                   label={`Point ${pIdx + 1}`}
                   pose={pt}
                   onChange={(newPt) => {
-                    const newPts = [...value.points];
+                    const newPts = [...curve.points];
                     newPts[pIdx] = newPt;
-                    onChange({ ...value, points: newPts });
+                    onChange({ ...curve, points: newPts });
                   }}
                 />
               </div>
@@ -174,8 +156,10 @@ export function CurveRefControl({ label, value, onChange }): ReactElement {
 
           <InterpRefControl
             label="Curve Interpolator"
-            value={value?.interpolation || { reversed: false }}
-            onChange={(interpolation) => onChange({ ...value, interpolation })}
+            interp={curve?.interpolation || { reversed: false }}
+            onChange={(interpolation: InterpRef) =>
+              onChange({ ...curve, interpolation })
+            }
           />
         </div>
       )}
