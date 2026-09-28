@@ -10,10 +10,10 @@ public class AutoCommands {
 
     abstract static class WaitForArtifacts implements Command {
 
-        @Override
-        public boolean isFinished() {
-            return IntakeSubsystem.robotFull;
-        }
+        //@Override
+        //public boolean isFinished() {
+        //    return IntakeSubsystem.robotFull;
+       // }
 
         public static Command Intake(Robot r) {
             return Command.create(r.intakeSubsystem::Intake);

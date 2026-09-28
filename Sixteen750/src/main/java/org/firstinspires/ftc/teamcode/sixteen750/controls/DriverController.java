@@ -59,7 +59,7 @@ public class DriverController implements Loggable {
         if (Setup.Connected.DRIVEBASE) {
             bindDriveControls();
         }
-        if (Setup.Connected.LAUNCHERSUBSYSTEM) {
+        if (Setup.Connected.TURRETSUBSYSTEM) {
             bindLaunchControls();
         }
         if (Setup.Connected.INTAKESUBSYSTEM) {
@@ -159,8 +159,6 @@ public class DriverController implements Loggable {
         spitButton.whenPressed(TeleCommands.Spit(robot));
         spitButton.whenReleased(TeleCommands.IntakeStop(robot));
         intakeTrigger.whilePressed(TeleCommands.Intake(robot));
-        intakeTrigger.whenPressed(TeleCommands.GobbleGulp(robot));
-        intakeTrigger.whenReleased(TeleCommands.IThinkIAteTooMuch(robot));
         intakeTrigger.whenReleased(TeleCommands.IntakeStop(robot));
     }
 

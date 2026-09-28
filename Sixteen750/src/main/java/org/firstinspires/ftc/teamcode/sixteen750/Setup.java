@@ -8,14 +8,14 @@ public class Setup {
     @Configurable
     public static class Connected {
 
-        public static final boolean LIMELIGHTSUBSYSTEM = true;
-        public static final boolean VISIONSUBSYSTEM = true;
+        public static final boolean LIMELIGHTSUBSYSTEM = false;
+        public static final boolean VISIONSUBSYSTEM = false;
         public static boolean DRIVEBASE = true;
-        public static boolean INTAKESUBSYSTEM = true;
-        public static boolean SMARTINTAKE = true;
-        public static boolean LAUNCHERSUBSYSTEM = true;
-        public static boolean AIMINGSUBSYSTEM = true;
-        public static boolean BRAKESUBSYSTEM = true;
+        public static boolean INTAKESUBSYSTEM = false;
+        public static boolean SMARTINTAKE = false;
+        public static boolean TURRETSUBSYSTEM = true;
+        public static boolean AIMINGSUBSYSTEM = false;
+        public static boolean BRAKESUBSYSTEM = false;
     }
 
     @Configurable
@@ -28,24 +28,21 @@ public class Setup {
         public static String IMU = "imu";
         public static String EXTERNAL_IMU = "adafruit-imu";
 
-        public static String INTAKE_MOTOR = "intake/odo";
+        public static String INTAKE_MOTOR = "intake";
 
-        public static String TRANSFERMOTOR1 = "transfermotor1";
-        public static String TRANSFERMOTOR2 = "transfermotor2";
-        public static String LAUNCHER_MOTOR = "launcher1";
-        //   public static String LAUNCHER_MOTOR2 = "launcher2";
-        public static String ROTATINGSERVO1 = "rotatingservo1";
-
-        public static String ROTATINGSERVO2 = "rotatingservo2";
-        public static String BRAKE_SERVO = "brake";
+        public static String TRANSFER_MOTOR1 = "transfer1";
+        public static String TRANSFER_MOTOR2 = "transfer2";
+        public static String GATE_SERVO = "gate";
+        public static String LAUNCHER_MOTOR = "launcher";
+        public static String TURRET_SERVO1 = "turret1";
+        public static String TURRET_SERVO2 = "turret2";
         public static String HOOD_SERVO = "hood";
-        public static String LEVER_SERVO = "lever";
+        public static String BRAKE_SERVO = "brake";
         public static String TESTSERVO = "testservo";
         public static String TESTMOTOR = "testmotor";
         public static String TESTCRSERVO = "testcrservo";
         public static String LIMELIGHT = "limelight";
         public static String PITCH = "cameraPitch";
-        public static String ITKANR = "gobbleServo";
 
         public static int Green_Color_Pipeline = 0;
         // public static int Classifier_Pipeline = 2;

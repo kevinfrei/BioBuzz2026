@@ -23,11 +23,12 @@ public class Hardware implements Loggable {
     public IGyro imu;
     public EncodedMotor<DcMotorEx> fl, fr, rl, rr;
     public Motor<DcMotorEx> intake;
-    //public MotorPlus<DcMotorEx> intake2;
-    public EncodedMotor<DcMotorEx> launcher1;
-
+    public Motor<DcMotorEx> transfer1;
+    public Motor<DcMotorEx> transfer2;
     public Servo gate;
-
+    public EncodedMotor<DcMotorEx> launcher;
+    public Servo turret1, turret2;
+    public Servo hood;
     public Limelight3A limelight;
 
     public Servo cameraPitch;
@@ -53,10 +54,15 @@ public class Hardware implements Loggable {
 
         if (Setup.Connected.INTAKESUBSYSTEM) {
             intake = new Motor<DcMotorEx>(Setup.HardwareNames.INTAKE_MOTOR);
+            transfer1 = new Motor<DcMotorEx>(Setup.HardwareNames.TRANSFER_MOTOR1);
+            transfer2 = new Motor<DcMotorEx>(Setup.HardwareNames.TRANSFER_MOTOR2);
+            gate = new Servo(Setup.HardwareNames.GATE_SERVO);
         }
-        if (Setup.Connected.LAUNCHERSUBSYSTEM) {
-            launcher1 = new EncodedMotor<DcMotorEx>(Setup.HardwareNames.LAUNCHER_MOTOR);
-            gate = new Servo(Setup.HardwareNames.HOOD_SERVO);
+        if (Setup.Connected.TURRETSUBSYSTEM) {
+            launcher = new EncodedMotor<DcMotorEx>(Setup.HardwareNames.LAUNCHER_MOTOR);
+            turret1 = new Servo(Setup.HardwareNames.TURRET_SERVO1);
+            turret2 = new Servo(Setup.HardwareNames.TURRET_SERVO2);
+            hood = new Servo(Setup.HardwareNames.HOOD_SERVO);
         }
 
         if (Setup.Connected.VISIONSUBSYSTEM) {

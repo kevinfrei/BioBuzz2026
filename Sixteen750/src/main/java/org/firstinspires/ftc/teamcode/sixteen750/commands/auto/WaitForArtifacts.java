@@ -17,10 +17,10 @@ public class WaitForArtifacts implements Command {
     }
 
     // Run this command until we've successfully acquired 3 artifacts...
-    @Override
-    public boolean isFinished() {
-        return intake.intakeFull;
-    }
+  //  @Override
+ //   public boolean isFinished() {
+ //       return intake.intakeFull;
+ //   }
 
     // I think if the command gets cancelled (it's timed out by an parallel wait command)
     // then we want to leave the intake going? If not, switch to hold?

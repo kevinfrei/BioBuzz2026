@@ -59,7 +59,7 @@ public class OperatorController {
         if (Setup.Connected.DRIVEBASE) {
             bindDriveControls();
         }
-        if (Setup.Connected.LAUNCHERSUBSYSTEM) {
+        if (Setup.Connected.TURRETSUBSYSTEM) {
             bindLaunchControls();
         }
         if (Setup.Connected.INTAKESUBSYSTEM) {

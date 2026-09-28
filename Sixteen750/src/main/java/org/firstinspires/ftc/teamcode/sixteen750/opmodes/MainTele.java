@@ -20,9 +20,9 @@ import org.firstinspires.ftc.teamcode.sixteen750.controls.DriverController;
 import org.firstinspires.ftc.teamcode.sixteen750.controls.OperatorController;
 import org.firstinspires.ftc.teamcode.sixteen750.helpers.StartingPosition;
 
-@TeleOp(name = "BlueTele")
+@TeleOp(name = "MainTele")
 @SuppressWarnings("unused")
-public class BlueTele extends CommandOpMode implements Loggable {
+public class MainTele extends CommandOpMode implements Loggable {
 
     public Robot robot;
     public OperatorController controlsOperator;
@@ -34,10 +34,10 @@ public class BlueTele extends CommandOpMode implements Loggable {
     @Override
     public void uponInit() {
         hardware = new Hardware(hardwareMap);
-        robot = new Robot(hardware, Alliance.BLUE, StartingPosition.Unspecified);
+        robot = new Robot(hardware, Alliance.RED, StartingPosition.Unspecified);
         // controlsOperator = new OperatorController(codriverGamepad, robot);
         panelsTelemetry = PanelsTelemetry.INSTANCE;
-        robot.follower.setPose(new Pose(0, 0, 0) /*Paths.getBSegmentedCurveStart()*/);
+        robot.follower.setPose(new Pose(0, 0, 0));
         // limelight = hardwareMap.get(Limelight3A.class, Setup.HardwareNames.LIMELIGHT);
         if (Setup.Connected.DRIVEBASE) {
             controlsDriver = new DriverController(driverGamepad, robot);
@@ -70,7 +70,7 @@ public class BlueTele extends CommandOpMode implements Loggable {
              */
             limelight.start();
         }
-        if (Setup.Connected.LAUNCHERSUBSYSTEM) {
+        if (Setup.Connected.TURRETSUBSYSTEM) {
             // CommandScheduler.register(robot.launcherSubsystem);
         }
     }
@@ -82,8 +82,7 @@ public class BlueTele extends CommandOpMode implements Loggable {
 
     @Override
     public void runLoop() {
-        /*
-        panelsTelemetry
+        /* panelsTelemetry
             .getTelemetry()
             .addData(
                 "currentLaunchVelocity",
@@ -108,9 +107,14 @@ public class BlueTele extends CommandOpMode implements Loggable {
             .getTelemetry()
             .addData("Distraw", String.valueOf(LimelightSubsystem.RawDistance));
 
-        panelsTelemetry.getTelemetry().update(telemetry);
-
-         */
+        panelsTelemetry.getTelemetry().update(telemetry);*/
+        // panelsTelemetry
+        //     .getTelemetry()
+        //      .addData("IntSpeed", String.valueOf(IntakeSubsystem.IntakeSpeed));
+        //  panelsTelemetry
+        //      .getTelemetry()
+        //     .addData("TransferSpeed", String.valueOf(IntakeSubsystem.TransferSpeed));
+        // panelsTelemetry.getTelemetry().update(telemetry);
     }
 
     /*

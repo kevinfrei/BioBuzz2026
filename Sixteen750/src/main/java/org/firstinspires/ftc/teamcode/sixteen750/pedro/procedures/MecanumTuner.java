@@ -24,10 +24,10 @@ public class MecanumTuner extends Procedure {
             "Mecanum Motor Names",
             "Enter the names in HardwareMap of your drivetrain motors."
         );
-        Inputs.Field<String> frontLeftName = motorNames.s("Front Left Name");
-        Inputs.Field<String> frontRightName = motorNames.s("Front Right Name");
-        Inputs.Field<String> backLeftName = motorNames.s("Back Left Name");
-        Inputs.Field<String> backRightName = motorNames.s("Back Right Name");
+        Inputs.Field<String> frontLeftName = motorNames.s("fl");
+        Inputs.Field<String> frontRightName = motorNames.s("fr");
+        Inputs.Field<String> backLeftName = motorNames.s("bl");
+        Inputs.Field<String> backRightName = motorNames.s("br");
         awaitInputs(motorNames);
 
         confirmation(

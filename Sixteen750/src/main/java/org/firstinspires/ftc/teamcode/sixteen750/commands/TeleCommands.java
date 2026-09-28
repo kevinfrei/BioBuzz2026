@@ -76,13 +76,7 @@ public class TeleCommands {
         return Command.create(r.intakeSubsystem::StopIntake);
     }
 
-    public static Command GobbleGulp(Robot r) {
-        return Command.create(r.intakeSubsystem::GobbleGulp);
-    }
 
-    public static Command IThinkIAteTooMuch(Robot r) {
-        return Command.create(r.intakeSubsystem::IThinkIAteTooMuch);
-    }
 
     public static Command Spit(Robot r) {
         return Command.create(r.intakeSubsystem::Spit);
