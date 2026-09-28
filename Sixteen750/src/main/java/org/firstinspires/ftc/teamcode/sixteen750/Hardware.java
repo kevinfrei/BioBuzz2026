@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.sixteen750;
 
 import com.bylazar.configurables.annotations.Configurable;
+import com.qualcomm.hardware.digitalchickenlabs.OctoQuad;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
@@ -20,7 +21,7 @@ public class Hardware implements Loggable {
 
     public List<LynxModule> hubs;
     public HardwareMap map;
-    public IGyro imu;
+    public OctoQuad octoquad;
     public EncodedMotor<DcMotorEx> fl, fr, rl, rr;
     public Motor<DcMotorEx> intake;
     public Motor<DcMotorEx> transfer1;
@@ -39,11 +40,7 @@ public class Hardware implements Loggable {
         map = hwmap;
         hubs = hwmap.getAll(LynxModule.class);
 
-        imu = new IMU(
-            Setup.HardwareNames.IMU,
-            RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
-            RevHubOrientationOnRobot.UsbFacingDirection.UP
-        );
+
 
         if (Setup.Connected.DRIVEBASE) {
             fl = new EncodedMotor<DcMotorEx>(Setup.HardwareNames.FL_DRIVE_MOTOR);

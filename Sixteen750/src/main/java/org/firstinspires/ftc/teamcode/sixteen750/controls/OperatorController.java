@@ -171,7 +171,6 @@ public class OperatorController {
         //        gateButton.whenReleased(TeleCommands.GateUp(robot));
 
         //
-        holdButton.whilePressed(TeleCommands.HoldIntake(robot));
         holdButton.whenReleased(TeleCommands.IntakeStop(robot));
     }
 }

@@ -36,6 +36,7 @@ public class PedroConstants {
         c.backLeftDirection.set(DcMotorSimple.Direction.REVERSE);
         c.backRightDirection.set(DcMotorSimple.Direction.FORWARD);
     });
+    // all this octoquad stuff is prob wrong cause one of the odo pods was dead
     public static OctoQuadConfig localizerConfig = new OctoQuadConfig( c ->{
         c.name.set("octoquad");
         c.xPodPort.set(1);

@@ -10,8 +10,8 @@ public class Setup {
 
         public static final boolean LIMELIGHTSUBSYSTEM = false;
         public static final boolean VISIONSUBSYSTEM = false;
-        public static boolean DRIVEBASE = true;
-        public static boolean INTAKESUBSYSTEM = false;
+        public static boolean DRIVEBASE = false;
+        public static boolean INTAKESUBSYSTEM = true;
         public static boolean SMARTINTAKE = false;
         public static boolean TURRETSUBSYSTEM = true;
         public static boolean AIMINGSUBSYSTEM = false;

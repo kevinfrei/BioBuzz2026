@@ -49,9 +49,9 @@ public class IntakeSubsystem implements Loggable, Subsystem {
             gate = h.gate;
             CommandScheduler.register(this);
             gamepad = null;
-            intake.setDirection(DcMotorSimple.Direction.REVERSE);
+            intake.setDirection(DcMotorSimple.Direction.FORWARD);
             transfer1.setDirection(DcMotorSimple.Direction.FORWARD);
-            transfer2.setDirection(DcMotorSimple.Direction.REVERSE);
+            transfer2.setDirection(DcMotorSimple.Direction.FORWARD);
         } else {
             intake = null;
         }

@@ -37,10 +37,11 @@ public class MainTele extends CommandOpMode implements Loggable {
         robot = new Robot(hardware, Alliance.RED, StartingPosition.Unspecified);
         // controlsOperator = new OperatorController(codriverGamepad, robot);
         panelsTelemetry = PanelsTelemetry.INSTANCE;
-        robot.follower.setPose(new Pose(0, 0, 0));
+      //  robot.follower.setPose(new Pose(0, 0, 0)); commented out till i can reenable dt once i get foresight values once new odo pod
         // limelight = hardwareMap.get(Limelight3A.class, Setup.HardwareNames.LIMELIGHT);
+        controlsDriver = new DriverController(driverGamepad, robot);
         if (Setup.Connected.DRIVEBASE) {
-            controlsDriver = new DriverController(driverGamepad, robot);
+
             robot.intakeSubsystem.setGamepad(gamepad1);
             robot.limelightSubsystem.setGamepad(gamepad1);
             // Just pick a starting point
@@ -82,145 +83,8 @@ public class MainTele extends CommandOpMode implements Loggable {
 
     @Override
     public void runLoop() {
-        /* panelsTelemetry
-            .getTelemetry()
-            .addData(
-                "currentLaunchVelocity",
-                String.valueOf(LauncherSubsystem.currentLaunchVelocity)
-            );
-        panelsTelemetry
-            .getTelemetry()
-            .addData("launcherError", String.valueOf(LauncherSubsystem.err));
-        panelsTelemetry
-            .getTelemetry()
-            .addData("launcherTargetVelocity", String.valueOf(LauncherSubsystem.targetSpeed));
-        panelsTelemetry
-            .getTelemetry()
-            .addData("launcher1Current", String.valueOf(LauncherSubsystem.launcher1Current));
-        panelsTelemetry
-            .getTelemetry()
-            .addData("launcher2Current", String.valueOf(LauncherSubsystem.launcher2Current));
-        panelsTelemetry
-            .getTelemetry()
-            .addData("launcher1Pow", String.valueOf(LauncherSubsystem.power));
-        panelsTelemetry
-            .getTelemetry()
-            .addData("Distraw", String.valueOf(LimelightSubsystem.RawDistance));
 
-        panelsTelemetry.getTelemetry().update(telemetry);*/
-        // panelsTelemetry
-        //     .getTelemetry()
-        //      .addData("IntSpeed", String.valueOf(IntakeSubsystem.IntakeSpeed));
-        //  panelsTelemetry
-        //      .getTelemetry()
-        //     .addData("TransferSpeed", String.valueOf(IntakeSubsystem.TransferSpeed));
-        // panelsTelemetry.getTelemetry().update(telemetry);
     }
-
-    /*
-    @Override
-    public void runLoop() {
-        LLStatus status = null;
-        if (Setup.Connected.LIMELIGHTSUBSYSTEM) {
-            status = limelight.getStatus();
-            limelight.updateRobotOrientation(hardware.imu.getHeadingInDegrees());
-        }
-
-        if (Setup.Connected.LIMELIGHTSUBSYSTEM) {
-            // here
-            telemetry.addData("Name", "%s", status.getName());
-
-            telemetry.addData(
-                "Motif:",
-                Setup.HardwareNames.Motif[0] +
-                    " " +
-                    Setup.HardwareNames.Motif[1] +
-                    " " +
-                    Setup.HardwareNames.Motif[2]
-            );
-            telemetry.addData(
-                "Pipeline",
-                "Index: %d, Type: %s",
-                status.getPipelineIndex(),
-                status.getPipelineType()
-            );
-
-            LLResult result = limelight.getLatestResult();
-
-            if (result != null) {
-                if (result.isValid()) {
-                    if (result.getPipelineIndex() == Setup.HardwareNames.AprilTag_Pipeline) {
-                        // Access fiducial results
-                        List<LLResultTypes.FiducialResult> fiducialResults =
-                            result.getFiducialResults();
-                        for (LLResultTypes.FiducialResult fr : fiducialResults) {
-                            int tag_id = fr.getFiducialId();
-                            telemetry.addData("Tag Id", tag_id);
-                            if (
-                                fr.getFiducialId() == 23 &&
-                                Arrays.equals(
-                                    Setup.HardwareNames.Motif,
-                                    new String[] { "1", "2", "3" }
-                                )
-                            ) {
-                                Setup.HardwareNames.Motif[0] = "\uD83D\uDFE3";
-                                Setup.HardwareNames.Motif[1] = "\uD83D\uDFE3";
-                                Setup.HardwareNames.Motif[2] = "\uD83D\uDFE2";
-                            } else if (
-                                fr.getFiducialId() == 22 &&
-                                Arrays.equals(
-                                    Setup.HardwareNames.Motif,
-                                    new String[] { "1", "2", "3" }
-                                )
-                            ) {
-                                Setup.HardwareNames.Motif[0] = "\uD83D\uDFE3";
-                                Setup.HardwareNames.Motif[1] = "\uD83D\uDFE2";
-                                Setup.HardwareNames.Motif[2] = "\uD83D\uDFE3";
-                            } else if (
-                                fr.getFiducialId() == 21 &&
-                                Arrays.equals(
-                                    Setup.HardwareNames.Motif,
-                                    new String[] { "1", "2", "3" }
-                                )
-                            ) {
-                                Setup.HardwareNames.Motif[0] = "\uD83D\uDFE2";
-                                Setup.HardwareNames.Motif[1] = "\uD83D\uDFE3";
-                                Setup.HardwareNames.Motif[2] = "\uD83D\uDFE3";
-                            }
-                            Pose3D targetPose = fr.getCameraPoseTargetSpace();
-                            double tx = targetPose.getPosition().x;
-                            double ty = targetPose.getPosition().y;
-                            double tz = targetPose.getPosition().z;
-                            // supposedly RawDistance to apriltag
-                            double RawDistance = Math.sqrt(tx * tx + ty * ty + tz * tz);
-                            if (tag_id == 21 || tag_id == 22 || tag_id == 23) {
-                                telemetry.addData(
-                                    "Distance to AprilTag (Obelisk)",
-                                    String.valueOf(RawDistance)
-                                );
-                            } else if (tag_id == 20) {
-                                telemetry.addData(
-                                    "Distance to AprilTag (Blue)",
-                                    String.valueOf(RawDistance)
-                                );
-                            } else if (tag_id == 24) {
-                                telemetry.addData(
-                                    "Distance to AprilTag (Red)",
-                                    String.valueOf(RawDistance)
-                                );
-                            }
-                        }
-                    }
-                }
-            } else {
-                telemetry.addData("Limelight", "No data available");
-            }
-        }
-
-        telemetry.update();
-    }
-    */
-
     @Override
     public void end() {
         if (Setup.Connected.LIMELIGHTSUBSYSTEM) {

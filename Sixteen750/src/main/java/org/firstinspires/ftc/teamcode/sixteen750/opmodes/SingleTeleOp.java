@@ -70,10 +70,10 @@ public class SingleTeleOp extends CommandOpMode {
     @Override
     public void runLoop() {
         LLStatus status = null;
-        if (Setup.Connected.LIMELIGHTSUBSYSTEM) {
-            status = limelight.getStatus();
-            limelight.updateRobotOrientation(hardware.imu.getHeadingInDegrees());
-        }
+        //if (Setup.Connected.LIMELIGHTSUBSYSTEM) {
+        //    status = limelight.getStatus();
+        //    limelight.updateRobotOrientation(hardware.imu.getHeadingInDegrees());
+      //  }
 
         if (Setup.Connected.LIMELIGHTSUBSYSTEM) {
             // here

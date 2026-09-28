@@ -14,56 +14,6 @@ public class TeleCommands {
         return Command.create(() -> r.follower.hold(new Pose(90, 90, Math.toRadians(90)), false)); //pose might need to be current pose?
     }
 
-    /*
-    public static Command Launch(Robot r) {
-        return Command.create(r.launcherSubsystem::Launch);
-    }
-
-    public static Command SetFarShoot(Robot r) {
-        return Command.create(r.launcherSubsystem::FarShoot);
-    }
-
-    public static Command SetCloseShoot(Robot r) {
-        return Command.create(r.launcherSubsystem::CloseShoot);
-    }
-
-    public static Command AutoLaunch1(Robot r) {
-        return Command.create(r.launcherSubsystem::AutoLaunch1);
-    }
-
-    public static Command AutoLaunch2(Robot r) {
-        return Command.create(r.launcherSubsystem::AutoLaunch2);
-    }
-
-    public static Command FarAutoLaunch(Robot r) {
-        return Command.create(r.launcherSubsystem::FarAutoLaunch);
-    }
-
-    public static Command StopLaunch(Robot r) {
-        return Command.create(r.launcherSubsystem::Stop);
-    }
-
-    public static Command IdleLaunch(Robot r) {
-        return Command.create(r.launcherSubsystem::Idle);
-    }
-
-    public static Command Rumble(Robot r) {
-        return Command.create(r.limelightSubsystem::setRumble);
-    }*/
-
-    public static Command RumbleOff(Robot r) {
-        return Command.create(r.limelightSubsystem::setRumbleOff);
-    }
-
-    /*
-    public static Command IncreaseMotor(Robot r) {
-        return Command.create(r.launcherSubsystem::IncreaseMotorVelocity);
-    }
-
-    public static Command DecreaseMotor(Robot r) {
-        return Command.create(r.launcherSubsystem::DecreaseMotorVelocity);
-    }
-    */
     public static Command Intake(Robot r) {
         return Command.create(r.intakeSubsystem::Intake);
     }
@@ -73,16 +23,26 @@ public class TeleCommands {
     }
 
     public static Command IntakeStop(Robot r) {
-        return Command.create(r.intakeSubsystem::StopIntake);
+         return Command.create(r.intakeSubsystem::StopIntake);
     }
 
-
+    public static Command Reject(Robot r) {
+        return Command.create(r.intakeSubsystem::Reject);
+    }
 
     public static Command Spit(Robot r) {
         return Command.create(r.intakeSubsystem::Spit);
     }
 
-    public static Command HoldIntake(Robot r) {
+    public static Command Hold(Robot r) {
         return Command.create(r.intakeSubsystem::Hold);
+    }
+
+    public static Command GateOpen(Robot r) {
+        return Command.create(r.intakeSubsystem::GateOpen);
+    }
+
+    public static Command GateClose(Robot r) {
+        return Command.create(r.intakeSubsystem::GateClose);
     }
 }
