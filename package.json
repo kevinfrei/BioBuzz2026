@@ -76,9 +76,13 @@
     "graphlb": "java -jar scripts/java2umltext/build/libs/java2umltext-0.1.0.jar MERMAID LearnBot > learnbot-classgraph.mmd",
     "graph": "bun run graphlib && bun run graph16 && bun run graph20 && bun run graphlb",
     "- // git hooks": "Auto-format code on commit",
-    "prepare": "simple-git-hooks"
+    "prepare": "simple-git-hooks",
+    "webdev": "bun --host ./scripts/dto/index.ts",
+    "webbld": "bun build ./scripts/dto/index.html --outdir=dist --sourcemap --target=browser --minify --define:process.env.NODE_ENV='\"production\"' --env='BUN_PUBLIC_*'",
+    "webrun": "NODE_ENV=production bun src/index.ts"
   },
   "dependencies": {
+    "@fluentui/react-components": "^9.74.9",
     "@freik/containers": "^0.4.10",
     "@freik/typechk": "^0.10.0",
     "@freik/workspace": "^0.8.1",
@@ -87,6 +91,7 @@
     "prettier": "^3.9.9",
     "prettier-plugin-java": "^2.11.0",
     "pretty-quick": "^4.2.2",
+    "react-dom": "^19.3.0",
     "simple-git": "^4.0.2",
     "simple-git-hooks": "^2.14.0",
     "typescript": "^7.0.2"
