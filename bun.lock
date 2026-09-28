@@ -6,6 +6,7 @@
       "name": "ftc-maintenance-sripts",
       "dependencies": {
         "@fluentui/react-components": "^9.74.9",
+        "@fluentui/react-icons": "^2.0.343",
         "@freik/containers": "^0.4.10",
         "@freik/typechk": "^0.10.0",
         "@freik/workspace": "^0.8.1",
