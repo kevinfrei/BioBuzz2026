@@ -2,7 +2,9 @@ import { ReactElement, useMemo, useState } from 'react';
 import { Provider, useAtom, useAtomValue, useSetAtom } from 'jotai';
 
 import {
+  Button,
   FluentProvider,
+  Select,
   SelectTabData,
   SelectTabEvent,
   Tab,
@@ -11,6 +13,7 @@ import {
   webDarkTheme,
   webLightTheme,
 } from '@fluentui/react-components';
+import { WeatherMoonFilled, WeatherSunnyRegular } from '@fluentui/react-icons';
 import {
   ArrowRight,
   Code,
@@ -48,9 +51,8 @@ export function PedroPathsEditor(): ReactElement {
   const [theme, setTheme] = useAtom(themeAtom);
   const setToast = useSetAtom(toastAtom);
 
-  const [selectedTab, setSelectedTab] = useState<string>('values');
   const onTabSelect = (event: SelectTabEvent, data: SelectTabData) => {
-    setSelectedTab(data.value as string);
+    setActiveTab(data.value as string);
   };
 
   // Statistics counters
@@ -71,71 +73,63 @@ export function PedroPathsEditor(): ReactElement {
   };
 
   return (
-    <div
-      className={`${theme === 'dark' ? 'dark' : ''} min-h-screen font-sans antialiased select-none`}>
-      <div className="min-h-screen bg-neutral-100 dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100 flex flex-col">
-        {/* Header Bar */}
-        <Toolbar>
-          <span>
-            <span>{counts.values} Values </span>
-            <span>{counts.poses} Poses </span>
-            <span>{counts.curves} Curves </span>
-            <span>{counts.paths} Paths </span>
-          </span>
+    <div>
+      {/* Header Bar */}
+      <Toolbar>
+        <span style={{ margin: 10 }}>
+          {counts.values} Values {counts.poses} Poses {counts.curves} Curves{' '}
+          {counts.paths} Paths{' '}
+        </span>
 
-          {/* Presets Dropdown */}
-          <select
-            onChange={(e) => {
-              if (e.target.value === 'autonomous')
-                loadPreset(SAMPLE_AUTONOMOUS_PRESET, 'Autonomous Trajectory');
-              if (e.target.value === 'empty')
-                loadPreset(EMPTY_WORKSPACE_PRESET, 'Empty Workspace');
-              e.target.value = '';
-            }}>
-            <option value="" disabled selected>
-              Load Preset Template...
-            </option>
-            <option value="autonomous">Autonomous Trajectory Setup</option>
-            <option value="empty">Clear / Empty Workspace</option>
-          </select>
+        {/* Presets Dropdown */}
+        <Select
+          onChange={(e) => {
+            if (e.target.value === 'autonomous')
+              loadPreset(SAMPLE_AUTONOMOUS_PRESET, 'Autonomous Trajectory');
+            if (e.target.value === 'empty')
+              loadPreset(EMPTY_WORKSPACE_PRESET, 'Empty Workspace');
+            e.target.value = '';
+          }}>
+          <option value="" disabled selected>
+            Load Preset Template...
+          </option>
+          <option value="autonomous">Autonomous Trajectory Setup</option>
+          <option value="empty">Clear / Empty Workspace</option>
+        </Select>
 
-          {/* Theme Toggle Button */}
-          <button
-            type="button"
-            onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-            className="p-2 rounded-md bg-neutral-100 dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 text-neutral-600 dark:text-neutral-300 hover:text-sky-600 dark:hover:text-sky-400 transition-colors"
-            title="Toggle Light/Dark Theme">
-            {theme === 'dark' ? (
-              <Sun className="w-4 h-4" />
-            ) : (
-              <Moon className="w-4 h-4" />
-            )}
-          </button>
-        </Toolbar>
+        {/* Theme Toggle Button */}
+        <Button
+          style={{ margin: 10 }}
+          onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+          title="Toggle Light/Dark Theme"
+          icon={
+            theme == 'dark' ? <WeatherSunnyRegular /> : <WeatherMoonFilled />
+          }
+        />
+      </Toolbar>
 
-        {/* Main Workspace Navigation Bar */}
-        <main className="flex-grow p-6 overflow-hidden flex flex-col max-w-7xl w-full mx-auto">
-          <TabList selectedValue={selectedTab} onTabSelect={onTabSelect}>
-            <Tab value="values">Values</Tab>
-            <Tab value="poses">Poses</Tab>
-            <Tab value="interpolations">Headings</Tab>
-            <Tab value="curves">Curves &amp; Lines</Tab>
-            <Tab value="paths">Paths</Tab>
-            <Tab value="visualizer">Field</Tab>
-            <Tab value="json">JSON view</Tab>
-          </TabList>
-          {selectedTab === 'values' && <ValuesEditor />}
-          {selectedTab === 'poses' && <PosesEditor />}
-          {selectedTab === 'interpolations' && <InterpolatorsEditor />}
-          {selectedTab === 'curves' && <CurvesEditor />}
-          {selectedTab === 'paths' && <PathsEditor />}
-          {selectedTab === 'visualizer' && <div>Put the old viz here</div>}
-          {selectedTab === 'json' && <JsonEditor />}
-        </main>
-
-        {/* Workspace Body */}
-        <NotificationToast />
+      {/* Main Workspace Navigation Bar */}
+      <div>
+        <TabList selectedValue={activeTab} onTabSelect={onTabSelect}>
+          <Tab value="values">Values</Tab>
+          <Tab value="poses">Poses</Tab>
+          <Tab value="interpolations">Headings</Tab>
+          <Tab value="curves">Curves &amp; Lines</Tab>
+          <Tab value="paths">Paths</Tab>
+          <Tab value="visualizer">Field</Tab>
+          <Tab value="json">JSON view</Tab>
+        </TabList>
+        {activeTab === 'values' && <ValuesEditor />}
+        {activeTab === 'poses' && <PosesEditor />}
+        {activeTab === 'interpolations' && <InterpolatorsEditor />}
+        {activeTab === 'curves' && <CurvesEditor />}
+        {activeTab === 'paths' && <PathsEditor />}
+        {activeTab === 'visualizer' && <div>Put the old viz here</div>}
+        {activeTab === 'json' && <JsonEditor />}
       </div>
+
+      {/* Workspace Body */}
+      <NotificationToast />
     </div>
   );
 }
