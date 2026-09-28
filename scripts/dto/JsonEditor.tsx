@@ -30,7 +30,6 @@ import {
   ZoomOut,
 } from 'lucide-react';
 
-import { resolvePoseRef } from './dto_schema';
 import {
   EMPTY_WORKSPACE_PRESET,
   namedValuesAtom,
@@ -40,6 +39,8 @@ import {
 } from './state';
 
 export function JsonEditor(): ReactElement {
+  return <>NYI, sorry</>;
+  /*
   const [namedValues, setNamedValues] = useAtom(namedValuesAtom);
   const [, setToast] = useAtom(toastAtom);
   const [rawJson, setRawJson] = useState(() =>
@@ -146,4 +147,5 @@ export function JsonEditor(): ReactElement {
       />
     </div>
   );
+  */
 }
