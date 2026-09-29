@@ -1,7 +1,7 @@
 import { ReactElement } from 'react';
 import { useAtomValue } from 'jotai';
 
-import { AlertTriangle } from 'lucide-react';
+import { AlertFilled } from '@fluentui/react-icons';
 import { isUndefined } from '@freik/typechk';
 
 import { chkErr, chkRef, ResolvedValue, ValRef } from './dto_schema';
@@ -91,7 +91,7 @@ export function ValRefControl({
           </select>
           {chkErr(resolved) && (
             <div className="flex items-center gap-1.5 text-xs text-rose-500 dark:text-rose-400">
-              <AlertTriangle className="w-3.5 h-3.5" />
+              <AlertFilled />
               <span>Missing reference: "{value?.ref}"</span>
             </div>
           )}

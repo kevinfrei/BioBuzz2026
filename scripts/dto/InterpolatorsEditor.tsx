@@ -1,7 +1,12 @@
 import { ReactElement } from 'react';
 import { useAtom } from 'jotai';
 
-import { Plus, Search, Trash2 } from 'lucide-react';
+import { Button, Input } from '@fluentui/react-components';
+import {
+  AddRegular,
+  DeleteRegular,
+  SearchRegular,
+} from '@fluentui/react-icons';
 
 import { getInterpType } from './dto_schema';
 import { InterpRefControl } from './InterpRefs';
@@ -73,22 +78,18 @@ export function InterpolatorsEditor(): ReactElement {
           <span className="font-bold text-sm text-neutral-800 dark:text-neutral-200">
             Interpolators ({Object.keys(interpolations).length})
           </span>
-          <button
-            type="button"
-            onClick={handleAdd}
-            className="p-1.5 rounded-md bg-sky-600 hover:bg-sky-500 text-white flex items-center gap-1 text-xs font-semibold">
-            <Plus className="w-3.5 h-3.5" /> Add
-          </button>
+          <Button icon={<AddRegular />} onClick={handleAdd}>
+            Add
+          </Button>
         </div>
 
         <div className="relative">
-          <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-neutral-400" />
-          <input
+          <Input
+            contentBefore={<SearchRegular />}
             type="text"
             placeholder="Search interpolators..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-8 pr-3 py-1.5 text-xs rounded-md border border-neutral-300 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 outline-none focus:ring-2 focus:ring-sky-500"
           />
         </div>
 
@@ -134,13 +135,12 @@ export function InterpolatorsEditor(): ReactElement {
                   (Interpolator Key)
                 </span>
               </div>
-              <button
-                type="button"
+              <Button
+                icon={<DeleteRegular />}
                 onClick={() => handleDelete(activeKey)}
                 className="p-1.5 rounded text-neutral-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-all"
-                title="Delete Interpolator">
-                <Trash2 className="w-4 h-4" />
-              </button>
+                title="Delete Interpolator"
+              />
             </div>
 
             <InterpRefControl

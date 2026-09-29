@@ -1,7 +1,8 @@
 import { ReactElement } from 'react';
 import { useAtom } from 'jotai';
 
-import { Plus, Trash2 } from 'lucide-react';
+import { Button } from '@fluentui/react-components';
+import { AddRegular, DeleteRegular } from '@fluentui/react-icons';
 
 import {
   chkConstInterp,
@@ -183,8 +184,8 @@ export function InterpRefControl({
             <span className="text-xs font-semibold text-neutral-600 dark:text-neutral-400">
               Piecewise Interpolator Segments
             </span>
-            <button
-              type="button"
+            <Button
+              icon={<AddRegular />}
               onClick={() => {
                 const pieces = interp?.pieces || [];
                 onChange({
@@ -193,10 +194,9 @@ export function InterpRefControl({
                     { until: { val: 1.0 }, interpolator: { reversed: false } },
                   ],
                 });
-              }}
-              className="px-2 py-1 text-xs rounded bg-sky-600 hover:bg-sky-500 text-white flex items-center gap-1 font-medium">
-              <Plus className="w-3 h-3" /> Add Piece
-            </button>
+              }}>
+              Add Piece
+            </Button>
           </div>
 
           {(interp?.pieces || []).map((piece, idx) => (
@@ -207,16 +207,15 @@ export function InterpRefControl({
                 <span className="text-xs font-bold text-sky-600 dark:text-sky-400">
                   Piece #{idx + 1}
                 </span>
-                <button
-                  type="button"
+                <Button
+                  icon={<DeleteRegular />}
                   onClick={() => {
                     const newPieces = interp.pieces.filter((_, i) => i !== idx);
                     onChange({ pieces: newPieces });
                   }}
                   className="text-neutral-400 hover:text-rose-500 transition-colors"
-                  title="Remove Piece">
-                  <Trash2 className="w-3.5 h-3.5" />
-                </button>
+                  title="Remove Piece"
+                />
               </div>
 
               <ValRefControl

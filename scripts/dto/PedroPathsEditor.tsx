@@ -1,4 +1,4 @@
-import { ReactElement, useMemo, useState } from 'react';
+import { ReactElement, useMemo } from 'react';
 import { Provider, useAtom, useAtomValue, useSetAtom } from 'jotai';
 
 import {
@@ -14,16 +14,6 @@ import {
   webLightTheme,
 } from '@fluentui/react-components';
 import { WeatherMoonFilled, WeatherSunnyRegular } from '@fluentui/react-icons';
-import {
-  ArrowRight,
-  Code,
-  Compass,
-  Eye,
-  Layers,
-  Moon,
-  Move,
-  Sun,
-} from 'lucide-react';
 
 import { CurvesEditor } from './CurvesEditor';
 import { NamedValues } from './dto_schema';
@@ -37,7 +27,6 @@ import {
   EMPTY_WORKSPACE_PRESET,
   namedValuesAtom,
   SAMPLE_AUTONOMOUS_PRESET,
-  symbolTableAtom,
   themeAtom,
   toastAtom,
 } from './state';

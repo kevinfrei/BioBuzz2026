@@ -1,7 +1,8 @@
 import { ReactElement } from 'react';
 import { useAtom } from 'jotai';
 
-import { Plus, Trash2 } from 'lucide-react';
+import { Button } from '@fluentui/react-components';
+import { AddRegular, DeleteRegular } from '@fluentui/react-icons';
 
 import { chkRef, CurveRef, InterpRef } from './dto_schema';
 import { InterpRefControl } from './InterpRefs';
@@ -98,8 +99,8 @@ export function CurveRefControl({
               <span className="text-xs font-medium text-neutral-700 dark:text-neutral-300">
                 Curve Points (Poses)
               </span>
-              <button
-                type="button"
+              <Button
+                icon={<AddRegular />}
                 onClick={() => {
                   const pts = curve?.points || [];
                   onChange({
@@ -114,10 +115,9 @@ export function CurveRefControl({
                       },
                     ],
                   });
-                }}
-                className="px-2 py-0.5 text-xs rounded bg-sky-600 hover:bg-sky-500 text-white flex items-center gap-1 font-medium">
-                <Plus className="w-3 h-3" /> Add Pose
-              </button>
+                }}>
+                Add Pose
+              </Button>
             </div>
 
             {(curve?.points || []).map((pt, pIdx) => (
@@ -127,18 +127,17 @@ export function CurveRefControl({
                     Pose #{pIdx + 1}
                   </span>
                   {(curve?.points || []).length > 1 && (
-                    <button
-                      type="button"
+                    <Button
+                      icon={<DeleteRegular />}
+
                       onClick={() => {
                         const newPts = curve.points.filter(
                           (_, i) => i !== pIdx,
                         );
                         onChange({ ...curve, points: newPts });
                       }}
-                      className="text-neutral-400 hover:text-rose-500 transition-colors"
-                      title="Remove Pose Point">
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
+                      title="Remove Pose Point"
+                    />
                   )}
                 </div>
                 <PoseRefControl
