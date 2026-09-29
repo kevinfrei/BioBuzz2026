@@ -45,8 +45,7 @@ import { getStore } from './store';
 import { ValuesEditor } from './ValuesEditor';
 
 export function PedroPathsEditor(): ReactElement {
-  const setNamedValues = useSetAtom(namedValuesAtom);
-  const symbolTable = useAtomValue(symbolTableAtom);
+  const [namedValues, setNamedValues] = useAtom(namedValuesAtom);
   const [activeTab, setActiveTab] = useAtom(activeTabAtom);
   const [theme, setTheme] = useAtom(themeAtom);
   const setToast = useSetAtom(toastAtom);
@@ -58,13 +57,13 @@ export function PedroPathsEditor(): ReactElement {
   // Statistics counters
   const counts = useMemo(
     () => ({
-      values: symbolTable.values.size,
-      poses: symbolTable.poses.size,
-      interpolations: symbolTable.interpolations.size,
-      curves: symbolTable.curves.size,
-      paths: symbolTable.paths.size,
+      values: Object.keys(namedValues.values).length,
+      poses: Object.keys(namedValues.poses).length,
+      interpolations: Object.keys(namedValues.interpolations).length,
+      curves: Object.keys(namedValues.curves).length,
+      paths: Object.keys(namedValues.paths).length,
     }),
-    [symbolTable],
+    [namedValues],
   );
 
   const loadPreset = (preset: NamedValues, name: string) => {
@@ -76,9 +75,9 @@ export function PedroPathsEditor(): ReactElement {
     <div>
       {/* Header Bar */}
       <Toolbar>
-        <span style={{ margin: 10 }}>
+        <span style={{ marginRight: 10 }}>
           {counts.values} Values {counts.poses} Poses {counts.curves} Curves{' '}
-          {counts.paths} Paths{' '}
+          {counts.interpolations} Interpolations {counts.paths} Paths{' '}
         </span>
 
         {/* Presets Dropdown */}
@@ -99,7 +98,7 @@ export function PedroPathsEditor(): ReactElement {
 
         {/* Theme Toggle Button */}
         <Button
-          style={{ margin: 10 }}
+          style={{ marginLeft: 10 }}
           onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
           title="Toggle Light/Dark Theme"
           icon={
