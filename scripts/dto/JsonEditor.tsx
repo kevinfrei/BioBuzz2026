@@ -9,28 +9,6 @@ import {
 import { useAtom, useAtomValue } from 'jotai';
 
 import {
-  AlertTriangle,
-  ArrowRight,
-  Code,
-  Compass,
-  Copy,
-  Eye,
-  FileDown,
-  FileUp,
-  Layers,
-  Moon,
-  Move,
-  Plus,
-  RefreshCw,
-  Search,
-  Sparkles,
-  Sun,
-  Trash2,
-  ZoomIn,
-  ZoomOut,
-} from 'lucide-react';
-
-import {
   EMPTY_WORKSPACE_PRESET,
   namedValuesAtom,
   SAMPLE_AUTONOMOUS_PRESET,

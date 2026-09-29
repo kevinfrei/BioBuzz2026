@@ -1,44 +1,19 @@
-import {
-  ReactElement,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
-import { useAtom, useAtomValue } from 'jotai';
+import { ReactElement } from 'react';
+import { useAtom } from 'jotai';
 
+import { Button, Input } from '@fluentui/react-components';
 import {
-  AlertTriangle,
-  ArrowRight,
-  Code,
-  Compass,
-  Copy,
-  Eye,
-  FileDown,
-  FileUp,
-  Layers,
-  Moon,
-  Move,
-  Plus,
-  RefreshCw,
-  Search,
-  Sparkles,
-  Sun,
-  Trash2,
-  ZoomIn,
-  ZoomOut,
-} from 'lucide-react';
+  AddRegular,
+  DeleteRegular,
+  SearchRegular,
+} from '@fluentui/react-icons';
 
 import { CurveRefControl } from './CurveRefs';
 import { InterpRefControl } from './InterpRefs';
 import {
-  EMPTY_WORKSPACE_PRESET,
   namedValuesAtom,
-  SAMPLE_AUTONOMOUS_PRESET,
   searchFilterAtom,
   selectedKeyAtom,
-  symbolTableAtom,
   toastAtom,
 } from './state';
 
@@ -104,17 +79,14 @@ export function PathsEditor(): ReactElement {
           <span className="font-bold text-sm text-neutral-800 dark:text-neutral-200">
             Paths Store ({Object.keys(paths).length})
           </span>
-          <button
-            type="button"
-            onClick={handleAdd}
-            className="p-1.5 rounded-md bg-sky-600 hover:bg-sky-500 text-white flex items-center gap-1 text-xs font-semibold">
-            <Plus className="w-3.5 h-3.5" /> Add
-          </button>
+          <Button icon={<AddRegular />} onClick={handleAdd}>
+            Add
+          </Button>
         </div>
 
         <div className="relative">
-          <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-neutral-400" />
-          <input
+          <Input
+            contentBefore={<SearchRegular />}
             type="text"
             placeholder="Search paths..."
             value={search}
@@ -165,13 +137,11 @@ export function PathsEditor(): ReactElement {
                   (Path Sequence Key)
                 </span>
               </div>
-              <button
-                type="button"
+              <Button
+                icon={<DeleteRegular />}
                 onClick={() => handleDelete(activeKey)}
-                className="p-1.5 rounded text-neutral-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-all"
-                title="Delete Path">
-                <Trash2 className="w-4 h-4" />
-              </button>
+                title="Delete Path"
+              />
             </div>
 
             <div className="space-y-4">
@@ -179,8 +149,8 @@ export function PathsEditor(): ReactElement {
                 <span className="text-xs font-semibold text-neutral-700 dark:text-neutral-300 uppercase tracking-wider">
                   Path Sequence Curves
                 </span>
-                <button
-                  type="button"
+                <Button
+                  icon={<AddRegular />}
                   onClick={() => {
                     const curvesList = activePath.curves || [];
                     const updatedPath = {
@@ -204,10 +174,9 @@ export function PathsEditor(): ReactElement {
                       ...namedValues,
                       paths: { ...paths, [activeKey]: updatedPath },
                     });
-                  }}
-                  className="px-2 py-1 text-xs rounded bg-sky-600 hover:bg-sky-500 text-white flex items-center gap-1 font-semibold">
-                  <Plus className="w-3.5 h-3.5" /> Add Curve
-                </button>
+                  }}>
+                  Add Curve
+                </Button>
               </div>
 
               {(activePath.curves || []).map((cRef, cIdx) => (
@@ -216,8 +185,8 @@ export function PathsEditor(): ReactElement {
                     <span className="text-xs font-bold text-sky-600 dark:text-sky-400">
                       Curve Segment #{cIdx + 1}
                     </span>
-                    <button
-                      type="button"
+                    <Button
+                      icon={<DeleteRegular />}
                       onClick={() => {
                         const newCurves = activePath.curves.filter(
                           (_, i) => i !== cIdx,
@@ -231,9 +200,8 @@ export function PathsEditor(): ReactElement {
                         });
                       }}
                       className="text-neutral-400 hover:text-rose-500 transition-colors"
-                      title="Remove Curve Segment">
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
+                      title="Remove Curve Segment"
+                    />
                   </div>
                   <CurveRefControl
                     label={`Segment ${cIdx + 1}`}

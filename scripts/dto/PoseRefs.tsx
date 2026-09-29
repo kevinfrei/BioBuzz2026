@@ -1,7 +1,7 @@
 import { ReactElement } from 'react';
 import { useAtomValue } from 'jotai';
 
-import { AlertTriangle } from 'lucide-react';
+import { AlertFilled } from '@fluentui/react-icons';
 import { hasField, isDefined, isUndefined } from '@freik/typechk';
 
 import { chkErr, chkRef, PoseRef, ResolvedPose } from './dto_schema';
@@ -88,7 +88,7 @@ export function PoseRefControl({
           </select>
           {chkErr(resolved) && (
             <div className="flex items-center gap-1.5 text-xs text-rose-500 dark:text-rose-400">
-              <AlertTriangle className="w-3.5 h-3.5" />
+              <AlertFilled />
               <span>Missing pose reference: "{pose?.ref}"</span>
             </div>
           )}
