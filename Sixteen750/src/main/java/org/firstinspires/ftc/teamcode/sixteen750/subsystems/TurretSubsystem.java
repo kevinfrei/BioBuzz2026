@@ -73,7 +73,8 @@ public class TurretSubsystem implements Loggable, Subsystem {
 
     private void setLauncherVelocity(double velo) {
         if (hasHardware) {
-            launcher.setVelocity(velo);
+            launcher.setPower(0.8);
+            //            launcher.setVelocity(velo);
         }
     }
 

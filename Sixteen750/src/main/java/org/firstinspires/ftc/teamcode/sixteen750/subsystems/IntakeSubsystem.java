@@ -53,12 +53,12 @@ public class IntakeSubsystem implements Loggable, Subsystem {
     }
 
     public void Intake() {
-        setIntakePower(REJECT_VELOCITY);
+        setIntakePower(INTAKE_VELOCITY);
     }
 
     public void Feed() {
         setIntakePower(-REJECT_VELOCITY);
-        setTransferPower(REJECT_VELOCITY);
+        setTransferPower(FEED_VELOCITY);
         setGatePosition(FIRE_POSITION);
     }
 
@@ -67,8 +67,8 @@ public class IntakeSubsystem implements Loggable, Subsystem {
     }
 
     public void Spit() {
-        setIntakePower(REJECT_VELOCITY);
-        setTransferPower(REJECT_VELOCITY);
+        setIntakePower(-FEED_VELOCITY);
+        setTransferPower(-FEED_VELOCITY);
     }
 
     public void Hold() {

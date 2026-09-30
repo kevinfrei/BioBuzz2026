@@ -30,7 +30,7 @@ public class DriverController implements Loggable {
     public CommandButton holdButton;
     public CommandButton turretlockButton;
 
-    public CommandAxis intakeTrigger;
+    public CommandButton intakeTrigger;
     public CommandAxis autoAim;
     public PedroDriver pedroDriver;
 
@@ -62,7 +62,7 @@ public class DriverController implements Loggable {
         resetGyroButton = gamepad.ps_options;
         driveLeftStick = gamepad.leftStick;
         driveRightStick = gamepad.rightStick;
-        intakeTrigger = gamepad.rightTrigger;
+        intakeTrigger = gamepad.rightTrigger.getAsButton();
 
         snailButton = gamepad.leftBumper;
         launchButton = gamepad.rightBumper;
@@ -93,19 +93,17 @@ public class DriverController implements Loggable {
         //MotorDecrease.whenPressed(TeleCommands.DecreaseMotor(robot));
         //MotorIncrease.whenPressed(TeleCommands.IncreaseMotor(robot));
 
-       // if (Setup.Connected.LIMELIGHTSUBSYSTEM) {
-          //  autoAim.whenPressed(DrivingCommands.AutoOrient(pedroDriver));
-          //  autoAim.whenReleased(DrivingCommands.NoAutoOrient(pedroDriver));
-          //  RelocButton.whenPressed(TeleCommands.LLRelocCommand(robot));
-            //AltAutoAlign.whenPressed(new AltAutoOrient(robot));
-            //AltAutoAlign.whenReleased(DrivingCommands.NormalDriving(pedroDriver));
-       // }
+        // if (Setup.Connected.LIMELIGHTSUBSYSTEM) {
+        //  autoAim.whenPressed(DrivingCommands.AutoOrient(pedroDriver));
+        //  autoAim.whenReleased(DrivingCommands.NoAutoOrient(pedroDriver));
+        //  RelocButton.whenPressed(TeleCommands.LLRelocCommand(robot));
+        //AltAutoAlign.whenPressed(new AltAutoOrient(robot));
+        //AltAutoAlign.whenReleased(DrivingCommands.NormalDriving(pedroDriver));
+        // }
         // autoAim.whilePressed(new LLPipelineChangeCommand(hardware.limelight, Setup.HardwareNames.AprilTag_Pipeline));
     }
 
-    public void bindLaunchControls() {
-
-    }
+    public void bindLaunchControls() {}
 
     public void bindIntakeControls() {
         spitButton.whenPressed(TeleCommands.Spit(robot));
@@ -121,7 +119,6 @@ public class DriverController implements Loggable {
 
     // spitTrigger.whilePressed(TeleCommands.Spit(robot.intakeSubsystem));
     // spitTrigger.whileReleased(TeleCommands.Intake(robot.intakeSubsystem));
-
 
     public void bindAimControls() {
         // if(yippee) {

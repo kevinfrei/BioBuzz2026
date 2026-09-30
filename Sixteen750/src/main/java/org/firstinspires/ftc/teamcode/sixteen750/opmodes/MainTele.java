@@ -6,6 +6,7 @@ import com.bylazar.telemetry.PanelsTelemetry;
 import com.pedropathing.math.Pose;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.technototes.library.command.Command;
 import com.technototes.library.command.CommandScheduler;
 import com.technototes.library.command.SequentialCommandGroup;
 import com.technototes.library.logger.Loggable;
@@ -37,18 +38,16 @@ public class MainTele extends CommandOpMode implements Loggable {
         robot = new Robot(hardware, Alliance.RED, StartingPosition.Unspecified);
         // controlsOperator = new OperatorController(codriverGamepad, robot);
         panelsTelemetry = PanelsTelemetry.INSTANCE;
-      //  robot.follower.setPose(new Pose(0, 0, 0)); commented out till i can reenable dt once i get foresight values once new odo pod
+        robot.follower.setPose(new Pose(0, 0, 0));
         // limelight = hardwareMap.get(Limelight3A.class, Setup.HardwareNames.LIMELIGHT);
         controlsDriver = new DriverController(driverGamepad, robot);
         if (Setup.Connected.DRIVEBASE) {
-
-            robot.intakeSubsystem.setGamepad(gamepad1);
-            robot.limelightSubsystem.setGamepad(gamepad1);
             // Just pick a starting point
             CommandScheduler.scheduleForState(
                 new SequentialCommandGroup(
                     HeadingHelper.RestorePreviousPosition(robot.follower),
-                    DrivingCommands.ResetGyro(controlsDriver.pedroDriver)
+                    DrivingCommands.ResetGyro(controlsDriver.pedroDriver),
+                    Command.create(robot.turretsubsystem::Launch)
                 ),
                 OpModeState.INIT
             );
@@ -82,9 +81,8 @@ public class MainTele extends CommandOpMode implements Loggable {
     }
 
     @Override
-    public void runLoop() {
+    public void runLoop() {}
 
-    }
     @Override
     public void end() {
         if (Setup.Connected.LIMELIGHTSUBSYSTEM) {

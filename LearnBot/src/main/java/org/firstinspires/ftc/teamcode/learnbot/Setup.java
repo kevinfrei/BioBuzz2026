@@ -8,7 +8,7 @@ public class Setup {
     public static class Connected {
 
         public static boolean DRIVEBASE = true;
-        public static boolean LIMELIGHT = true;
+        public static boolean LIMELIGHT = false;
         public static boolean PINPOINT = false;
         public static boolean OCTOQUAD = true;
         public static boolean GIMBAL = true;
