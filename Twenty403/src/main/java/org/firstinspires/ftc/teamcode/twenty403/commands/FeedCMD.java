@@ -18,6 +18,6 @@ public class FeedCMD {
             .andThen(new WaitCommand(LAUNCH_STARTUP))
             .andThen(Command.create(r.feedingSubsystem::moveball))
             .andThen(new WaitCommand(FEED_WAIT))
-            .andThen(Command.create(r.feedingSubsystem::stop));
+            .andThen(Command.create(r.feedingSubsystem::Stop));
     }
 }

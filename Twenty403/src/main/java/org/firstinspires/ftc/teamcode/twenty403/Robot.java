@@ -6,7 +6,7 @@ import com.technototes.library.logger.Log;
 import com.technototes.library.logger.Loggable;
 import com.technototes.library.util.Alliance;
 import org.firstinspires.ftc.teamcode.twenty403.helpers.StartingPosition;
-import org.firstinspires.ftc.teamcode.twenty403.subsystems.FeedingSubsystem;
+import org.firstinspires.ftc.teamcode.twenty403.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.twenty403.subsystems.LauncherSubsystem;
 
 @Configurable
@@ -32,7 +32,7 @@ public class Robot implements Loggable {
     public double initialVoltage;
 
     public LauncherSubsystem launcherSubsystem;
-    public FeedingSubsystem feedingSubsystem;
+    public IntakeSubsystem feedingSubsystem;
     public Follower follower;
 
     public Robot(Hardware hw, Alliance team, StartingPosition pos) {
@@ -43,7 +43,7 @@ public class Robot implements Loggable {
             this.launcherSubsystem = new LauncherSubsystem(hw);
         }
         if (Setup.Connected.INTAKE) {
-            this.feedingSubsystem = new FeedingSubsystem(hw);
+            this.feedingSubsystem = new IntakeSubsystem(hw);
         }
     }
 
