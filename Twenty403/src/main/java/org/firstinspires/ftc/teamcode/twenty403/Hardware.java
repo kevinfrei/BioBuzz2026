@@ -22,7 +22,7 @@ public class Hardware implements Loggable {
     public EncodedMotor<DcMotorEx> launcher;
     public Motor<DcMotorEx> inTake;
     public Limelight3A limelight;
-    public CRServo launchFeedServo;
+    public CRServo transferServo;
     public CRServo leftIntakeServo;
     public CRServo rightIntakeServo;
     public IGyro imu;
@@ -43,6 +43,9 @@ public class Hardware implements Loggable {
         }
         if (Setup.Connected.LIMELIGHT) {
             limelight = hwmap.get(Limelight3A.class, Setup.HardwareNames.LIMELIGHT);
+        }
+        if (Setup.Connected.TRANSFER) {
+            transferServo = new CRServo(Setup.HardwareNames.SPIN);
         }
         if (Setup.Connected.EXTERNALIMU) {
             imu = new AdafruitIMU(Setup.HardwareNames.EXTERNALIMU, AdafruitIMU.Orientation.Yaw);

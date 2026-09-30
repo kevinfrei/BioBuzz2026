@@ -8,7 +8,7 @@ public class Setup {
     public static class Connected {
 
         public static boolean DRIVEBASE = true;
-        public static boolean TESTSUBSYSTEM = false;
+        public static boolean TRANSFER = false;
         public static boolean SAFETYSUBSYSTEM = false;
         public static boolean EXTERNALIMU = true;
         public static boolean LAUNCHER = true;

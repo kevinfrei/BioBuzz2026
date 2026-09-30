@@ -90,7 +90,7 @@ public class JustDrivingTeleOp extends CommandOpMode {
             CommandScheduler.register(robot.launcherSubsystem);
         }
         if (Setup.Connected.INTAKE) {
-            CommandScheduler.register(robot.feedingSubsystem);
+            CommandScheduler.register(robot.intakeSubsystem);
         }
         telemetry.addData(">", "Robot Ready.  Press Play.");
         telemetry.update();

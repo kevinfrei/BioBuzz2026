@@ -108,11 +108,11 @@ public class DriverController {
     }
 
     public void bindFeedControls() {
-        moveballup.whenPressed(robot.feedingSubsystem::moveball);
-        moveballup.whenReleased(robot.feedingSubsystem::Stop);
+        moveballup.whenPressed(robot.intakeSubsystem::Intake);
+        moveballup.whenReleased(robot.intakeSubsystem::Stop);
         compactScore.whenPressed(FeedCMD.Feed(robot));
-        moveballanyways.whenPressed(robot.feedingSubsystem::moveballanyways);
-        moveballanyways.whenReleased(robot.feedingSubsystem::Stop);
+        moveballanyways.whenPressed(robot.intakeSubsystem::Intake);
+        moveballanyways.whenReleased(robot.intakeSubsystem::Stop);
     }
 
     public void bindPipelineControls() {

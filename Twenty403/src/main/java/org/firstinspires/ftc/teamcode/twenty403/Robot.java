@@ -32,7 +32,7 @@ public class Robot implements Loggable {
     public double initialVoltage;
 
     public LauncherSubsystem launcherSubsystem;
-    public IntakeSubsystem feedingSubsystem;
+    public IntakeSubsystem intakeSubsystem;
     public Follower follower;
 
     public Robot(Hardware hw, Alliance team, StartingPosition pos) {
@@ -43,7 +43,7 @@ public class Robot implements Loggable {
             this.launcherSubsystem = new LauncherSubsystem(hw);
         }
         if (Setup.Connected.INTAKE) {
-            this.feedingSubsystem = new IntakeSubsystem(hw);
+            this.intakeSubsystem = new IntakeSubsystem(hw);
         }
     }
 
