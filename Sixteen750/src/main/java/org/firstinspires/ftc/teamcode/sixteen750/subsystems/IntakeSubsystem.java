@@ -24,7 +24,7 @@ public class IntakeSubsystem implements Loggable, Subsystem {
 
     public static double BLOCK_POSITION = 0.5;
 
-    public static double FIRE_POSITION = 0.7;
+    public static double FIRE_POSITION = 0.3;
 
     boolean hasHardware;
 
