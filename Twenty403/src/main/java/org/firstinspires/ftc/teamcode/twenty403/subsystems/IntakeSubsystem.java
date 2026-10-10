@@ -65,7 +65,7 @@ public class IntakeSubsystem implements Subsystem {
 
     private void setIntakeServo(double power) {
         if (hasHardware) {
-            _leftintake.setPower(power);
+            _leftintake.setPower(-power);
             _rightintake.setPower(power);
         }
     }

@@ -16,7 +16,7 @@ public class IntakeValidator extends ValidationOpMode {
     private CRServo right;
     public static double intakeVelocity = 2000;
     public static double intakeVelocity2 = -200;
-    public static double spinLeftFlower = -1;
+    public static double spinLeftFlower = 1;
     public static double spinRightFlower = 1;
 
     @Override
@@ -36,16 +36,28 @@ public class IntakeValidator extends ValidationOpMode {
             intakeMotor.setVelocity(intakeVelocity);
         } else if (this.gamepad1.dpad_down) {
             intakeMotor.setVelocity(intakeVelocity2);
+        } else {
+            intakeMotor.setVelocity(0);
         }
 
-        addLine("Press left on d-pad to intake left");
-        if (this.gamepad1.dpad_left) {
+        addLine("Press left bumper to intake left side (positive)");
+        addLine("Press left trigger to intake left side (negative)");
+        if (this.gamepad1.left_bumper) {
             left.setPower(spinLeftFlower);
+        } else if (this.gamepad1.left_trigger_pressed) {
+            left.setPower(-spinLeftFlower);
+        } else {
+            left.setPower(0);
         }
 
-        addLine("Press right on d-pad to intake right");
-        if (this.gamepad1.dpad_right) {
+        addLine("Press right bumper to intake right side (positive)");
+        addLine("Press right trigger to intake right side (negative)");
+        if (this.gamepad1.right_bumper) {
             right.setPower(spinRightFlower);
+        } else if (this.gamepad1.right_trigger_pressed) {
+            right.setPower(-spinRightFlower);
+        } else {
+            right.setPower(0);
         }
     }
 }

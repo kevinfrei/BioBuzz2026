@@ -47,7 +47,7 @@ public class Hardware implements Loggable {
         if (Setup.Connected.INTAKE) {
             leftIntakeServo = new CRServo(Setup.HardwareNames.LEFTINTAKESERVO);
             rightIntakeServo = new CRServo(Setup.HardwareNames.RIGHTINTAKESERVO);
-            intake = new Motor<>(Setup.HardwareNames.LAUNCHER);
+            intake = new Motor<>(Setup.HardwareNames.INTAKEMOTOR);
         }
         if (Setup.Connected.LIMELIGHT) {
             limelight = hwmap.get(Limelight3A.class, Setup.HardwareNames.LIMELIGHT);

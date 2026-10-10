@@ -15,9 +15,7 @@ public class LaunchValidator extends ValidationOpMode {
     private DcMotorEx launchmotor;
     private CRServo spinnything;
     public static double launchvelocity = 2000;
-    public static double intakeVelocity2 = -200;
-    public static double spinspeed = -1;
-    public static double spinRightFlower = 1;
+    public static double spinspeed = 1;
 
     @Override
     public void init() {
@@ -30,16 +28,22 @@ public class LaunchValidator extends ValidationOpMode {
     @Override
     public void loop() {
         super.loop();
-        addLine("Press up on d-pad to launch");
+        addLine("Press up on d-pad to spin launcher (positive)");
+        addLine("Press down on d-pad to spin launch (negative)");
         if (this.gamepad1.dpad_up) {
             launchmotor.setVelocity(launchvelocity);
+        } else if (this.gamepad1.dpad_down) {
+            launchmotor.setVelocity(-launchvelocity);
         } else {
             launchmotor.setVelocity(0);
         }
 
-        addLine("Press right bumper to spin");
+        addLine("Press right bumper to spin transfer (positive)");
+        addLine("Press left bumper to spin transfer (negative)");
         if (this.gamepad1.right_bumper) {
             spinnything.setPower(spinspeed);
+        } else if (this.gamepad1.left_bumper) {
+            spinnything.setPower(-spinspeed);
         } else {
             spinnything.setPower(0);
         }
