@@ -41,7 +41,7 @@ public class PedroConstants {
         c.name.set("octoquad");
         c.xPodPort.set(1);
         c.yPodPort.set(0);
-        c.ticksPerUnit.set(505.316944406);
+        c.ticksPerUnit.set(487.875);
         c.xPodOffset.set(2.598); // from cad but i trust it more
         c.yPodOffset.set(2.264); // from cad but i trust it more
         c.xPodDirection.set(OctoQuad.EncoderDirection.FORWARD);

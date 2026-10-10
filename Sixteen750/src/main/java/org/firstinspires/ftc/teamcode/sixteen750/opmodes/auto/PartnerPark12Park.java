@@ -48,23 +48,29 @@ public class PartnerPark12Park extends CommandOpMode {
                 t.AutoHood(robot)
             ).alongWith(
                 new SequentialCommandGroup(
-                    new PedroPathCommand(robot.follower, p.StartToPartnerPark()), //)
+                    new PedroPathCommand(robot.follower, p.StartToPartnerPark()),
+                    new WaitCommand(3),
                     new PedroPathCommand(robot.follower, p.PartnerParkToLaunch1()),
                     t.Feed(robot),
-                    new WaitCommand(3),
+                    new WaitCommand(1.2),
                     new PedroPathCommand(robot.follower, p.Launch1ToGardenPreInt()).alongWith(
                         t.Intake(robot)
                     ),
                     new PedroPathCommand(robot.follower, p.GardenPreIntToGardenInt()),
-                    new WaitCommand(2),
+                    new WaitCommand(1.5),
                     new PedroPathCommand(robot.follower, p.GardenIntToLaunch2()),
                     t.Feed(robot),
-                    new WaitCommand(3),
+                    new WaitCommand(1.2),
                     new PedroPathCommand(robot.follower, p.Launch2ToPark()),
                     CommandScheduler::terminateOpMode
                 )
             ),
             OpModeState.RUN
         );
+    }
+
+    @Override
+    public void runLoop() {
+        robot.follower.update();
     }
 }

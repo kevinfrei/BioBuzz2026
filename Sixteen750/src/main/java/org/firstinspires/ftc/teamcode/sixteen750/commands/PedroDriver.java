@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.sixteen750.commands;
 
 import com.bylazar.configurables.annotations.Configurable;
 import com.pedropathing.follower.Follower;
+import com.pedropathing.follower.ManualDrive;
 import com.pedropathing.math.Pose;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.technototes.library.command.Command;
@@ -276,13 +277,14 @@ public class PedroDriver implements Command, Loggable {
         if (driveMode == DrivingMode.RobotCentric || driveMode == DrivingMode.FieldCentric) {
             double rot = getRotation(fwdVal, strafeVal);
             ShowDriveVectors(fwdVal, strafeVal, rot, headingOffset);
-            follower.manual(
-                fwdVal,
-                strafeVal,
-                rot /*,
-                driveMode == DrivingMode.RobotCentric,
-                headingOffset*/
-            );
+            if (driveMode == DrivingMode.FieldCentric) {
+                double heading = follower.pose().heading();
+                follower.manual(
+                    ManualDrive.fieldCentric(fwdVal, strafeVal, rot, heading, headingOffset)
+                );
+            } else {
+                follower.manual(fwdVal, strafeVal, rot);
+            }
         }
 
         // target based driving:
