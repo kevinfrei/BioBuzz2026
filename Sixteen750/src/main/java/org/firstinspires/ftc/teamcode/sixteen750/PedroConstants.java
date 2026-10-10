@@ -51,7 +51,44 @@ public class PedroConstants {
         c.i2cRecoveryMode.set(OctoQuad.I2cRecoveryMode.MODE_1_PERIPH_RST_ON_FRAME_ERR);
         c.headingScalar.set(1.01828);
     });
+
     public static ForesightConfig foresightConfig = new ForesightConfig(c -> {
+        Controller primaryTranslationalForward = Controller.proportional(0.28395704217991863);
+        Controller secondaryTranslationalForward = Controller.proportional(0.1049145396135724);
+        Controller primaryTranslationalLateral = Controller.proportional(0.3428231469950291);
+        Controller secondaryTranslationalLateral = Controller.proportional(0.12666399241146598);
+
+        c.forwardTranslational.set(
+            Controller.piecewise(secondaryTranslationalForward).put(
+                2.5,
+                primaryTranslationalForward
+            )
+        );
+        c.strafeTranslational.set(
+            Controller.piecewise(secondaryTranslationalLateral).put(
+                2.5,
+                primaryTranslationalLateral
+            )
+        );
+
+        c.coast.set(Controller.proportionalFeedforward(0.01079904153957472));
+        c.brake.set(Controller.proportionalFeedforward(0.009179185308638512));
+
+        c.headingFeedback.set(Controller.proportional(4.147776450022238));
+        c.headingBrakeCoefficients.set(
+            Vector2D.cartesian(0.04379310349541531, 0.004956338721491027)
+        );
+
+        c.linearBrakeCoefficients.set(Matrix.diag(0.10012668456353997, 0.050384955639263866));
+        c.quadraticBrakeCoefficients.set(Matrix.diag(0.001271398610072872, 0.0018072979525181625));
+
+        c.maxAchievableForwardVelocity.set(90.17261302872845);
+        c.maxAchievableStrafeVelocity.set(72.09872492436867);
+        c.naturalForwardDeceleration.set(33.961982607863476);
+        c.naturalStrafeDeceleration.set(64.77010240081039);
+    });
+
+    /*  public static ForesightConfig foresightConfig = new ForesightConfig(c -> {
         Controller primaryTranslationalForward = Controller.proportional(0.28921569321161206);
         Controller secondaryTranslationalForward = Controller.proportional(0.10685747065603969);
         Controller primaryTranslationalLateral = Controller.proportional(0.419135079202836);
@@ -85,5 +122,5 @@ public class PedroConstants {
         c.maxAchievableStrafeVelocity.set(73.09254179785334);
         c.naturalForwardDeceleration.set(35.97919628362501);
         c.naturalStrafeDeceleration.set(65.42587076498502);
-    });
+    });*/
 }

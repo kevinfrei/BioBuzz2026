@@ -55,6 +55,7 @@ public class IntakeSubsystem implements Loggable, Subsystem {
 
     public void Intake() {
         setIntakePower(INTAKE_VELOCITY);
+        setGatePosition(BLOCK_POSITION);
     }
 
     public void Feed() {
