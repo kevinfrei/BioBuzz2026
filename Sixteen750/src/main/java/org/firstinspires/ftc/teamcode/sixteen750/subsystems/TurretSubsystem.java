@@ -31,18 +31,13 @@ public class TurretSubsystem implements Loggable, Subsystem {
 
     public static double TARGET_SWITCH_THRESHOLD = 72;
     public static double TURRET_CENTER = 0.5;
-    public static double TURRET_MIN = 0.08;
-    public static double TURRET_MAX = 0.92;
-    public static double ROTATE_LEFT = 0.15;
-    public static double ROTATE_RIGHT = 0.85;
+    public static double TURRET_MIN = 0.05;
+    public static double TURRET_MAX = 0.95;
     // @Log.Number (name = "target servo Pos")
     public static double targetServoPos = 0;
 
     @Log.Number(name = "Robot Heading")
     public static double robotHead = 0;
-
-    // @Log.Number (name = "Absolute heading")
-    public static double ABSOLUTE_HEAD = 0;
 
     @Log.Number(name = "Turret Heading")
     public static double turretHead = 0;
@@ -63,13 +58,10 @@ public class TurretSubsystem implements Loggable, Subsystem {
     public static double manualHoodPos = 0.5; // manual hood pos stuff for tuning
 
     public static double HOOD_INCREMENT = 0.01; // amount to manually adjust hood by for tuning
-
-    public static double hoodTargetAngle = 21; // hood target angle in degrees
     public static double HOOD_POSITION_TO_ANGLE_CONSTANT = 43.42105; // did math to get this it is how the position relates to the angle in degrees
     public static double hoodCompScalar = 0.05; // the ratio between our error in velocity ~in the couple of hundreds and the change in hood angle 21-38 degrees;
     public static double HOOD_MIN = 0.1;
     public static double HOOD_MAX = 0.5;
-    public static double HOOD_DOWN_ANGLE = 21; // fully down hood angle in deg
     public static double INCREASE = 15; // extremely jank increment and decrement
 
     @Log.Number(name = "hood calculated Pos")
