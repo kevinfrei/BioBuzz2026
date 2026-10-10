@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.twenty403;
 
+import com.pedropathing.follower.Follower;
+import com.pedropathing.follower.FollowerLog;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
@@ -29,20 +31,22 @@ public class Hardware implements Loggable {
     public CRServo leftIntakeServo;
     public CRServo rightIntakeServo;
     public IGyro imu;
+    public Follower follower;
 
     /* Put other hardware here! */
 
     public Hardware(HardwareMap hwmap) {
         hubs = hwmap.getAll(LynxModule.class);
         if (Setup.Connected.DRIVEBASE) {
+            follower = PedroConstants.create(hwmap);
         }
-
         if (Setup.Connected.ODO) {
             fbOdo = new MotorEncoder(PedroConstants.localizerConfig.xPodName.get());
             strafeOdo = new MotorEncoder(PedroConstants.localizerConfig.yPodName.get());
         }
         if (Setup.Connected.LAUNCHER) {
             launcher = new EncodedMotor<>(Setup.HardwareNames.LAUNCHER);
+            transferServo = new CRServo(Setup.HardwareNames.SPIN);
         }
         if (Setup.Connected.INTAKE) {
             leftIntakeServo = new CRServo(Setup.HardwareNames.LEFTINTAKESERVO);
@@ -51,9 +55,6 @@ public class Hardware implements Loggable {
         }
         if (Setup.Connected.LIMELIGHT) {
             limelight = hwmap.get(Limelight3A.class, Setup.HardwareNames.LIMELIGHT);
-        }
-        if (Setup.Connected.TRANSFER) {
-            transferServo = new CRServo(Setup.HardwareNames.SPIN);
         }
         if (Setup.Connected.EXTERNALIMU) {
             imu = new AdafruitIMU(Setup.HardwareNames.EXTERNALIMU, AdafruitIMU.Orientation.Yaw);

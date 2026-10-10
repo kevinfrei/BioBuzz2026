@@ -30,13 +30,6 @@ public class BlueBigTriScore extends CommandOpMode {
     public void uponInit() {
         hardware = new Hardware(hardwareMap);
         robot = new Robot(hardware, Alliance.BLUE, StartingPosition.Unspecified);
-        SparkFunOTOS otos = hardwareMap.get(SparkFunOTOS.class, Setup.HardwareNames.OTOS);
-        otos.calibrateImu();
-        //        robot.follower = AutoConstants.createFollower(hardwareMap);
-        // p = new Paths(robot.follower);
-        //        Pose start = p.start.setHeading(Math.toRadians(37));
-        //        robot.follower.setPose(p.start);
-        //        telemetry.addData("Pose:", robot.follower.getPose());
         robot.follower.update();
         CommandScheduler.register(robot.launcherSubsystem);
         CommandScheduler.scheduleForState(
@@ -54,12 +47,6 @@ public class BlueBigTriScore extends CommandOpMode {
     }
 
     @Override
-    public void initLoop() {
-        //        telemetry.addData("Pose:", robot.follower.getPose());
-        robot.follower.update();
-    }
-
-    @Override
     public void uponStart() {
         //        EZCmd.Drive.ResetGyro(robot.follower);
         robot.atStart();
@@ -67,12 +54,5 @@ public class BlueBigTriScore extends CommandOpMode {
 
     public void end() {
         //        HeadingHelper.savePose(robot.follower.getPose());
-    }
-
-    @Override
-    public void runLoop() {
-        //        telemetry.addData("Pose:", robot.follower.getPose());
-        //        if (robot.follower.getHeading() != robot.follower.getCurrentPath().getPose()) {}
-        robot.follower.update();
     }
 }

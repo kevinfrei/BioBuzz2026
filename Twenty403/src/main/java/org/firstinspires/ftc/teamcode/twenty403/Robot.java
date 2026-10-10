@@ -6,6 +6,7 @@ import com.technototes.library.logger.Log;
 import com.technototes.library.logger.Loggable;
 import com.technototes.library.util.Alliance;
 import org.firstinspires.ftc.teamcode.twenty403.helpers.StartingPosition;
+import org.firstinspires.ftc.teamcode.twenty403.subsystems.DrivebaseSubsystem;
 import org.firstinspires.ftc.teamcode.twenty403.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.twenty403.subsystems.LauncherSubsystem;
 
@@ -33,6 +34,7 @@ public class Robot implements Loggable {
 
     public LauncherSubsystem launcherSubsystem;
     public IntakeSubsystem intakeSubsystem;
+    public DrivebaseSubsystem drivebaseSubsystem;
     public Follower follower;
 
     public Robot(Hardware hw, Alliance team, StartingPosition pos) {
@@ -44,6 +46,9 @@ public class Robot implements Loggable {
         }
         if (Setup.Connected.INTAKE) {
             this.intakeSubsystem = new IntakeSubsystem(hw);
+        }
+        if (Setup.Connected.DRIVEBASE) {
+            this.drivebaseSubsystem = new DrivebaseSubsystem(hw.follower);
         }
     }
 

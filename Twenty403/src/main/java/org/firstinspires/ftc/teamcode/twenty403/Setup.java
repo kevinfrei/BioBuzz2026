@@ -7,15 +7,12 @@ public class Setup {
     @Configurable
     public static class Connected {
 
-        public static boolean DRIVEBASE = false;
-        public static boolean TRANSFER = false;
+        public static boolean DRIVEBASE = true;
         public static boolean ODO = true;
-        public static boolean SAFETYSUBSYSTEM = false;
         public static boolean EXTERNALIMU = false;
         public static boolean LAUNCHER = true;
         public static boolean INTAKE = true;
         public static boolean LIMELIGHT = false;
-        public static boolean OTOS = false;
     }
 
     @Configurable
@@ -27,17 +24,12 @@ public class Setup {
         public static String RRMOTOR = "rr";
         public static String IMU = "imu";
         public static String EXTERNALIMU = "adafruit-imu";
-        public static String OCTOQUAD = "octoquad";
         public static String LAUNCHER = "launch";
         public static String SPIN = "spin";
         public static String LEFTINTAKESERVO = "lintake";
         public static String RIGHTINTAKESERVO = "rintake";
         public static String INTAKEMOTOR = "intake";
-        public static String OTOS = "sparky";
         public static String LIMELIGHT = "limelight";
-        public static String TESTSERVO = "testservo";
-        public static String TESTMOTOR = "testmotor";
-        public static String TESTCRSERVO = "testcrservo";
 
         //        public static int Barcode_Pipeline = 0;
         public static int Green_Color_Pipeline = 0;

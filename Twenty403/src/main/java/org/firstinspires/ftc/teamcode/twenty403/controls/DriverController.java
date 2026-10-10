@@ -25,7 +25,6 @@ public class DriverController {
     public CommandButton spitOut;
     public CommandButton launchFaster;
     public CommandButton launchSlower;
-    public CommandButton autoAim;
 
     public DriverController(CommandGamepad g, Robot r) {
         this.robot = r;
@@ -60,12 +59,9 @@ public class DriverController {
 
     public void bindDriveControls() {
         CommandScheduler.scheduleJoystick(
-            new JoystickDriveCommand(robot.follower, driveLeftStick, driveRightStick)
+            new JoystickDriveCommand(robot.drivebaseSubsystem, driveLeftStick, driveRightStick)
         );
-
-        if (Setup.Connected.LIMELIGHT) {
-            autoAim.whenPressed(EZCmd.Drive.AutoAim());
-        }
+        resetGyroButton.whenPressed(robot.drivebaseSubsystem::ResetGyro);
     }
 
     public void bindLaunchControls() {

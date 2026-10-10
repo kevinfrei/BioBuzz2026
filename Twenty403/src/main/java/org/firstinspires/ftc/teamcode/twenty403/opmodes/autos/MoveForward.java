@@ -26,10 +26,6 @@ public class MoveForward extends CommandOpMode {
     public void uponInit() {
         hardware = new Hardware(hardwareMap);
         robot = new Robot(hardware, Alliance.RED, StartingPosition.Net);
-        SparkFunOTOS otos = hardwareMap.get(SparkFunOTOS.class, Setup.HardwareNames.OTOS);
-        otos.calibrateImu();
-        // robot.follower = AutoConstants.createFollower(hardwareMap);
-        //robot.drivebase.setPoseEstimate(AutoConstants.BACKWARD.toPose());
         CommandScheduler.scheduleForState(
             new SequentialCommandGroup(
                 new DriveAutoCommand(robot.follower, 0.5, 0),
