@@ -68,7 +68,7 @@ public class TurretSubsystem implements Loggable, Subsystem {
     public static double hoodTargetPos = 0.5;
 
     public static double actualTarget = 0; // target for manual velocity tuning
-    public static double launcherVelocity = 2400;
+    public static double launcherVelocity = 1500;
 
     @Log.Number(name = "Auto Velocity")
     public static double autoVelocity = 2000;
@@ -107,9 +107,9 @@ public class TurretSubsystem implements Loggable, Subsystem {
     // Stuff used for the Feed Forward function.
     // This one is highly variable, based on the amount of friction in the system
 
-    public static double kStaticFriction = 0.364; // measured 10/3
+    public static double kStaticFriction = 0.4938; // measured 10/12
 
-    public static double kDynamicFriction = 0.360; // measured 10/3
+    public static double kDynamicFriction = 0.4934; // measured 10/12
 
     // This one tends to be somewhere between 0.0035 to 0.005 or so.
     public static double kVelocityConstant = 0.0043;
@@ -272,7 +272,7 @@ public class TurretSubsystem implements Loggable, Subsystem {
     // returns the final position in servo position (0-1) that we want our hood servo to be at after velocity compensation
     public double getHoodAutoPos() {
         hoodAutoPos =
-            /*hoodTargetPos commented out for manual testing*/ hoodTargetPos +
+            /*hoodTargetPos commented out for manual testing*/ manualHoodPos +
             (error * hoodCompScalar) / HOOD_POSITION_TO_ANGLE_CONSTANT; // takes our target and subtracts our error times a scalar
         return clamp(hoodAutoPos, HOOD_MIN, HOOD_MAX); // clamp it again so it doesnt try and unionize (i think you only need to clamp it once but by doing it twice both the compensated and uncompensated values are actually usable)
     }

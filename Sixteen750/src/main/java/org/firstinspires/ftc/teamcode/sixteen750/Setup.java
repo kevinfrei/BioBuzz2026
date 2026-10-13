@@ -33,6 +33,7 @@ public class Setup {
         public static String TRANSFER_MOTOR1 = "transfer1";
         public static String TRANSFER_MOTOR2 = "transfer2";
         public static String GATE_SERVO = "gate";
+        public static String RAMP_SERVO = "ramp";
         public static String LAUNCHER_MOTOR = "launcher";
         public static String TURRET_SERVO1 = "turret1";
         public static String TURRET_SERVO2 = "turret2";

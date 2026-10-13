@@ -38,7 +38,7 @@ public class Launcher {
         // This should probably track the PrimaryReversed value
         // but if you're using the encoder from the secondary, it might not.
         // The FeedFwd helper tell you the correct value.
-        public static boolean ReverseEncoder = true;
+        public static boolean ReverseEncoder = false;
         // Is the secondary intake motor reversed?
         public static boolean SecondaryReversed = false;
 

@@ -31,6 +31,7 @@ public class Hardware implements Loggable {
     public Servo turret1, turret2;
     public Servo hood;
     public Limelight3A limelight;
+    public Servo ramp;
 
     public Servo cameraPitch;
 
@@ -52,6 +53,7 @@ public class Hardware implements Loggable {
             transfer1 = new Motor<DcMotorEx>(Setup.HardwareNames.TRANSFER_MOTOR1);
             transfer2 = new Motor<DcMotorEx>(Setup.HardwareNames.TRANSFER_MOTOR2);
             gate = new Servo(Setup.HardwareNames.GATE_SERVO);
+            ramp = new Servo(Setup.HardwareNames.RAMP_SERVO);
         }
         if (Setup.Connected.TURRETSUBSYSTEM) {
             launcher = new EncodedMotor<DcMotorEx>(Setup.HardwareNames.LAUNCHER_MOTOR);

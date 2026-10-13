@@ -32,15 +32,13 @@ public class MainTele extends CommandOpMode implements Loggable {
     public DriverController controlsDriver;
     public Hardware hardware;
     private Limelight3A limelight;
-    private PanelsTelemetry panelsTelemetry;
-    TelemetryManager ptel;
+    public TelemetryManager ptel;
 
     @Override
     public void uponInit() {
         hardware = new Hardware(hardwareMap);
         robot = new Robot(hardware, Alliance.RED, StartingPosition.Unspecified);
         // controlsOperator = new OperatorController(codriverGamepad, robot);
-        panelsTelemetry = PanelsTelemetry.INSTANCE;
         robot.follower.setPose(new Pose(6.75, 6.75, 0)); // temporary starting pos for now
         // limelight = hardwareMap.get(Limelight3A.class, Setup.HardwareNames.LIMELIGHT);
         controlsDriver = new DriverController(driverGamepad, robot);
@@ -87,6 +85,10 @@ public class MainTele extends CommandOpMode implements Loggable {
     @Override
     public void runLoop() {
         robot.follower.update();
+       // ptel.addData("targetvelo", TurretSubsystem.targetVelo);
+       // ptel.addData("currentvelo", TurretSubsystem.currentVelo);
+      //  ptel.addData("Err", TurretSubsystem.error);
+       // ptel.update();
     }
 
     @Override

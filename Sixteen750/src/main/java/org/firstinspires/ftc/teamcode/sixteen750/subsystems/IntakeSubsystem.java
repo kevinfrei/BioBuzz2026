@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.technototes.library.command.CommandScheduler;
 import com.technototes.library.hardware.motor.Motor;
 import com.technototes.library.hardware.servo.Servo;
+import com.technototes.library.logger.Log;
 import com.technototes.library.logger.Loggable;
 import com.technototes.library.subsystem.Subsystem;
 import org.firstinspires.ftc.teamcode.sixteen750.Hardware;
@@ -26,12 +27,17 @@ public class IntakeSubsystem implements Loggable, Subsystem {
     public static double BLOCK_POSITION = 0.53;
 
     public static double FIRE_POSITION = 0.3;
-
+    public static double RAMP_UP_POS = 0.5;
+    public static double RAMP_DOWN_POS = 0;
+    @Log.Number(name = "ramptestpos")
+    public static double manualRampPos = 0.5;
+    @Log.Number(name = "rampautpos")
+    public static double rampAutoPos = 0.2;
     boolean hasHardware;
 
     Motor<DcMotorEx> _intake;
     Motor<DcMotorEx> _transfer1, _transfer2;
-    Servo _gate;
+    Servo _gate, _ramp;
 
     public IntakeSubsystem(Hardware h) {
         hasHardware = Setup.Connected.INTAKESUBSYSTEM;
@@ -41,6 +47,7 @@ public class IntakeSubsystem implements Loggable, Subsystem {
             _transfer1 = h.transfer1;
             _transfer2 = h.transfer2;
             _gate = h.gate;
+            _ramp = h.ramp;
             CommandScheduler.register(this);
             _intake.setDirection(DcMotorSimple.Direction.FORWARD);
             _transfer1.setDirection(DcMotorSimple.Direction.FORWARD);
@@ -91,9 +98,31 @@ public class IntakeSubsystem implements Loggable, Subsystem {
     public void GateClose() {
         setGatePosition(BLOCK_POSITION);
     }
+    public void RampIncrease() {
+        manualRampPos = manualRampPos + 0.01;
+    }
+    public void RampDecrease() {
+        manualRampPos = manualRampPos - 0.01;
+    }
+    public void RampUp() {
+        setRampPosition(RAMP_UP_POS);
+    }
+
+    public void RampDown() {
+        setRampPosition(RAMP_DOWN_POS);
+    }
+    public void RampAutoTest() {
+        setRampPosition(rampAutoPos);
+    }
+    public double getRampAutoPos() {
+        double RampAutoPos = manualRampPos;
+        return RampAutoPos;
+    }
+
 
     @Override
     public void periodic() {
+        rampAutoPos = getRampAutoPos();
         // Add an item to the array and update the index for the next update to the 'circular' array
     }
 
@@ -125,6 +154,11 @@ public class IntakeSubsystem implements Loggable, Subsystem {
     private void setGatePosition(double pos) {
         if (hasHardware) {
             _gate.setPosition(pos);
+        }
+    }
+    private void setRampPosition(double pos) {
+        if (hasHardware) {
+            _ramp.setPosition(pos);
         }
     }
 }

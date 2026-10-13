@@ -46,18 +46,18 @@ public class tourretvalidator extends CommandOpMode {
         super.runLoop();
 
         telemetry.addLine("Move right stick to rotate turret");
-        double pos = (this.gamepad1.right_stick_x + 1.25) / 2.5;
+        double pos = .5;
         rotatingservo2.setPosition(pos);
         rotatingservo1.setPosition(pos);
 
         telemetry.addLine("Move up and down");
-        double hoodpos = (this.gamepad1.left_stick_y + 1) / 2;
+        double hoodpos = 0.5;
         hoodservo.setPosition(hoodpos);
         telemetry.addData("hoodpos", hoodpos);
 
         telemetry.addLine("Increase velocity");
         double po = ((this.gamepad1.left_stick_x + 1) / 2) * -1;
-        launcher.setPower(-.8);
+        launcher.setPower(0);
         telemetry.addData("launcher speed", launcher.getPower());
         double velo = this.gamepad1.right_trigger;
         intake.setPower(velo);
