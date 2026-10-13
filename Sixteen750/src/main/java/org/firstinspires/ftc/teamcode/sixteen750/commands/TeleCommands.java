@@ -45,20 +45,11 @@ public class TeleCommands {
     public static Command GateClose(Robot r) {
         return Command.create(r.intakeSubsystem::GateClose);
     }
-    public static Command RampIncrease(Robot r) {
-        return Command.create(r.intakeSubsystem::RampIncrease);
-    }
-    public static Command RampDecrease(Robot r) {
-        return Command.create(r.intakeSubsystem::RampDecrease);
-    }
     public static Command RampUp(Robot r) {
         return Command.create(r.intakeSubsystem::RampUp);
     }
     public static Command RampDown(Robot r) {
         return Command.create(r.intakeSubsystem::RampDown);
-    }
-    public static Command RampAuto(Robot r) {
-        return Command.create(r.intakeSubsystem::RampAutoTest);
     }
 
     public static Command TrackHive(Robot r) {

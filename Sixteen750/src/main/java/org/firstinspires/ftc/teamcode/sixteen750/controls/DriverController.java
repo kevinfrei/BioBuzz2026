@@ -32,9 +32,6 @@ public class DriverController implements Loggable {
     public CommandButton flywheelButton;
     public CommandButton intakeTrigger;
     public CommandButton rampTrigger;
-    public CommandButton rampUpButton;
-    public CommandButton rampDownButton;
-    public CommandButton rampAutoButton;
     public CommandButton veloUpButton;
     public CommandButton veloDownButton;
     public CommandButton hoodUpButton;
@@ -82,9 +79,6 @@ public class DriverController implements Loggable {
         relocButton = gamepad.ps_share;
         trackButton = gamepad.ps_triangle;
         hoodButton = gamepad.ps_cross;
-        rampAutoButton = gamepad.dpadLeft;
-        rampUpButton = gamepad.dpadUp;
-        rampDownButton = gamepad.dpadDown;
     }
 
     public void bindDriveControls() {
@@ -109,16 +103,13 @@ public class DriverController implements Loggable {
         trackButton.whileInverseToggled(TeleCommands.TrackHive(robot));
         flywheelButton.whileInverseToggled(TeleCommands.Launch(robot));
         hoodButton.whileInverseToggled(TeleCommands.AutoHood(robot));
-       // veloUpButton.whenPressed(TeleCommands.IncreaseFlywheel(robot));
-       // veloDownButton.whenPressed(TeleCommands.DecreaseFlywheel(robot));
-       // hoodUpButton.whenPressed(TeleCommands.IncreaseHood(robot));
-       // hoodDownButton.whenPressed(TeleCommands.DecreaseHood(robot));
+        veloUpButton.whenPressed(TeleCommands.IncreaseFlywheel(robot));
+        veloDownButton.whenPressed(TeleCommands.DecreaseFlywheel(robot));
+        hoodUpButton.whenPressed(TeleCommands.IncreaseHood(robot));
+        hoodDownButton.whenPressed(TeleCommands.DecreaseHood(robot));
     }
 
     public void bindIntakeControls() {
-        rampUpButton.whenPressed(TeleCommands.RampIncrease(robot));
-        rampDownButton.whenPressed(TeleCommands.RampDecrease(robot));
-        rampAutoButton.whileInverseToggled(TeleCommands.RampAuto(robot));
         rampTrigger.whenPressedReleased(TeleCommands.RampDown(robot), TeleCommands.RampUp(robot));
         spitButton.whenPressed(TeleCommands.Spit(robot));
         spitButton.whenReleased(TeleCommands.Reject(robot));

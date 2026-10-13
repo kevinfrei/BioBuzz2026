@@ -29,10 +29,6 @@ public class IntakeSubsystem implements Loggable, Subsystem {
     public static double FIRE_POSITION = 0.3;
     public static double RAMP_UP_POS = 0.5;
     public static double RAMP_DOWN_POS = 0;
-    @Log.Number(name = "ramptestpos")
-    public static double manualRampPos = 0.5;
-    @Log.Number(name = "rampautpos")
-    public static double rampAutoPos = 0.2;
     boolean hasHardware;
 
     Motor<DcMotorEx> _intake;
@@ -98,12 +94,7 @@ public class IntakeSubsystem implements Loggable, Subsystem {
     public void GateClose() {
         setGatePosition(BLOCK_POSITION);
     }
-    public void RampIncrease() {
-        manualRampPos = manualRampPos + 0.01;
-    }
-    public void RampDecrease() {
-        manualRampPos = manualRampPos - 0.01;
-    }
+
     public void RampUp() {
         setRampPosition(RAMP_UP_POS);
     }
@@ -111,18 +102,9 @@ public class IntakeSubsystem implements Loggable, Subsystem {
     public void RampDown() {
         setRampPosition(RAMP_DOWN_POS);
     }
-    public void RampAutoTest() {
-        setRampPosition(rampAutoPos);
-    }
-    public double getRampAutoPos() {
-        double RampAutoPos = manualRampPos;
-        return RampAutoPos;
-    }
-
 
     @Override
     public void periodic() {
-        rampAutoPos = getRampAutoPos();
         // Add an item to the array and update the index for the next update to the 'circular' array
     }
 

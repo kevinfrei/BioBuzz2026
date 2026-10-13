@@ -55,6 +55,7 @@ public class MainTele extends CommandOpMode implements Loggable {
             //         TeleCommand aas.Intake(robot.intakeSubsystem),
             //         OpModeState.RUN
             // );
+            ptel = PanelsTelemetry.INSTANCE.getTelemetry();
         }
         if (Setup.Connected.LIMELIGHTSUBSYSTEM) {
             limelight = hardware.limelight;
@@ -70,7 +71,7 @@ public class MainTele extends CommandOpMode implements Loggable {
              */
             limelight.start();
 
-            ptel = PanelsTelemetry.INSTANCE.getTelemetry();
+
         }
         if (Setup.Connected.TURRETSUBSYSTEM) {
             // CommandScheduler.register(robot.launcherSubsystem);
@@ -85,10 +86,10 @@ public class MainTele extends CommandOpMode implements Loggable {
     @Override
     public void runLoop() {
         robot.follower.update();
-       // ptel.addData("targetvelo", TurretSubsystem.targetVelo);
-       // ptel.addData("currentvelo", TurretSubsystem.currentVelo);
-      //  ptel.addData("Err", TurretSubsystem.error);
-       // ptel.update();
+       ptel.addData("targetvelo", TurretSubsystem.targetVelo);
+       ptel.addData("currentvelo", TurretSubsystem.currentVelo);
+       ptel.addData("Err", TurretSubsystem.error);
+       ptel.update();
     }
 
     @Override
