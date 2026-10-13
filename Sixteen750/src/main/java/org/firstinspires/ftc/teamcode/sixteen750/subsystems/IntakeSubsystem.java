@@ -18,17 +18,17 @@ public class IntakeSubsystem implements Loggable, Subsystem {
     public static double INTAKE_VELOCITY = 1;
 
     public static double REJECT_VELOCITY = -0.4;
-
-    public static double HOLD_VELOCITY1 = 0.55;
-    public static double HOLD_VELOCITY2 = 0.65;
-
-    public static double FEED_VELOCITY = 0.95;
-
+    public static double TRANSFER1_HOLD_VELOCITY = 0.65;
+    public static double TRANSFER2_HOLD_VELOCITY = 0.5;
+    public static double INTAKE_FEED_VELOCITY = 0.6;
+    public static double TRANSFER1_FEED_VELOCITY = 0.95;
+    public static double TRANSFER2_FEED_VELOCITY = 0.92;
     public static double BLOCK_POSITION = 0.53;
+    public static double REGURGITATE_VELOCITY = -0.7;
 
     public static double FIRE_POSITION = 0.3;
-    public static double RAMP_UP_POS = 0.5;
-    public static double RAMP_DOWN_POS = 0;
+    public static double RAMP_UP_POS = 0.28;
+    public static double RAMP_DOWN_POS = 0.965;
     boolean hasHardware;
 
     Motor<DcMotorEx> _intake;
@@ -62,8 +62,9 @@ public class IntakeSubsystem implements Loggable, Subsystem {
     }
 
     public void Feed() {
-        setIntakePower(-REJECT_VELOCITY); // Javier: minus reject? does that mean ingest, or does that mean that there's a sign problem?
-        setTransferPower(FEED_VELOCITY);
+        setIntakePower(INTAKE_FEED_VELOCITY); // Javier: minus reject? does that mean ingest, or does that mean that there's a sign problem?
+        setTransfer1Power(TRANSFER1_FEED_VELOCITY);
+        setTransfer2Power(TRANSFER2_FEED_VELOCITY);
         setGatePosition(FIRE_POSITION);
     }
 
@@ -71,14 +72,14 @@ public class IntakeSubsystem implements Loggable, Subsystem {
         setIntakePower(REJECT_VELOCITY);
     }
 
-    public void Spit() {
-        setIntakePower(-FEED_VELOCITY);
-        setTransferPower(-FEED_VELOCITY);
+    public void Regurgitate() {
+        setIntakePower(REGURGITATE_VELOCITY);
+        setTransferPower(REGURGITATE_VELOCITY);
     }
 
     public void Hold() {
-        setTransfer1Power(HOLD_VELOCITY2);
-        setTransfer2Power(HOLD_VELOCITY1);
+        setTransfer1Power(TRANSFER1_HOLD_VELOCITY);
+        setTransfer2Power(TRANSFER2_HOLD_VELOCITY);
         setGatePosition(BLOCK_POSITION);
     }
 

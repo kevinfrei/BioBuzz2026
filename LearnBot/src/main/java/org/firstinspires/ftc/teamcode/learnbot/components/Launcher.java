@@ -28,7 +28,7 @@ public class Launcher {
     public static class Config {
 
         // This should be the motor that has the encoder
-        public static String MotorName1 = "launcher1";
+        public static String MotorName1 = "launcher";
 
         // Set this to null if there's only one motor
         public static String MotorName2 = "launcher2-odo1";
@@ -409,7 +409,7 @@ public class Launcher {
         double dynamicFriction = 0.001;
         double velocityConstant = 0;
 
-        double frictionStep = 0.0002;
+        double frictionStep = 0.0004;
         MovingStatistics velocityConstantStats = new MovingStatistics(50);
         double vel = 0;
         double peakVel = 0;

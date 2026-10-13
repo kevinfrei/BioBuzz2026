@@ -31,7 +31,7 @@ public class TeleCommands {
     }
 
     public static Command Spit(Robot r) {
-        return Command.create(r.intakeSubsystem::Spit);
+        return Command.create(r.intakeSubsystem::Regurgitate);
     }
 
     public static Command Hold(Robot r) {

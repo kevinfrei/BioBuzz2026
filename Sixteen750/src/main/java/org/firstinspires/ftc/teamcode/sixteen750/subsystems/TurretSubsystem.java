@@ -31,8 +31,8 @@ public class TurretSubsystem implements Loggable, Subsystem {
 
     public static double TARGET_SWITCH_THRESHOLD = 72;
     public static double TURRET_CENTER = 0.5;
-    public static double TURRET_MIN = 0.05;
-    public static double TURRET_MAX = 0.95;
+    public static double TURRET_MIN = 0.03;
+    public static double TURRET_MAX = 0.97;
     // @Log.Number (name = "target servo Pos")
     public static double targetServoPos = 0;
 
@@ -102,14 +102,14 @@ public class TurretSubsystem implements Loggable, Subsystem {
     // It's output is a power value in the -1 to +1 range.
     // So, P is probably in the range of .001-ish.
     // For a velocity-targeting PIDF, we probably want an I value, not a D value.
-    public static PIDFCoefficients launchPID = new PIDFCoefficients(0.003, 0.00015, 0.0, 0); // 10/3/26 added a p value seems pretty decent
+    public static PIDFCoefficients launchPID = new PIDFCoefficients(0.00012, 0.000003, 0.0, 0); // 10/3/26 added a p value seems pretty decent
     private Hardware hardware;
     // Stuff used for the Feed Forward function.
     // This one is highly variable, based on the amount of friction in the system
 
-    public static double kStaticFriction = 0.4938; // measured 10/12
+    public static double kStaticFriction = 0.4483; // measured 10/12
 
-    public static double kDynamicFriction = 0.4934; // measured 10/12
+    public static double kDynamicFriction = 0.4474; // measured 10/12
 
     // This one tends to be somewhere between 0.0035 to 0.005 or so.
     public static double kVelocityConstant = 0.0043;
