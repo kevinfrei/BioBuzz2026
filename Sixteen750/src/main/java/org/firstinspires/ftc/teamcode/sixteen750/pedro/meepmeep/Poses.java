@@ -33,7 +33,10 @@ public class Poses {
         public static double Launch2Head = Math.toRadians(270);
         public static Pose Launch2Ctrl1 = new Pose(48, 24);
         public static Pose Launch2Ctrl2 = new Pose(22, 132);
-        public static Pose Park = new Pose(16, 119);
-        public static double ParkHead = Math.toRadians(180);
+        public static Pose ParkL = new Pose(16, 119);
+        public static Pose ParkR = new Pose(11, 94);
+        public static Pose ParkRControl = new Pose(21, 51);
+        public static double ParkHeadR = Math.toRadians(270);
+        public static double ParkHeadL = Math.toRadians(180);
     }
 }

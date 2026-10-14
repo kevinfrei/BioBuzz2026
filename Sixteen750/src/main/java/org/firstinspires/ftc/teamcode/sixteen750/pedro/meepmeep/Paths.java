@@ -43,7 +43,15 @@ public class Paths {
         );
     }
 
-    public Path Launch2ToPark() {
-        return line(p.Launch2, p.Park).constant(p.ParkHead);
+    public Path GardenIntToLaunch1() {
+        return line(p.GardenInt, p.Launch1).constant(p.Launch1Head);
+    }
+
+    public Path Launch2ToParkL() {
+        return line(p.Launch2, p.ParkL).constant(p.ParkHeadL);
+    }
+
+    public Path Launch1ToParkR() {
+        return curve(p.Launch1, p.ParkRControl, p.ParkR).constant(p.ParkHeadR);
     }
 }

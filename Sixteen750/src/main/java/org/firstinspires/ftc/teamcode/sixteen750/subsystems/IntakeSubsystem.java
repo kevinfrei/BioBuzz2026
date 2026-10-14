@@ -21,8 +21,8 @@ public class IntakeSubsystem implements Loggable, Subsystem {
     public static double TRANSFER1_HOLD_VELOCITY = 0.65;
     public static double TRANSFER2_HOLD_VELOCITY = 0.5;
     public static double INTAKE_FEED_VELOCITY = 0.6;
-    public static double TRANSFER1_FEED_VELOCITY = 0.95;
-    public static double TRANSFER2_FEED_VELOCITY = 0.92;
+    public static double TRANSFER1_FEED_VELOCITY = 1;
+    public static double TRANSFER2_FEED_VELOCITY = 0.88;
     public static double BLOCK_POSITION = 0.53;
     public static double REGURGITATE_VELOCITY = -0.7;
 
@@ -139,6 +139,7 @@ public class IntakeSubsystem implements Loggable, Subsystem {
             _gate.setPosition(pos);
         }
     }
+
     private void setRampPosition(double pos) {
         if (hasHardware) {
             _ramp.setPosition(pos);

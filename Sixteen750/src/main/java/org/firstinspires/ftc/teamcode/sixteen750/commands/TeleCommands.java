@@ -45,9 +45,11 @@ public class TeleCommands {
     public static Command GateClose(Robot r) {
         return Command.create(r.intakeSubsystem::GateClose);
     }
+
     public static Command RampUp(Robot r) {
         return Command.create(r.intakeSubsystem::RampUp);
     }
+
     public static Command RampDown(Robot r) {
         return Command.create(r.intakeSubsystem::RampDown);
     }
@@ -77,6 +79,6 @@ public class TeleCommands {
     }
 
     public static Command Launch(Robot r) {
-        return Command.create(r.turretsubsystem::ManualLaunch);
+        return Command.create(r.turretsubsystem::Launch);
     }
 }
