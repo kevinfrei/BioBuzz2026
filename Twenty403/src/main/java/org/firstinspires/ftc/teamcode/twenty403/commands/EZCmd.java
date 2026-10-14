@@ -34,5 +34,9 @@ public class EZCmd {
         public static Command Eject(IntakeSubsystem intake) {
             return Command.create(intake::Reject);
         }
+
+        public static Command Stop(IntakeSubsystem intake) {
+            return Command.create(intake::Stop);
+        }
     }
 }

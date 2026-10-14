@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.twenty403.Setup;
 @Configurable
 public class LauncherSubsystem implements Loggable, Subsystem {
 
-    public static double TARGET_MOTOR_VELOCITY = 1530; //.58; // 0.5 // /1.0
+    public static double TARGET_MOTOR_VELOCITY = 1350; //.58; // 0.5 // /1.0
 
     boolean hasHardware;
     public static EncodedMotor<DcMotorEx> launchMotor;

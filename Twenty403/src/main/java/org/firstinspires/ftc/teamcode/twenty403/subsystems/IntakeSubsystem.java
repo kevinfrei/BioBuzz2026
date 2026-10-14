@@ -5,19 +5,24 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.technototes.library.hardware.motor.CRServo;
 import com.technototes.library.hardware.motor.Motor;
+import com.technototes.library.logger.Log;
+import com.technototes.library.logger.Loggable;
 import com.technototes.library.subsystem.Subsystem;
 import org.firstinspires.ftc.teamcode.twenty403.Hardware;
 import org.firstinspires.ftc.teamcode.twenty403.Setup;
 
 @Configurable
-public class IntakeSubsystem implements Subsystem {
+public class IntakeSubsystem implements Subsystem, Loggable {
 
     public static double INTAKE_SERVO_SPEED = 1;
     public static double REJECT_SERVO_SPEED = -0.5;
 
-    public static double INTAKE_MOTOR_SPEED = 1;
+    public static double INTAKE_MOTOR_SPEED = 0.5;
 
-    public static double REJECT_MOTOR_SPEED = -1;
+    public static double REJECT_MOTOR_SPEED = -0.5;
+
+    @Log.Number(name = "intake speed")
+    public double intakepower;
 
     public IntakeSubsystem(Hardware h) {
         hasHardware = Setup.Connected.INTAKE;
@@ -71,6 +76,7 @@ public class IntakeSubsystem implements Subsystem {
     }
 
     private void setIntakeMotor(double power) {
+        intakepower = power;
         if (hasHardware) {
             _intakemotor.setPower(power);
         }

@@ -44,15 +44,14 @@ public class DrivebaseSubsystem implements Subsystem, Loggable {
     public void periodic() {
         if (!follower.isBusy()) {
             Pose pose = follower.pose();
-            follower.manual(
-                ManualDrive.fieldCentric(
+            follower.manual(fwdJoystick, strafeJoystick, rotateJoystick);
+            /* ManualDrive.fieldCentric(
                     fwdJoystick,
                     strafeJoystick,
                     rotateJoystick,
                     pose.heading(),
                     headingOffset
-                )
-            );
+                )*/
         }
         follower.update();
     }

@@ -23,6 +23,7 @@ public class DriverController {
     public CommandButton launch;
     public CommandButton intake;
     public CommandButton spitOut;
+    public CommandButton stopintake;
     public CommandButton launchFaster;
     public CommandButton launchSlower;
 
@@ -53,6 +54,7 @@ public class DriverController {
         launch = gamepad.rightTrigger.getAsButton();
         intake = gamepad.leftTrigger.getAsButton();
         spitOut = gamepad.leftBumper;
+        stopintake = gamepad.dpadLeft;
         launchFaster = gamepad.dpadUp;
         launchSlower = gamepad.dpadDown;
     }
@@ -74,6 +76,7 @@ public class DriverController {
         if (Setup.Connected.INTAKE) {
             intake.whenPressed(EZCmd.PollenIntake.Intake(robot.intakeSubsystem));
             spitOut.whenPressed(EZCmd.PollenIntake.Eject(robot.intakeSubsystem));
+            stopintake.whenPressed(EZCmd.PollenIntake.Stop(robot.intakeSubsystem));
         }
     }
 
