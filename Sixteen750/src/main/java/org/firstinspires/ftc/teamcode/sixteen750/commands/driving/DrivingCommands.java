@@ -13,8 +13,11 @@ public class DrivingCommands {
         return pd::SetSnailSpeed;
     }
 
-    public static Command ResetPosition(PedroDriver pd) {
-        return pd::ResetPosition;
+    public static Command ResetPosition1(PedroDriver pd) {
+        return pd::ResetPosition1;
+    }
+    public static Command ResetPosition2(PedroDriver pd) {
+        return pd::ResetPosition2;
     }
 
     public static Command TurboDriving(PedroDriver pd) {

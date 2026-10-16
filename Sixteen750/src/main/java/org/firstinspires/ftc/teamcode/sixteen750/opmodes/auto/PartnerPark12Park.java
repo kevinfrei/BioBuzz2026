@@ -42,33 +42,24 @@ public class PartnerPark12Park extends CommandOpMode {
         panelsTelemetry = PanelsTelemetry.INSTANCE;
         robot.follower.setPose(Poses.StartPoses.getStart());
         CommandScheduler.scheduleForState(
-            new ParallelCommandGroup(
-                t.Launch(robot),
-                t.TrackHive(robot),
-                t.AutoHood(robot)
-            ).alongWith(
                 new SequentialCommandGroup(
                     new PedroPathCommand(robot.follower, p.StartToPartnerPark()),
                     new WaitCommand(1),
                     new PedroPathCommand(robot.follower, p.PartnerParkToLaunch1()),
-                    new WaitCommand(3),
-                    t.Feed(robot),
-                    new WaitCommand(1.2),
+                    new WaitCommand(.5),
+                    a.Fire(robot),
                     new PedroPathCommand(robot.follower, p.Launch1ToGardenPreInt()).alongWith(
                         t.Intake(robot)
                     ),
-                    new WaitCommand(2),
-
-                    new PedroPathCommand(robot.follower, p.GardenPreIntToGardenInt()),
-                    new WaitCommand(1.5),
-                    new PedroPathCommand(robot.follower, p.GardenIntToLaunch1()),
                     new WaitCommand(1),
-                    t.Feed(robot),
-                    new WaitCommand(1.2),
+                    new PedroPathCommand(robot.follower, p.GardenPreIntToGardenInt()).withTimeout(2),
+                    new WaitCommand(2),
+                    new PedroPathCommand(robot.follower, p.GardenIntToLaunch1()),
+                    new WaitCommand(.5),
+                    a.Fire(robot),
                     new PedroPathCommand(robot.follower, p.Launch1ToParkR()),
                     CommandScheduler::terminateOpMode
-                )
-            ),
+                ),
             OpModeState.RUN
         );
     }
@@ -76,5 +67,8 @@ public class PartnerPark12Park extends CommandOpMode {
     @Override
     public void runLoop() {
         robot.follower.update();
+        robot.turretsubsystem.Launch();
+        robot.turretsubsystem.setTurretTarget();
+        robot.turretsubsystem.setHoodAutoPos();
     }
 }

@@ -26,7 +26,8 @@ public class DriverController implements Loggable {
     public CommandButton spitButton;
     public CommandButton gateButton;
     public CommandButton override;
-    public CommandButton relocButton;
+    public CommandButton reloc1Button;
+    public CommandButton reloc2Button;
     public CommandButton holdButton;
     public CommandButton trackButton;
     public CommandButton flywheelButton;
@@ -60,7 +61,7 @@ public class DriverController implements Loggable {
     }
 
     public void AssignNamedControllerButton() {
-        resetGyroButton = gamepad.ps_options;
+        //resetGyroButton = gamepad.ps_options;
         driveLeftStick = gamepad.leftStick;
         driveRightStick = gamepad.rightStick;
         intakeTrigger = gamepad.rightTrigger.getAsButton();
@@ -76,7 +77,8 @@ public class DriverController implements Loggable {
         spitButton = gamepad.ps_square;
         // gateButton = gamepad.ps_cross;
         // holdButton = gamepad.ps_circle;
-        relocButton = gamepad.ps_share;
+        reloc1Button = gamepad.ps_share;
+        reloc2Button = gamepad.ps_options;
         trackButton = gamepad.ps_triangle;
         hoodButton = gamepad.ps_cross;
     }
@@ -95,8 +97,9 @@ public class DriverController implements Loggable {
             DrivingCommands.NormalDriving(pedroDriver)
         );
 
-        resetGyroButton.whenPressed(DrivingCommands.ResetGyro(pedroDriver));
-        relocButton.whenPressed(DrivingCommands.ResetPosition(pedroDriver));
+       // resetGyroButton.whenPressed(DrivingCommands.ResetGyro(pedroDriver));
+        reloc1Button.whenPressed(DrivingCommands.ResetPosition1(pedroDriver));
+        reloc2Button.whenPressed(DrivingCommands.ResetPosition2(pedroDriver));
     }
 
     public void bindLaunchControls() {

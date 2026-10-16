@@ -13,20 +13,20 @@ import com.pedropathing.paths.interpolator.Interpolator;
 public class Paths {
 
     Poses.StartPoses sp = new Poses.StartPoses();
-    Poses.Push12ParkPoses p = new Poses.Push12ParkPoses();
 
     public static Follower follower;
     public Path Launch1ToGardenPreInt;
     public Path GardenPreIntToGardenInt;
     public Path GardenIntToLaunch2;
     public Path Launch2ToPark;
+    Poses.Push1TipParkPoses p = new Poses.Push1TipParkPoses();
 
     public Path StartToPartnerPark() {
         return line(sp.Start, p.PartnerPark).constant(p.PartnerParkHead);
     }
 
     public Path PartnerParkToLaunch1() {
-        return line(p.PartnerPark, p.Launch1).linear(p.PartnerParkHead, p.Launch1Head);
+        return line(p.PartnerPark, p.Launch1).constant(p.Launch1Head);
     }
 
     public Path Launch1ToGardenPreInt() {
@@ -52,6 +52,22 @@ public class Paths {
     }
 
     public Path Launch1ToParkR() {
-        return curve(p.Launch1, p.ParkRControl, p.ParkR).constant(p.ParkHeadR);
+        return curve(p.Launch1, p.ParkRCtrl, p.ParkR).constant(p.ParkHeadR);
+    }
+    Poses.Solo1TipParkPoses p1 = new Poses.Solo1TipParkPoses();
+    public Path SStartToLaunch() {
+        return line(sp.SideStart, p1.Launch).constant(p1.LaunchHead);
+    }
+    public Path SLaunchToGardenPreInt() {
+        return line(p1.Launch, p1.GardenPreInt).constant(p1.GardenIntHead);
+    }
+    public Path SGardenPreIntToGardenInt() {
+        return line(p1.GardenPreInt, p1.GardenInt).constant(p1.GardenIntHead);
+    }
+    public Path SGardenIntToLaunch() {
+        return line(p1.GardenInt, p1.Launch).constant(p1.LaunchHead);
+    }
+    public Path SLaunchToPark() {
+        return curve(p1.Launch, p1.ParkCtrl, p1.Park).constant(p1.ParkHead);
     }
 }
