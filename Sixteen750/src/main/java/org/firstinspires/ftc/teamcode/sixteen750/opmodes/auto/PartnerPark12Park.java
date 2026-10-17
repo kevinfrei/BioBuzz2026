@@ -42,24 +42,27 @@ public class PartnerPark12Park extends CommandOpMode {
         panelsTelemetry = PanelsTelemetry.INSTANCE;
         robot.follower.setPose(Poses.StartPoses.getStart());
         CommandScheduler.scheduleForState(
-                new SequentialCommandGroup(
-                    new PedroPathCommand(robot.follower, p.StartToPartnerPark()),
-                    new WaitCommand(1),
-                    new PedroPathCommand(robot.follower, p.PartnerParkToLaunch1()),
-                    new WaitCommand(.5),
-                    a.Fire(robot),
-                    new PedroPathCommand(robot.follower, p.Launch1ToGardenPreInt()).alongWith(
-                        t.Intake(robot)
-                    ),
-                    new WaitCommand(1),
-                    new PedroPathCommand(robot.follower, p.GardenPreIntToGardenInt()).withTimeout(2),
-                    new WaitCommand(2),
-                    new PedroPathCommand(robot.follower, p.GardenIntToLaunch1()),
-                    new WaitCommand(.5),
-                    a.Fire(robot),
-                    new PedroPathCommand(robot.follower, p.Launch1ToParkR()),
-                    CommandScheduler::terminateOpMode
+            new SequentialCommandGroup(
+                new PedroPathCommand(robot.follower, p.StartToPartnerPark()),
+                new WaitCommand(1),
+                new PedroPathCommand(robot.follower, p.PartnerParkToLaunch1()),
+                new WaitCommand(.5),
+                a.Fire(robot),
+                new PedroPathCommand(robot.follower, p.Launch1ToGardenPreInt()).alongWith(
+                    t.Intake(robot)
                 ),
+                new WaitCommand(1),
+                new PedroPathCommand(robot.follower, p.GardenPreIntToGardenInt()).withTimeout(2),
+                new WaitCommand(2),
+                new PedroPathCommand(robot.follower, p.GardenIntToLaunch1()).alongWith(
+                    t.Reject(robot)
+                ),
+                new WaitCommand(.5),
+                a.Fire(robot),
+                new PedroPathCommand(robot.follower, p.Launch1ToParkR()),
+                t.GateClose(robot),
+                CommandScheduler::terminateOpMode
+            ),
             OpModeState.RUN
         );
     }

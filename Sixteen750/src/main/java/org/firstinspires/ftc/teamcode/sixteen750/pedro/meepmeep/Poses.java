@@ -17,8 +17,12 @@ public class Poses {
         public static Pose getStart() {
             return new Pose(7, 64, Math.toRadians(0));
         }
-        public static Pose SideStart = new Pose (31,7);
-        public static Pose getSideStart() {return new Pose(31,7,Math.toRadians(90));}
+
+        public static Pose SideStart = new Pose(31, 7);
+
+        public static Pose getSideStart() {
+            return new Pose(31, 7, Math.toRadians(90));
+        }
     }
 
     @Configurable
@@ -29,7 +33,7 @@ public class Poses {
         public static Pose Launch1 = new Pose(56, 18);
         public static double Launch1Head = Math.toRadians(90);
         public static Pose GardenPreInt = new Pose(7, 22);
-        public static Pose GardenInt = new Pose(7, 9.2);
+        public static Pose GardenInt = new Pose(8, 7.7);
         public static double GardenIntHead = Math.toRadians(270);
         public static Pose Launch2 = new Pose(56, 125);
         public static double Launch2Head = Math.toRadians(270);
@@ -38,9 +42,10 @@ public class Poses {
         public static Pose ParkL = new Pose(16, 119);
         public static Pose ParkR = new Pose(11, 94);
         public static Pose ParkRCtrl = new Pose(21, 51);
-        public static double ParkHeadR = Math.toRadians(270);
-        public static double ParkHeadL = Math.toRadians(180);
+        public static double ParkHeadR = Math.toRadians(0);
+        public static double ParkHeadL = Math.toRadians(0);
     }
+
     @Configurable
     public static class Solo1TipParkPoses {
 
@@ -49,8 +54,8 @@ public class Poses {
         public static Pose GardenPreInt = new Pose(22, 7);
         public static Pose GardenInt = new Pose(9, 7);
         public static double GardenIntHead = Math.toRadians(180);
-        public static Pose Park = new Pose(11,94);
-        public static Pose ParkCtrl = new Pose(21,51);
-        public static double ParkHead = Math.toRadians(90);
+        public static Pose Park = new Pose(0, 94);
+        public static Pose ParkCtrl = new Pose(21, 51);
+        public static double ParkHead = Math.toRadians(0);
     }
 }
