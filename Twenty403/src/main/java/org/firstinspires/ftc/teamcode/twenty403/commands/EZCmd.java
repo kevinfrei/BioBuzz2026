@@ -9,6 +9,10 @@ import org.firstinspires.ftc.teamcode.twenty403.subsystems.LauncherSubsystem;
 
 public class EZCmd {
 
+    public static Command Stop(LauncherSubsystem launcherSubsystem) {
+        return Command.create(Launcher::Stop);
+    }
+
     public static class Drive {
 
         public static Command ResetGyro(Follower follower) {
@@ -27,6 +31,12 @@ public class EZCmd {
         public static Command Stop(LauncherSubsystem launcher) {
             return Command.create(launcher::Stop);
         }
+
+        public static Command Reverse(LauncherSubsystem windmill) {
+            return Command.create(windmill::Reverse);
+        }
+
+        public static void Stop() {}
     }
 
     public static class PollenIntake {

@@ -21,6 +21,7 @@ public class DriverController {
     public Stick driveLeftStick, driveRightStick;
     public CommandButton resetGyroButton;
     public CommandButton launch;
+    public CommandButton reversewindmill;
     public CommandButton intake;
     public CommandButton spitOut;
     public CommandButton stopintake;
@@ -57,6 +58,7 @@ public class DriverController {
         stopintake = gamepad.dpadLeft;
         launchFaster = gamepad.dpadUp;
         launchSlower = gamepad.dpadDown;
+        reversewindmill = gamepad.ps_square;
     }
 
     public void bindDriveControls() {
@@ -70,6 +72,8 @@ public class DriverController {
         if (Setup.Connected.LAUNCHER) {
             launch.whenPressed(EZCmd.Launcher.Launch(robot.launcherSubsystem));
             launch.whenReleased(EZCmd.Launcher.Stop(robot.launcherSubsystem));
+            reversewindmill.whenPressed(EZCmd.Launcher.Reverse(robot.launcherSubsystem));
+            reversewindmill.whenReleased(EZCmd.Stop(robot.launcherSubsystem));
         }
     }
 

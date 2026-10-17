@@ -17,7 +17,8 @@ import org.firstinspires.ftc.teamcode.twenty403.Setup;
 public class LauncherSubsystem implements Loggable, Subsystem {
 
     public static double TARGET_MOTOR_VELOCITY = 1350; //.58; // 0.5 // /1.0
-    public static double WINDMILL_SPIN = -1;
+    public static double WINDMILL_SPIN = -0.15;
+    public static double REVERSE_WINDMILL = 0.15;
 
     boolean hasHardware;
     public static EncodedMotor<DcMotorEx> launchMotor;
@@ -45,6 +46,7 @@ public class LauncherSubsystem implements Loggable, Subsystem {
     public static double err;
 
     private boolean launching = false;
+    private boolean reverse = false;
 
     public LauncherSubsystem(Hardware h) {
         hasHardware = Setup.Connected.LAUNCHER;
@@ -87,6 +89,12 @@ public class LauncherSubsystem implements Loggable, Subsystem {
             setTargetSpeed(TARGET_MOTOR_VELOCITY);
         }
         launching = true;
+        reverse = false;
+    }
+
+    public void Reverse() {
+        reverse = true;
+        launching = false;
     }
 
     private void setWindmillPower(double power) {
@@ -102,6 +110,7 @@ public class LauncherSubsystem implements Loggable, Subsystem {
             setTargetSpeed(1370);
         }
         launching = true;
+        reverse = false;
     }
 
     public void IncreaseVelocity() {
@@ -128,6 +137,7 @@ public class LauncherSubsystem implements Loggable, Subsystem {
             setWindmillPower(0);
         }
         launching = false;
+        reverse = false;
     }
 
     public void setTargetSpeed(double speed) {
@@ -141,7 +151,7 @@ public class LauncherSubsystem implements Loggable, Subsystem {
     }
 
     private void setMotorPower(double pow) {
-        double power = Math.clamp(pow, -0.5, 0.5);
+        double power = Math.clamp(pow, -0.53, 0.53);
         if (launchMotor != null) {
             launchMotor.setPower(power);
         }
@@ -162,9 +172,9 @@ public class LauncherSubsystem implements Loggable, Subsystem {
         power = launchMotor.getPower();
         if (launching /*&& Math.abs(MOTOR_VELOCITY- TARGET_MOTOR_VELOCITY) < 100.0*/) {
             setWindmillPower(WINDMILL_SPIN);
-        } else {
-            setWindmillPower(0.0);
-        }
-        // launcherP.f =  SPIN_F_SCALE * target + SPIN_VOLT_COMP * Math.min(PEAK_VOLTAGE, Hardware.voltage());
+        } else if (reverse) {
+            setWindmillPower(-WINDMILL_SPIN);
+        } else setWindmillPower(0.0);
     }
+    // launcherP.f =  SPIN_F_SCALE * target + SPIN_VOLT_COMP * Math.min(PEAK_VOLTAGE, Hardware.voltage());
 }
