@@ -69,6 +69,7 @@ public class DriverController {
     public void bindLaunchControls() {
         if (Setup.Connected.LAUNCHER) {
             launch.whenPressed(EZCmd.Launcher.Launch(robot.launcherSubsystem));
+            launch.whenReleased(EZCmd.Launcher.Stop(robot.launcherSubsystem));
         }
     }
 

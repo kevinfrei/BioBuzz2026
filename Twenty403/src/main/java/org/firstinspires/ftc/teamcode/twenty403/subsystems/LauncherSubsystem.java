@@ -4,6 +4,7 @@ import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
+import com.technototes.library.hardware.motor.CRServo;
 import com.technototes.library.hardware.motor.EncodedMotor;
 import com.technototes.library.logger.Log;
 import com.technototes.library.logger.Loggable;
@@ -16,9 +17,11 @@ import org.firstinspires.ftc.teamcode.twenty403.Setup;
 public class LauncherSubsystem implements Loggable, Subsystem {
 
     public static double TARGET_MOTOR_VELOCITY = 1350; //.58; // 0.5 // /1.0
+    public static double WINDMILL_SPIN = -1;
 
     boolean hasHardware;
     public static EncodedMotor<DcMotorEx> launchMotor;
+    public CRServo windmill;
     // this doesn't really matter as much since f calculation is just overriding it :(
     public static PIDFCoefficients launcherP = new PIDFCoefficients(0.006, 0.0, 0.0, 0);
     public static double SPIN_F_SCALE = 0.00016;
@@ -68,6 +71,10 @@ public class LauncherSubsystem implements Loggable, Subsystem {
             );
             //            top.setPIDFCoefficients(launcherP);
             setTargetSpeed(0);
+
+            // set the windmill
+            windmill = h.windmill;
+            setWindmillPower(0);
         } else {
             launchMotor = null;
         }
@@ -80,6 +87,12 @@ public class LauncherSubsystem implements Loggable, Subsystem {
             setTargetSpeed(TARGET_MOTOR_VELOCITY);
         }
         launching = true;
+    }
+
+    private void setWindmillPower(double power) {
+        if (hasHardware) {
+            windmill.setPower(-power);
+        }
     }
 
     public void AutoLaunch() {
@@ -112,6 +125,7 @@ public class LauncherSubsystem implements Loggable, Subsystem {
     public void Stop() {
         if (hasHardware) {
             setTargetSpeed(0);
+            setWindmillPower(0);
         }
         launching = false;
     }
@@ -127,7 +141,7 @@ public class LauncherSubsystem implements Loggable, Subsystem {
     }
 
     private void setMotorPower(double pow) {
-        double power = Math.clamp(pow, -1, 1);
+        double power = Math.clamp(pow, -0.5, 0.5);
         if (launchMotor != null) {
             launchMotor.setPower(power);
         }
@@ -146,6 +160,11 @@ public class LauncherSubsystem implements Loggable, Subsystem {
         err = launcherPID.getLastError();
         MOTOR_VELOCITY = getMotorSpeed();
         power = launchMotor.getPower();
+        if (launching /*&& Math.abs(MOTOR_VELOCITY- TARGET_MOTOR_VELOCITY) < 100.0*/) {
+            setWindmillPower(WINDMILL_SPIN);
+        } else {
+            setWindmillPower(0.0);
+        }
         // launcherP.f =  SPIN_F_SCALE * target + SPIN_VOLT_COMP * Math.min(PEAK_VOLTAGE, Hardware.voltage());
     }
 }

@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.twenty403;
 
 import com.pedropathing.follower.Follower;
-import com.pedropathing.follower.FollowerLog;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
@@ -27,7 +26,7 @@ public class Hardware implements Loggable {
     public MotorEncoder fbOdo;
     public MotorEncoder strafeOdo;
     public Limelight3A limelight;
-    public CRServo transferServo;
+    public CRServo windmill;
     public CRServo leftIntakeServo;
     public CRServo rightIntakeServo;
     public IGyro imu;
@@ -46,7 +45,7 @@ public class Hardware implements Loggable {
         }
         if (Setup.Connected.LAUNCHER) {
             launcher = new EncodedMotor<>(Setup.HardwareNames.LAUNCHER);
-            transferServo = new CRServo(Setup.HardwareNames.SPIN);
+            windmill = new CRServo(Setup.HardwareNames.WINDMILL);
         }
         if (Setup.Connected.INTAKE) {
             leftIntakeServo = new CRServo(Setup.HardwareNames.LEFTINTAKESERVO);

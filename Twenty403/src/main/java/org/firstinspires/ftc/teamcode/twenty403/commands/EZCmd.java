@@ -23,6 +23,10 @@ public class EZCmd {
         public static Command Launch(LauncherSubsystem launcher) {
             return Command.create(launcher::Launch);
         }
+
+        public static Command Stop(LauncherSubsystem launcher) {
+            return Command.create(launcher::Stop);
+        }
     }
 
     public static class PollenIntake {

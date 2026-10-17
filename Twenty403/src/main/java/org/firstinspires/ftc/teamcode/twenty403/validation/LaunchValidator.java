@@ -21,7 +21,7 @@ public class LaunchValidator extends ValidationOpMode {
     public void init() {
         super.init();
         launchmotor = this.hardwareMap.get(DcMotorEx.class, Setup.HardwareNames.LAUNCHER);
-        spinnything = this.hardwareMap.get(CRServo.class, Setup.HardwareNames.SPIN);
+        spinnything = this.hardwareMap.get(CRServo.class, Setup.HardwareNames.WINDMILL);
         launchmotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
     }
 
