@@ -28,19 +28,14 @@ public class Launcher {
     public static class Config {
 
         // This should be the motor that has the encoder
-        public static String MotorName1 = "launcher1";
-
-        // Set this to null if there's only one motor
-        public static String MotorName2 = "launcher2-odo1";
+        public static String MotorName = "launcher";
 
         // Is the primary intake motor reversed?
-        public static boolean PrimaryReversed = false;
-        // This should probably track the PrimaryReversed value
-        // but if you're using the encoder from the secondary, it might not.
+        public static boolean ReverseMotor = false;
+
+        // This should probably track the ReverseMotor value
         // The FeedFwd helper tell you the correct value.
         public static boolean ReverseEncoder = false;
-        // Is the secondary intake motor reversed?
-        public static boolean SecondaryReversed = false;
 
         // The distance to use when auto-calculating velocity, but we don't have a target
         public static double DefaultDistance = 50;
@@ -60,13 +55,11 @@ public class Launcher {
         // This one tends to be somewhere between 0.0035 to 0.005 or so.
         public static double kVelocityConstant = 0.0044;
 
+        // This one we have to measure acceleration rates in the tuner
+        public static double kAccelerationConstant = 0.0001;
+
         // This is only used if we can't read the voltage.
         public static double DefaultVoltage = 12.0;
-
-        // GoBilda says stall current of 9.2A at 12V, so V = I * R, R = 12 / 9.2 (about 1.3 ohms)
-        // As the motor heats up, resistance also increase, so we could increase this a little bit
-        // or maybe increase it over time to counteract that, but this is probably good enough.
-        public static double MotorResistance = 12 / 9.2;
 
         // This is how much to add/subtract to *setMotorPower* when inc/dec velocity is invoked
         public static double PowerDelta = 0.025;
@@ -156,26 +149,30 @@ public class Launcher {
         @Log.Number(name = "Target Velocity")
         public double targetVelocity = 0.0;
 
+        @Log.Number(name = "Smoothed Velocity Goal")
+        public double smoothedVelocity = 0.0;
+
         @Log.Number(name = "Current Velocity")
-        public double motorVelocity;
+        public double motorVelocity = 0.0;
 
         @Log.Number(name = "Target Power")
-        public double targetPower;
+        public double targetPower = 0.0;
 
         @Log.Number(name = "Manual Extra Power")
-        public double additionalAmount;
+        public double additionalAmount = 0.0;
 
         @Log.Number(name = "AutoAim Velocity")
-        public double autoVelocity;
+        public double autoVelocity = 0.0;
 
         // This the PIDF controller that's used manage the power.
         // The PIDF values are set in the Config class above.
         private final PIDFController pidfController;
+        public double targetAcceleration;
+        private final ElapsedTime lastRead = new ElapsedTime();
 
         // External dependencies this component requires:
         // The two launcher motors:
-        EncodedMotor<DcMotorEx> _launcher1;
-        EncodedMotor<DcMotorEx> _launcher2;
+        EncodedMotor<DcMotorEx> _launcher;
         // Interface to indicate position of a target
         TargetAcquisition _targetAcquisition;
         // Get the voltage, needed for a sensible FeedFwd function
@@ -190,8 +187,7 @@ public class Launcher {
         }
 
         public Component(TargetAcquisition targetSubsystem, DoubleSupplier voltageSup) {
-            _launcher1 = configMotor(Config.MotorName1, Config.PrimaryReversed);
-            _launcher2 = configMotor(Config.MotorName2, Config.SecondaryReversed);
+            _launcher = configMotor(Config.MotorName, Config.ReverseMotor);
             _targetAcquisition = targetSubsystem;
             voltage = () -> {
                 double v = voltageSup != null ? voltageSup.getAsDouble() : Config.DefaultVoltage;
@@ -215,9 +211,9 @@ public class Launcher {
                 Config.launchPID,
                 target ->
                     (Math.signum(target) * // signum(<0) = -1, signum(>0) = 1, signum(0) = *0*
-                        (Config.GetFrictionConstant(getActualVelocity() != 0) +
-                            getMotor1Current() * Config.MotorResistance) +
-                        Config.kVelocityConstant * target) /
+                        Config.GetFrictionConstant(getActualVelocity() != 0) +
+                        Config.kVelocityConstant * target +
+                        Config.kAccelerationConstant * targetAcceleration) /
                     voltage.getAsDouble()
             );
 
@@ -237,12 +233,13 @@ public class Launcher {
 
         // Explicitly set the target velocity for the motors
         public void setVelocityTarget(double speed) {
-            pidfController.setTarget(speed);
+            targetVelocity = speed;
+            updateTargetValues();
         }
 
         // Returns the current target velocity (which may be set explicitly, or automatically)
         public double getVelocityTarget() {
-            return pidfController.getTarget();
+            return targetVelocity;
         }
 
         // Set the velocity target based on the TargetAcquisition interface
@@ -251,8 +248,8 @@ public class Launcher {
         }
 
         public double getActualVelocity() {
-            if (hasLaunch1()) {
-                return _launcher1.getVelocity() * (Config.ReverseEncoder ? -1 : 1);
+            if (hasLaunch()) {
+                return _launcher.getVelocity() * (Config.ReverseEncoder ? -1 : 1);
             } else {
                 return Double.NaN; // Not a Number
             }
@@ -261,26 +258,19 @@ public class Launcher {
         protected void setPower(double pow) {
             double power = Math.clamp(pow, -1, 1);
             targetPower = power;
-            if (hasLaunch1()) {
-                _launcher1.setPower(power);
-            }
-            if (hasLaunch2()) {
-                _launcher2.setPower(power);
+            if (hasLaunch()) {
+                _launcher.setPower(power);
             }
         }
 
-        private final MovingStatistics smooth = new MovingStatistics(1);
+        private final MovingStatistics current = new MovingStatistics(1);
 
-        public double getMotor1Current() {
-            if (!hasLaunch1()) {
+        public double getMotorCurrent() {
+            if (!hasLaunch()) {
                 return 0;
             }
-            smooth.add(_launcher1.getAmperage(CurrentUnit.AMPS));
-            return smooth.getMean();
-        }
-
-        public double getMotor2Current() {
-            return hasLaunch2() ? _launcher2.getAmperage(CurrentUnit.AMPS) : 0;
+            current.add(_launcher.getAmperage(CurrentUnit.AMPS));
+            return current.getMean();
         }
 
         public void stop() {
@@ -316,8 +306,14 @@ public class Launcher {
             return Config.DefaultDistance;
         }
 
+        // This calculates what the highest achievable rate of acceleration is,
+        // and smooths the PID target velocities to get to the actual target as quickly as possible.
+        private void updateTargetValues() {}
+
         @Override
         public void periodic() {
+            double delta = lastRead.seconds();
+            lastRead.reset();
             // Update some values for logging:
             autoVelocity = calculateVelocityTarget();
             targetVelocity = getVelocityTarget();
@@ -326,12 +322,8 @@ public class Launcher {
             setPower(power + Math.copySign(additionalAmount, power));
         }
 
-        boolean hasLaunch1() {
-            return _launcher1 != null;
-        }
-
-        boolean hasLaunch2() {
-            return _launcher2 != null;
+        boolean hasLaunch() {
+            return _launcher != null;
         }
     }
 
@@ -344,37 +336,27 @@ public class Launcher {
         @Override
         public void init() {
             super.init();
-            String name2 = Config.MotorName2;
             lc = new Launcher.Component(this::getVoltage);
         }
 
         @Override
         public void loop() {
             super.loop();
-            addLine(">>> Press left trigger for Launcher1 control");
-            addLine(">>> Press right trigger for Launcher2 control");
+            addLine(">>> Press left trigger for Launcher control");
             addLine(">>> Hit the dpad to stop");
             String res = "";
             double p1 = gamepad1.left_trigger;
-            double p2 = gamepad1.right_trigger;
-            if (lc.hasLaunch1()) {
-                lc._launcher1.setPower(p1);
+            if (lc.hasLaunch()) {
+                lc._launcher.setPower(p1);
                 res += "lt " + p1;
             } else {
-                res += "(no launcher1) ";
-            }
-            if (lc.hasLaunch2()) {
-                lc._launcher2.setPower(p2);
-                res += "rt " + p2;
-            } else {
-                res += "(no launcher2) ";
+                res += "(no launcher) ";
             }
             res += String.format(
                 Locale.ENGLISH,
-                "Speed: %.2f, Current1: %.2f, Current2: %.2f",
+                "Speed: %.2f, Current: %.2f",
                 lc.getActualVelocity(),
-                lc.getMotor1Current(),
-                lc.getMotor2Current()
+                lc.getMotorCurrent()
             );
             addLine(res);
             if (anyDpadReleased()) {
@@ -395,6 +377,9 @@ public class Launcher {
             DoneWithFriction,
             MeasureVelocity,
             DoneWithVelocity,
+            StartAcceleration,
+            MeasureAcceleration,
+            FinishAcceleration,
             Testing,
             RunTest,
             Abort,
@@ -413,9 +398,10 @@ public class Launcher {
             staticFriction = Config.kStaticFriction * 0.5;
         }
 
-        double staticFriction = 0.001;
-        double dynamicFriction = 0.001;
+        double staticFriction = 0.005;
+        double dynamicFriction = 0.005;
         double velocityConstant = 0;
+        double accelerationConstant = 0;
 
         double frictionStep = 0.001;
         MovingStatistics velocityConstantStats = new MovingStatistics(50);
@@ -430,8 +416,8 @@ public class Launcher {
         // We could try a more elaborate binary-search algorithm, but this works pretty reliably
         private State MeasureStaticFriction() {
             double v = getVoltage();
-            double amps = lc.getMotor1Current();
-            double power = (staticFriction + amps * Config.MotorResistance) / v;
+            double amps = lc.getMotorCurrent();
+            double power = staticFriction / v;
             lc.setPower(power);
             addLine("Search for static friction constant...");
             addData("kStaticFriction", staticFriction);
@@ -490,8 +476,8 @@ public class Launcher {
 
         private State MeasureDynamicFriction() {
             double v = getVoltage();
-            double amps = lc.getMotor1Current();
-            double power = (dynamicFriction + amps * Config.MotorResistance) / v;
+            double amps = lc.getMotorCurrent();
+            double power = dynamicFriction / v;
             lc.setPower(power);
             addLine("Search for dynamic friction constant...");
             addData("kStaticFriction", staticFriction);
@@ -528,6 +514,7 @@ public class Launcher {
             return State.MeasureDynamicFriction;
         }
 
+        // TODO: This could be better tested...
         private State ValidateDynamicFriction() {
             addLine("Validating observed kDynamicFriction value");
             if (lastUpdate.milliseconds() >= 2000) {
@@ -561,7 +548,6 @@ public class Launcher {
 
         private State MeasureVelocity() {
             // We're measuring the kVelocityConstant:
-            double amps;
             if (anyButtonsReleased()) {
                 velocityConstant = velocityConstantStats.getMean();
                 lc.setPower(0);
@@ -571,14 +557,13 @@ public class Launcher {
             vel = lc.getActualVelocity();
             peakVel = Math.max(peakVel, vel);
             double vol = getVoltage();
-            amps = lc.getMotor1Current();
             if (vel != 0) {
                 // power = (kFriction + kVelocityConstant * RPM + motorAmperage * motorResistance) / v
                 // So
                 //   1 = (kF + kV * RPM + motorAmperage * motorResistance) / v;
                 // solve for kV:
                 //   kV = (v - kF - motorAmperage * motorResistance) / RPM
-                velocityConstant = (vol - dynamicFriction - amps * Config.MotorResistance) / vel;
+                velocityConstant = (vol - dynamicFriction) / vel;
                 velocityConstantStats.add(velocityConstant);
             }
             addData("kStaticFriction!", staticFriction);
@@ -600,7 +585,7 @@ public class Launcher {
             addData("kVelocityConstant!", velocityConstant);
             if (!extra.isBlank()) addLine(extra);
             addLine("************");
-            addLine("*** Press a button to continue on to testing");
+            addLine("*** Press a button to continue on to acceleration profiling");
             addLine("************");
             if (anyButtonsReleased()) {
                 // Update the values from the Velocity Constant calculator & go to testing
@@ -611,17 +596,113 @@ public class Launcher {
                 Config.kStaticFriction = staticFriction;
                 Config.kDynamicFriction = dynamicFriction;
                 Config.kVelocityConstant = velocityConstant;
-                return State.Testing;
+                return State.StartAcceleration;
             } else {
                 lc.setPower(0);
                 return State.DoneWithVelocity;
             }
         }
 
-        private State StartTesting() {
+        private static class AccData {
+
+            public double v, vel, acc;
+
+            public AccData(double volt, double velo, double a) {
+                v = volt;
+                vel = velo;
+                acc = a;
+            }
+        }
+
+        public static int TPS_COUNT = 4;
+        private MovingStatistics tps; // ticks per second
+        private AccData[] tps2; // ticks per second^2
+        private int tps2Pos;
+        private double lastVel = 0.0;
+
+        private State StartAccelerationProfiling() {
+            // This gets complicated: We need to measure acceleration and then
+            // produce a linear regression of the data we get to come up with
+            // what the 'ideal' aaceleration looks like for the mass we're spinning
+            if (lc.getActualVelocity() != 0) {
+                // We wait until the launcher is actually stopped
+                return State.StartAcceleration;
+            }
+            lastUpdate.reset();
+            tps = new MovingStatistics(TPS_COUNT);
+            tps2 = new AccData[250];
+            tps2Pos = 0;
+            lastVel = 0;
+            lc.setPower(1.0);
+            return State.MeasureAcceleration;
+        }
+
+        private State MeasureAcceleration() {
+            addLine("***************");
+            addLine("*** Calculating Acceleration values");
+            addLine("***************");
+            if (anyButtonsReleased()) {
+                lc.setPower(0);
+                return State.Abort;
+            }
+            // We're heading to full power, and measuring the tps2
+            tps.add(lc.getActualVelocity());
+            if (tps.getCount() != TPS_COUNT) {
+                lastVel = Math.max(0, tps.getMean());
+                lastUpdate.reset();
+                return State.MeasureAcceleration;
+            }
+            double curVel = Math.max(0, tps.getMean());
+            double acc = (curVel - lastVel) / lastUpdate.seconds();
+            tps2[tps2Pos++] = new AccData(getVoltage(), curVel, acc);
+            lastUpdate.reset();
+            if (tps2Pos >= tps2.length || (tps2Pos > 20 && acc < 0.0001)) {
+                return State.FinishAcceleration;
+            }
+            return State.MeasureAcceleration;
+        }
+
+        private double calculateKa() {
+            double sumNumerator = 0.0; // Sum of (V_residual * alpha)
+            double sumDenominator = 0.0; // Sum of (alpha^2)
+            for (int i = 0; i < tps2Pos; i++) {
+                AccData p = tps2[i];
+                // Ignore points where acceleration is negative or zero (e.g., sensor noise at start)
+                if (p.acc <= 100) continue;
+
+                // Calculate V_residual: V_applied - Ks*sgn(v) - Kv*v
+                double sgn = Math.signum(p.vel);
+                double vResidual =
+                    p.v - (p.vel != 0 ? dynamicFriction * sgn + velocityConstant * p.vel : 0);
+
+                sumNumerator += vResidual * p.acc;
+                sumDenominator += p.acc * p.acc;
+            }
+
+            if (sumDenominator == 0) return 0.0;
+
+            // Least squares slope: kA = sum(vResidual * alpha) / sum(alpha^2)
+            return sumNumerator / sumDenominator;
+        }
+
+        private State FinishAcceleration() {
+            if (anyButtonsReleased()) {
+                return State.Testing;
+            }
+            accelerationConstant = calculateKa();
+            addLine("************");
+            addLine("* Acceleration calculation");
+            addLine("************");
+            addData("kAcceleration", accelerationConstant);
+            return State.FinishAcceleration;
+        }
+
+        private State PrepTesting() {
             Config.kStaticFriction = staticFriction;
             Config.kDynamicFriction = dynamicFriction;
             Config.kVelocityConstant = velocityConstant;
+            Config.kAccelerationConstant = accelerationConstant;
+            targetVelocity = 0.0;
             return State.RunTest;
         }
 
@@ -638,7 +719,8 @@ public class Launcher {
             addData("kStaticFriction", Config.kStaticFriction);
             addData("kDynamicFriction", Config.kDynamicFriction);
             addData("kVelocityConstant", Config.kVelocityConstant);
-            addData("Current", lc.getMotor1Current());
+            addData("kAccelerationConstant", Config.kAccelerationConstant);
+            addData("Current", lc.getMotorCurrent());
             addData("Voltage", getVoltage());
             addLine(
                 String.format(
@@ -659,22 +741,27 @@ public class Launcher {
                 )
             );
             addLine("************");
-            addLine("*** Dpad Left/Right => Target +/-200");
+            addLine("*** Dpad Left/Right => Target +/-250");
             addLine("*** Dpad Up/Down => Target +/-20");
             addLine("*** PS5 triangle/X => dynamicFriction +/1 0.001");
             addLine("*** PS5 square/O => dynamicFriction +/1 0.01");
             addLine("************");
             if (gamepad1.dpadLeftWasPressed()) {
                 lastUpdate.reset();
-                targetVelocity -= 200;
+                targetVelocity -= 250;
             } else if (gamepad1.dpadRightWasPressed()) {
                 lastUpdate.reset();
-                targetVelocity += 200;
+                targetVelocity += 250;
             } else if (gamepad1.dpadUpWasPressed()) {
                 lastUpdate.reset();
                 targetVelocity += 20;
+                targetVelocity += 20;
             } else if (gamepad1.dpadDownWasPressed()) {
                 lastUpdate.reset();
+                targetVelocity -= 20;
+            }
+            if (gamepad1.triangleWasReleased()) {
+                Config.kDynamicFriction += 0.001;
                 targetVelocity -= 20;
             }
             if (gamepad1.triangleWasReleased()) {
@@ -717,8 +804,17 @@ public class Launcher {
                 case DoneWithVelocity:
                     state = DoneWithVelocity();
                     break;
+                case StartAcceleration:
+                    state = StartAccelerationProfiling();
+                    break;
+                case MeasureAcceleration:
+                    state = MeasureAcceleration();
+                    break;
+                case FinishAcceleration:
+                    state = FinishAcceleration();
+                    break;
                 case Testing:
-                    state = StartTesting();
+                    state = PrepTesting();
                     break;
                 case RunTest:
                     state = RunTesting();
