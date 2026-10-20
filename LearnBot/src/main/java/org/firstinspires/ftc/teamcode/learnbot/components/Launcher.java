@@ -28,13 +28,13 @@ public class Launcher {
     public static class Config {
 
         // This should be the motor that has the encoder
-        public static String MotorName1 = "launcher";
+        public static String MotorName1 = "launcher1";
 
         // Set this to null if there's only one motor
         public static String MotorName2 = "launcher2-odo1";
 
         // Is the primary intake motor reversed?
-        public static boolean PrimaryReversed = true;
+        public static boolean PrimaryReversed = false;
         // This should probably track the PrimaryReversed value
         // but if you're using the encoder from the secondary, it might not.
         // The FeedFwd helper tell you the correct value.
@@ -54,11 +54,11 @@ public class Launcher {
 
         // Stuff used for the Feed Forward function.
         // This one is highly variable, based on the amount of friction in the system
-        public static double kStaticFriction = 0.183;
-        public static double kDynamicFriction = 0.168;
+        public static double kStaticFriction = 0.54;
+        public static double kDynamicFriction = 0.3;
 
         // This one tends to be somewhere between 0.0035 to 0.005 or so.
-        public static double kVelocityConstant = 0.0043;
+        public static double kVelocityConstant = 0.0044;
 
         // This is only used if we can't read the voltage.
         public static double DefaultVoltage = 12.0;
@@ -269,8 +269,14 @@ public class Launcher {
             }
         }
 
+        private final MovingStatistics smooth = new MovingStatistics(1);
+
         public double getMotor1Current() {
-            return hasLaunch1() ? _launcher1.getAmperage(CurrentUnit.AMPS) : 0;
+            if (!hasLaunch1()) {
+                return 0;
+            }
+            smooth.add(_launcher1.getAmperage(CurrentUnit.AMPS));
+            return smooth.getMean();
         }
 
         public double getMotor2Current() {
@@ -390,6 +396,7 @@ public class Launcher {
             MeasureVelocity,
             DoneWithVelocity,
             Testing,
+            RunTest,
             Abort,
         }
 
@@ -403,17 +410,19 @@ public class Launcher {
             lc = new Launcher.Component(this::getVoltage);
             state = State.MeasureStaticFriction;
             lc.setPower(0);
+            staticFriction = Config.kStaticFriction * 0.5;
         }
 
         double staticFriction = 0.001;
         double dynamicFriction = 0.001;
         double velocityConstant = 0;
 
-        double frictionStep = 0.0004;
+        double frictionStep = 0.001;
         MovingStatistics velocityConstantStats = new MovingStatistics(50);
         double vel = 0;
         double peakVel = 0;
         double targetVelocity = 0;
+        double measuredVelocity = 0;
         MovingStatistics error = new MovingStatistics(1000);
         ElapsedTime lastUpdate = new ElapsedTime();
 
@@ -431,15 +440,23 @@ public class Launcher {
             addLine("************");
             addLine("*** Please be patient");
             addLine("*** (press a button to abort)");
+            addLine("*** Dpad up to add 0.1");
+            addLine("*** Dpad right to add 0.01");
             addLine("************");
             if (lastUpdate.milliseconds() >= 50) {
                 lastUpdate.reset();
                 // We update every 50 milliseconds, just to give it time to trigger the encoder
-                double measuredVelocity = lc.getActualVelocity();
-                if (measuredVelocity != 0) {
+                measuredVelocity = lc.getActualVelocity();
+                if (Math.abs(measuredVelocity) > 0.1) {
                     return State.ValidateStaticFriction;
                 }
                 staticFriction += frictionStep;
+            }
+            if (gamepad1.dpadUpWasReleased()) {
+                staticFriction += 0.1;
+            }
+            if (gamepad1.dpadRightWasReleased()) {
+                staticFriction += 0.01;
             }
             if (anyButtonsReleased()) {
                 lc.setPower(0);
@@ -450,10 +467,11 @@ public class Launcher {
 
         private State ValidateStaticFriction() {
             addLine("Validating observed kStaticFriction value");
+            addData("Velocity", measuredVelocity);
             if (lastUpdate.milliseconds() >= 2000) {
-                double measuredVelocity = lc.getActualVelocity();
+                measuredVelocity = lc.getActualVelocity();
                 // If it's still moving, we found the static friction value:
-                if (measuredVelocity != 0) {
+                if (Math.abs(measuredVelocity) > 1) {
                     // Set the dynamicFriction value for the next step...
                     dynamicFriction = staticFriction;
                     staticFriction -= frictionStep;
@@ -476,22 +494,33 @@ public class Launcher {
             double power = (dynamicFriction + amps * Config.MotorResistance) / v;
             lc.setPower(power);
             addLine("Search for dynamic friction constant...");
+            addData("kStaticFriction", staticFriction);
             addData("kDynamicFriction", dynamicFriction);
             addData("Voltage", v);
             addData("Power", power);
             addLine("************");
             addLine("*** Please be patient");
             addLine("*** (press a button to abort)");
+            addLine("*** Dpad up to subtract 0.1");
+            addLine("*** Dpad right to subtract 0.01");
             addLine("************");
             if (lastUpdate.milliseconds() >= 500) {
                 lastUpdate.reset();
                 // We update every 500 milliseconds, to give the system time to halt
                 double measuredVelocity = lc.getActualVelocity();
-                if (measuredVelocity == 0) {
+                if (measuredVelocity == 0 || dynamicFriction <= 0) {
+                    dynamicFriction = Math.max(0, dynamicFriction);
                     return State.ValidateDynamicFriction;
                 }
                 dynamicFriction -= frictionStep;
             }
+            if (gamepad1.dpadUpWasReleased()) {
+                dynamicFriction -= 0.1;
+            }
+            if (gamepad1.dpadRightWasReleased()) {
+                dynamicFriction -= 0.01;
+            }
+
             if (anyButtonsReleased()) {
                 lc.setPower(0);
                 return State.Abort;
@@ -575,7 +604,7 @@ public class Launcher {
             addLine("************");
             if (anyButtonsReleased()) {
                 // Update the values from the Velocity Constant calculator & go to testing
-                targetVelocity = vel * 0.5;
+                targetVelocity = 0;
                 error.clear();
                 error.add(0);
                 lastUpdate.reset();
@@ -589,7 +618,14 @@ public class Launcher {
             }
         }
 
-        private State Testing() {
+        private State StartTesting() {
+            Config.kStaticFriction = staticFriction;
+            Config.kDynamicFriction = dynamicFriction;
+            Config.kVelocityConstant = velocityConstant;
+            return State.RunTest;
+        }
+
+        private State RunTesting() {
             // DoneWithVelocity sets the config values, so let's use the launcher's periodic
             // function to test the results.
             lc.setVelocityTarget(targetVelocity);
@@ -599,9 +635,9 @@ public class Launcher {
                 error.add(targetVelocity - vel);
             }
             lc.periodic();
-            addData("kStaticFriction", staticFriction);
-            addData("kDynamicFriction", dynamicFriction);
-            addData("kVelocityConstant", velocityConstant);
+            addData("kStaticFriction", Config.kStaticFriction);
+            addData("kDynamicFriction", Config.kDynamicFriction);
+            addData("kVelocityConstant", Config.kVelocityConstant);
             addData("Current", lc.getMotor1Current());
             addData("Voltage", getVoltage());
             addLine(
@@ -623,22 +659,38 @@ public class Launcher {
                 )
             );
             addLine("************");
-            addLine("*** Press the dpad to change target velocity");
+            addLine("*** Dpad Left/Right => Target +/-200");
+            addLine("*** Dpad Up/Down => Target +/-20");
+            addLine("*** PS5 triangle/X => dynamicFriction +/1 0.001");
+            addLine("*** PS5 square/O => dynamicFriction +/1 0.01");
             addLine("************");
             if (gamepad1.dpadLeftWasPressed()) {
                 lastUpdate.reset();
-                targetVelocity -= 100;
+                targetVelocity -= 200;
             } else if (gamepad1.dpadRightWasPressed()) {
                 lastUpdate.reset();
-                targetVelocity += 100;
+                targetVelocity += 200;
             } else if (gamepad1.dpadUpWasPressed()) {
                 lastUpdate.reset();
-                targetVelocity += 10;
+                targetVelocity += 20;
             } else if (gamepad1.dpadDownWasPressed()) {
                 lastUpdate.reset();
-                targetVelocity -= 10;
+                targetVelocity -= 20;
             }
-            return State.Testing;
+            if (gamepad1.triangleWasReleased()) {
+                Config.kDynamicFriction += 0.001;
+            }
+            if (gamepad1.crossWasReleased()) {
+                Config.kDynamicFriction -= 0.001;
+            }
+            if (gamepad1.squareWasReleased()) {
+                Config.kDynamicFriction += 0.01;
+            }
+            if (gamepad1.circleWasReleased()) {
+                Config.kDynamicFriction -= 0.01;
+            }
+
+            return State.RunTest;
         }
 
         public void loop() {
@@ -666,7 +718,10 @@ public class Launcher {
                     state = DoneWithVelocity();
                     break;
                 case Testing:
-                    state = Testing();
+                    state = StartTesting();
+                    break;
+                case RunTest:
+                    state = RunTesting();
                     break;
                 case Abort:
                 default:
