@@ -11,7 +11,7 @@ import org.firstinspires.ftc.teamcode.twenty403.Setup;
 @TeleOp(name = "Drivebase Testbed")
 public class DriveBaseValidation extends LinearOpMode {
 
-    public static double motorPower = 0.2;
+    public static double motorPower = 0.75;
     public static double triggerThreshold = 0.1;
 
     @Override
@@ -77,10 +77,10 @@ public class DriveBaseValidation extends LinearOpMode {
                 } else {
                     rr.setPower(0);
                 }
-                telemetry.addData("FL", fl.getCurrentPosition());
-                telemetry.addData("FR", fr.getCurrentPosition());
-                telemetry.addData("RL", rl.getCurrentPosition());
-                telemetry.addData("RR", rr.getCurrentPosition());
+                telemetry.addData("FL", fl.getVelocity());
+                telemetry.addData("FR", fr.getVelocity());
+                telemetry.addData("RL", rl.getVelocity());
+                telemetry.addData("RR", rr.getVelocity());
             }
             if (Setup.Connected.LAUNCHER) {
                 if (gamepad1.cross) {
