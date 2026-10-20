@@ -1,0 +1,109 @@
+{
+  "values": {
+    "xLeftEdge": { "val": 11.25 }
+  },
+  "poses": {
+    "start": {
+      "X": { "ref": "xLeftEdge" },
+      "Y": { "val": 88 },
+      "heading": { "angle": { "val": 90 }, "inRadians": false }
+    },
+    "point2": {
+      "X": { "val": 12.5 },
+      "Y": { "val": 11.75 },
+      "heading": { "angle": { "val": -105 }, "inRadians": false }
+    },
+    "point3Start": {
+      "X": { "val": 12.5 },
+      "Y": { "val": 11.75 },
+      "heading": { "angle": { "val": -90 }, "inRadians": false }
+    },
+    "point3": {
+      "X": { "val": 58.5 },
+      "Y": { "val": 11.5 },
+      "heading": { "angle": { "val": -90 }, "inRadians": false }
+    },
+    "point4": {
+      "X": { "val": 14 },
+      "Y": { "val": 93 },
+      "heading": { "angle": { "val": -90 }, "inRadians": false }
+    },
+    "gardenLaunch": {
+      "X": { "val": 58.25 },
+      "Y": { "val": 11.1 },
+      "heading": { "angle": { "val": -90 }, "inRadians": false }
+    }
+  },
+  "interpolations": {},
+  "curves": {},
+  "paths": {
+    "pathStartToGardenLaunch": {
+      "curves": [
+        {
+          "points": [
+            { "ref": "start" },
+            {
+              "X": { "val": 16.5 },
+              "Y": { "val": 20.25 }
+            },
+            { "ref": "gardenLaunch" }
+          ],
+          "interpolation": {
+            "heading": { "ref": "start" }
+          }
+        }
+      ]
+    },
+    "pathGardenLaunchToGarden": {
+      "curves": [
+        {
+          "points": [
+            { "ref": "gardenLaunch" },
+            {
+              "X": { "val": 26 },
+              "Y": { "val": 62.5 }
+            },
+            { "ref": "point2" }
+          ],
+          "interpolation": { "reversed": false }
+        }
+      ]
+    },
+    "pathGardenToGardenLaunch": {
+      "curves": [
+        {
+          "points": [
+            { "ref": "point3Start" },
+            {
+              "X": { "val": 27 },
+              "Y": { "val": 54 }
+            },
+            { "ref": "point3" }
+          ],
+          "interpolation": {
+            "start": { "ref": "point3Start" },
+            "end": { "ref": "point3" },
+            "longWay": false
+          }
+        }
+      ]
+    },
+    "pathGardenLaunchToPark": {
+      "curves": [
+        {
+          "points": [
+            { "ref": "point3" },
+            {
+              "X": { "val": 15.5 },
+              "Y": { "val": 37 }
+            },
+            { "ref": "point4" }
+          ],
+          "interpolation": {
+            "heading": { "ref": "point4" }
+          }
+        }
+      ]
+    }
+  }
+}

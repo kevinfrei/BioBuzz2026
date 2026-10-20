@@ -1,0 +1,110 @@
+{
+  "values": {
+    "center": {
+      "val": 72
+    }
+  },
+  "poses": {
+    "centre": {
+      "X": {
+        "ref": "center"
+      },
+      "Y": {
+        "val": 72
+      },
+      "heading": {
+        "angle": {
+          "val": 45
+        },
+        "inRadians": false
+      }
+    }
+  },
+  "interpolations": {
+    "90to45": {
+      "start": {
+        "angle": {
+          "val": 45
+        },
+        "inRadians": false
+      },
+      "end": {
+        "angle": {
+          "val": 90
+        },
+        "inRadians": false
+      },
+      "longWay": false
+    }
+  },
+  "curves": {
+    "theCurve": {
+      "points": [
+        {
+          "X": {
+            "val": 50
+          },
+          "Y": {
+            "val": 100
+          },
+          "heading": {
+            "angle": {
+              "val": 0
+            },
+            "inRadians": false
+          }
+        },
+        {
+          "X": {
+            "val": 45
+          },
+          "Y": {
+            "val": 45
+          },
+          "heading": {
+            "angle": {
+              "val": 0
+            },
+            "inRadians": false
+          }
+        },
+        {
+          "ref": "centre"
+        }
+      ],
+      "interpolation": {
+        "ref": "90to45"
+      }
+    },
+    "theLine": {
+      "points": [
+        {
+          "ref": "centre"
+        },
+        {
+          "X": {
+            "val": 120
+          },
+          "Y": {
+            "val": 120
+          }
+        }
+      ],
+      "interpolation": {
+        "reversed": false
+      }
+    }
+  },
+  "paths": {
+    "testPath": {
+      "curves": [
+        {
+          "ref": "newCurve1"
+        },
+        {
+          "ref": "theLine"
+        }
+      ]
+    }
+  }
+}
