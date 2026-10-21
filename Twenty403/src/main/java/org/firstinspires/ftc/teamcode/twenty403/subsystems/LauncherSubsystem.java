@@ -19,6 +19,7 @@ public class LauncherSubsystem implements Loggable, Subsystem {
     public static double TARGET_MOTOR_VELOCITY = 1350; //.58; // 0.5 // /1.0
     public static double WINDMILL_SPIN = -0.15;
     public static double REVERSE_WINDMILL = 0.15;
+    public static double Target_windmill = 100;
 
     boolean hasHardware;
     public static EncodedMotor<DcMotorEx> launchMotor;
@@ -170,7 +171,8 @@ public class LauncherSubsystem implements Loggable, Subsystem {
         err = launcherPID.getLastError();
         MOTOR_VELOCITY = getMotorSpeed();
         power = launchMotor.getPower();
-        if (launching /*&& Math.abs(MOTOR_VELOCITY- TARGET_MOTOR_VELOCITY) < 100.0*/) {
+        // only launch if the wheel is spinning within 100 rpm of target
+        if (launching && Math.abs(MOTOR_VELOCITY - TARGET_MOTOR_VELOCITY) < Target_windmill) {
             setWindmillPower(WINDMILL_SPIN);
         } else if (reverse) {
             setWindmillPower(-WINDMILL_SPIN);

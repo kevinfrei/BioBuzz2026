@@ -15,7 +15,7 @@ public class LaunchValidator extends ValidationOpMode {
     private DcMotorEx launchmotor;
     private CRServo spinnything;
     public static double launchvelocity = 2000;
-    public static double spinspeed = 1;
+    public static double spinspeed = 0.15;
 
     @Override
     public void init() {
