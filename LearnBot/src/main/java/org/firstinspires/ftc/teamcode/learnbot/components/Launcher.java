@@ -605,10 +605,10 @@ public class Launcher {
 
         private static class AccData {
 
-            public double v, vel, acc;
+            public double volts, vel, acc;
 
-            public AccData(double volt, double velo, double a) {
-                v = volt;
+            public AccData(double v, double velo, double a) {
+                volts = v;
                 vel = velo;
                 acc = a;
             }
@@ -673,13 +673,15 @@ public class Launcher {
                 // Calculate V_residual: V_applied - Ks*sgn(v) - Kv*v
                 double sgn = Math.signum(p.vel);
                 double vResidual =
-                    p.v - (p.vel != 0 ? dynamicFriction * sgn + velocityConstant * p.vel : 0);
+                    p.volts - (p.vel != 0 ? dynamicFriction * sgn + velocityConstant * p.vel : 0);
 
                 sumNumerator += vResidual * p.acc;
                 sumDenominator += p.acc * p.acc;
             }
 
-            if (sumDenominator == 0) return 0.0;
+            if (sumDenominator == 0) {
+                return 0.0;
+            }
 
             // Least squares slope: kA = sum(vResidual * alpha) / sum(alpha^2)
             return sumNumerator / sumDenominator;
