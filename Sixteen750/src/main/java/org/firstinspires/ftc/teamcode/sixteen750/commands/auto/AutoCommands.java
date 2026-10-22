@@ -11,7 +11,7 @@ public class AutoCommands {
     public static SequentialCommandGroup Fire (Robot r) {
         return new SequentialCommandGroup(
                 r.intakeSubsystem::Feed,
-        new WaitCommand(1));
+        new WaitCommand(.8));
     }
     abstract static class AutoTurret implements Command {
 

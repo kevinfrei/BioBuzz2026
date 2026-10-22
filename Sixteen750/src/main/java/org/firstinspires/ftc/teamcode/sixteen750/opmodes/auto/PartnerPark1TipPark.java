@@ -3,9 +3,7 @@ package org.firstinspires.ftc.teamcode.sixteen750.opmodes.auto;
 import com.bylazar.telemetry.PanelsTelemetry;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.technototes.library.command.Command;
 import com.technototes.library.command.CommandScheduler;
-import com.technototes.library.command.ParallelCommandGroup;
 import com.technototes.library.command.SequentialCommandGroup;
 import com.technototes.library.command.WaitCommand;
 import com.technototes.library.structure.CommandOpMode;
@@ -21,9 +19,9 @@ import org.firstinspires.ftc.teamcode.sixteen750.helpers.StartingPosition;
 import org.firstinspires.ftc.teamcode.sixteen750.pedro.meepmeep.Paths;
 import org.firstinspires.ftc.teamcode.sixteen750.pedro.meepmeep.Poses;
 
-@Autonomous(name = "PartnerPark12Park", preselectTeleOp = "MainTele")
+@Autonomous(name = "PartnerPark1TipPark", preselectTeleOp = "MainTele")
 @SuppressWarnings("unused")
-public class PartnerPark12Park extends CommandOpMode {
+public class PartnerPark1TipPark extends CommandOpMode {
 
     public Robot robot;
     public DriverController controls;

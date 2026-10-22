@@ -26,7 +26,7 @@ import org.firstinspires.ftc.teamcode.sixteen750.Setup;
 public class TurretSubsystem implements Loggable, Subsystem {
 
     final Robot robot;
-    Pose HIVE_TARGET1 = new Pose(58, 51);
+    Pose HIVE_TARGET1 = new Pose(56.5, 51);
     Pose HIVE_TARGET2 = new Pose(56.5, 93);
 
     public static double TARGET_SWITCH_THRESHOLD = 72;
