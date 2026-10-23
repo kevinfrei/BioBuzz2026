@@ -77,13 +77,13 @@ public class TurretSubsystem implements Loggable, Subsystem {
     public static double HOOD_REGRESSION_B = -0.0003136;
     public static double HOOD_REGRESSION_C = 0.0153873;
     public static double HOOD_REGRESSION_D = -0.315317;
-    public static double HOOD_REGRESSION_E = 2.88479; // offset to the slope (y intercept)
+    public static double HOOD_REGRESSION_E = 2.94479; // offset to the slope (y intercept)
     public static double LAUNCHER_REGRESSION_A = 0.00657618; // slope of launcher regression
     public static double LAUNCHER_REGRESSION_B = -0.960648;
     public static double LAUNCHER_REGRESSION_C = 51.54356;
     public static double LAUNCHER_REGRESSION_D = -1197.91667; // offset to the launcher regression slope (y-intercept)
 
-    public static double LAUNCHER_REGRESSION_E = 11464.0909;
+    public static double LAUNCHER_REGRESSION_E = 11400.0909;
 
     @Log.Number(name = "distance")
     public static double distanceToTarget = 0; // distance to the hive we are aiming at in inches
@@ -104,14 +104,14 @@ public class TurretSubsystem implements Loggable, Subsystem {
     // It's output is a power value in the -1 to +1 range.
     // So, P is probably in the range of .001-ish.
     // For a velocity-targeting PIDF, we probably want an I value, not a D value.
-    public static PIDFCoefficients launchPID = new PIDFCoefficients(0.0003, 0.000004, 0.0, 0); // 10/3/26 added a p value seems pretty decent
+    public static PIDFCoefficients launchPID = new PIDFCoefficients(0.006, 0.000019, 0.0, 0); // 10/3/26 added a p value seems pretty decent
     private Hardware hardware;
     // Stuff used for the Feed Forward function.
     // This one is highly variable, based on the amount of friction in the system
 
-    public static double kStaticFriction = 0.717; // measured 10/12
+    public static double kStaticFriction = 0.47; // measured 10/12
 
-    public static double kDynamicFriction = 0.72; // measured 10/12
+    public static double kDynamicFriction = 0.463; // measured 10/12
 
     // This one tends to be somewhere between 0.0035 to 0.005 or so.
     public static double kVelocityConstant = 0.0043;
@@ -189,7 +189,7 @@ public class TurretSubsystem implements Loggable, Subsystem {
 
         double Distance = robotPose.distance(targetPose);
 
-        return clamp(Distance, 15, 60);
+        return clamp(Distance, 20, 48);
     }
 
     // increment ignore how sus this implementation is btw
