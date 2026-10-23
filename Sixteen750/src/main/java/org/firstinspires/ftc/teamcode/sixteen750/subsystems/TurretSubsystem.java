@@ -26,8 +26,8 @@ import org.firstinspires.ftc.teamcode.sixteen750.Setup;
 public class TurretSubsystem implements Loggable, Subsystem {
 
     final Robot robot;
-    Pose HIVE_TARGET1 = new Pose(56.5, 51);
-    Pose HIVE_TARGET2 = new Pose(56.5, 93);
+    Pose HIVE_TARGET1 = new Pose(57, 51);
+    Pose HIVE_TARGET2 = new Pose(57, 93);
 
     public static double TARGET_SWITCH_THRESHOLD = 72;
     public static double TURRET_CENTER = 0.5;
@@ -35,6 +35,11 @@ public class TurretSubsystem implements Loggable, Subsystem {
     public static double TURRET_MAX = 0.97;
     // @Log.Number (name = "target servo Pos")
     public static double targetServoPos = 0;
+    public static double FLIGHT_TIME = 0.3;
+    @Log.Number(name = "xvelo")
+    public static double xVelo = 0;
+    @Log.Number(name = "yvelo")
+    public static double yVelo = 0;
 
     @Log.Number(name = "Robot Heading")
     public static double robotHead = 0;
@@ -50,6 +55,8 @@ public class TurretSubsystem implements Loggable, Subsystem {
 
     @Log(name = "Target Pose")
     public static Pose targetPose = new Pose(0, 0);
+    @Log(name = "sotm targetPose")
+    public static Pose sotmTargetPose = new Pose(0, 0);
 
     @Log.Number(name = "final hood pose")
     public static double hoodAutoPos = 0.5; // final value we feed into the hood for position
@@ -85,8 +92,10 @@ public class TurretSubsystem implements Loggable, Subsystem {
 
     public static double LAUNCHER_REGRESSION_E = 11400.0909;
 
-    @Log.Number(name = "distance")
+    @Log.Number(name = "rawdistance")
     public static double distanceToTarget = 0; // distance to the hive we are aiming at in inches
+    @Log.Number(name = "SOTMdistance")
+    public static double sotmDistanceToTarget = 0; // distance for sotm
 
     @Log.Number(name = "err")
     public static double error = 0; // error for launcher velo
@@ -164,6 +173,7 @@ public class TurretSubsystem implements Loggable, Subsystem {
     // returns the turret angle in radians relative to the robot
     public double getTurretAngle() {
         Pose targetPose = getTargetPose();
+        Pose sotmTargetPose = getSotmTargetPose();
 
         double x, y, robotHead, dx, dy, absoluteAngle, angle; //
 
@@ -174,8 +184,10 @@ public class TurretSubsystem implements Loggable, Subsystem {
             AngleUnit.RADIANS
         ); // sets robotHead to robot heading and normalizes to delta radians
 
-        dx = targetPose.x() - x; // difference between target x and robot x
-        dy = targetPose.y() - y; // difference between target y and robot y
+        //dx = targetPose.x() - x; // difference between target x and robot x
+        dx = sotmTargetPose.x() - x;
+        //dy = targetPose.y() - y; // difference between target y and robot y
+        dy = sotmTargetPose.y() - y;
         absoluteAngle = Math.atan2(dy, dx); // in radians the target angle of the turret relative to the field
 
         angle = absoluteAngle - robotHead; // still in radians.......
@@ -190,6 +202,15 @@ public class TurretSubsystem implements Loggable, Subsystem {
         double Distance = robotPose.distance(targetPose);
 
         return clamp(Distance, 20, 48);
+    }
+    //returns the distance from the sotm target made the clamp slightly bigger cause why not ig
+    public double getSotmDistance() {
+        Pose robotPose = robot.follower.pose();
+        Pose sotmTargetPose = getSotmTargetPose();
+
+        double sotmDistance = robotPose.distance(sotmTargetPose);
+
+        return clamp(sotmDistance, 16,52);
     }
 
     // increment ignore how sus this implementation is btw
@@ -218,6 +239,23 @@ public class TurretSubsystem implements Loggable, Subsystem {
         }
 
         return targetPose;
+    }
+    // gets our predicted pose by shifting the hive target by our velocity multiplied times our flight time (might have to make flight time a function we will see)
+    public Pose getSotmTargetPose() {
+        double Y, dx, dy;
+        Pose sotmTargetPose;
+
+        Y = robot.follower.pose().y();
+        dx = getXVelo();
+        dy = getYVelo();
+
+        if (Y < TARGET_SWITCH_THRESHOLD) {
+           sotmTargetPose = new Pose (HIVE_TARGET1.x() - (dx * FLIGHT_TIME), HIVE_TARGET1.y() - (dy * FLIGHT_TIME));
+        } else {
+            sotmTargetPose = new Pose(HIVE_TARGET2.x() - (dx * FLIGHT_TIME), HIVE_TARGET2.y() - (dy * FLIGHT_TIME));
+        }
+
+        return sotmTargetPose;
     }
 
     // takes our final turret angle does some math and returns a value in servo position aka 0-1
@@ -250,7 +288,8 @@ public class TurretSubsystem implements Loggable, Subsystem {
 
     // returns the target angle we want our hood to be at in degrees before we compensate for velocity
     public double getHoodTargetPos() {
-        double x = distanceToTarget; // distance in inches
+        //double x = distanceTotarget;
+        double x = sotmDistanceToTarget; // distance in inches
 
         hoodTargetPos =
             HOOD_REGRESSION_A * Math.pow(x, 4) +
@@ -295,6 +334,7 @@ public class TurretSubsystem implements Loggable, Subsystem {
         hoodAutoPos = getHoodAutoPos();
         getHoodAutoPos();
         getHoodTargetPos();
+        sotmDistanceToTarget = getSotmDistance();
         error = pidfController.getLastError();
 
         // Add an item to the array and update the index for the next update to the 'circular' array
@@ -316,7 +356,8 @@ public class TurretSubsystem implements Loggable, Subsystem {
 
     // takes distance and returns AUTO_VELOCITY by plugging it into the regression
     public double getAutoVelocity() {
-        double x = distanceToTarget;
+        //double x = distanceToTarget;
+        double x = sotmDistanceToTarget;
 
         autoVelocity =
             LAUNCHER_REGRESSION_A * Math.pow(x, 4) +
@@ -336,6 +377,16 @@ public class TurretSubsystem implements Loggable, Subsystem {
     public void setTurretPosition(double pos) {
         turret1.setPosition(pos);
         turret2.setPosition(pos);
+    }
+    //gets our x velocity in in/s clamping it to not make the launcher have a seizure
+    public double getXVelo() {
+        xVelo = robot.follower.velocity().vx;
+        return clamp(xVelo, -50,50);
+    }
+    //gets our y velocity in in/s clamping it to not make the launcher have a seizure
+    public double getYVelo() {
+        yVelo = robot.follower.velocity().vy;
+        return clamp(yVelo, -50,50);
     }
 
     private void setHoodPos(double pos) {
