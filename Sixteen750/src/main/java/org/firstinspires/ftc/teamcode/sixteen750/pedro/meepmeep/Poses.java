@@ -69,8 +69,8 @@ public class Poses {
         public static Pose GardenPreInt = new Pose(7, 22);
         public static Pose GardenInt = new Pose(6.7, 7.7);
         public static double GardenIntHead = Math.toRadians(270);
-        public static Pose Launch2 = new Pose(48.5, 121);
-        public static double Launch2Head = Math.toRadians(255);
+        public static Pose Launch2 = new Pose(57, 19);
+        public static double Launch2Head = Math.toRadians(0);
         public static Pose NearFlowerPreInt = new Pose(24, 47);
         public static Pose NearFlowerPreIntCtrl1 = new Pose(68, 79);
         public static Pose NearFlowerPreIntCtrl2 = new Pose(67.5, 10.5);
@@ -79,6 +79,7 @@ public class Poses {
         public static Pose Launch3 = new Pose(58, 121);
         public static Pose Launch3Ctrl1 = new Pose(68.5, 23.5);
         public static Pose Launch3Ctrl2 = new Pose(58.5, 60);
+        public static double Launch3Head = 270;
         public static Pose SideFlowerPreInt = new Pose(47, 118);
         public static Pose SideFlowerInt = new Pose(47, 130.4);
         public static double SideFlowerIntHead = Math.toRadians(90);

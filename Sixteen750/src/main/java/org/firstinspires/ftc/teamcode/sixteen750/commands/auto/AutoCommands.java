@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.sixteen750.commands.auto;
 
 import com.technototes.library.command.Command;
+import com.technototes.library.command.ParallelCommandGroup;
 import com.technototes.library.command.ParallelRaceGroup;
 import com.technototes.library.command.SequentialCommandGroup;
 import com.technototes.library.command.WaitCommand;
@@ -12,6 +13,13 @@ public class AutoCommands {
         return new SequentialCommandGroup(
                 r.intakeSubsystem::Feed,
         new WaitCommand(.8));
+    }
+    public static SequentialCommandGroup FireHalf (Robot r)  {
+        return new SequentialCommandGroup(
+                r.intakeSubsystem::Feed,
+                new WaitCommand(.3),
+                r.intakeSubsystem::Hold
+        );
     }
     abstract static class AutoTurret implements Command {
 

@@ -86,8 +86,11 @@ public class Paths {
     public Path DGardenIntToLaunch2() {
         return line(p2.GardenInt, p2.Launch2).linear(p2.GardenIntHead, p2.Launch2Head);
     }
-    public Path DLaunch2ToNearFlowerPreInt() {
-        return curve(p2.Launch2, p2.NearFlowerPreIntCtrl1, p2.NearFlowerPreIntCtrl2, p2.NearFlowerPreInt).tangent();
+    public Path DLaunch2ToLaunch3() {
+        return line(p2.Launch2, p2.Launch3).constant(p2.Launch3Head);
+    }
+    public Path DLaunch3ToNearFlowerPreInt() {
+        return curve(p2.Launch3, p2.NearFlowerPreIntCtrl1, p2.NearFlowerPreIntCtrl2, p2.NearFlowerPreInt).tangent();
     }
     public Path DNearFlowerPreIntToNearFlowerInt() {
         return line(p2.NearFlowerPreInt, p2.NearFlowerInt).constant(p2.NearFlowerIntHead);
