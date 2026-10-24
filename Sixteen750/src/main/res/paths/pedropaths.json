@@ -11,26 +11,22 @@
     "pose1": {
       "X": { "val": 2.0 },
       "Y": { "val": 3.0 },
-      "Heading": { "val": 3.14159 },
-      "inRadians": true
+      "heading": { "angle": { "val": 3.14159 }, "inRadians": true }
     },
     "pose2": {
       "X": { "ref": "value1" },
       "Y": { "val": 4.0 },
-      "Heading": { "val": 45 },
-      "inRadians": false
+      "heading": { "angle": { "val": 45 }, "inRadians": false }
     },
     "pose3": {
       "X": { "val": 15.0 },
       "Y": { "ref": "value3" },
-      "Heading": { "ref": "value6" },
-      "inRadians": false
+      "heading": { "angle": { "ref": "value6" }, "inRadians": false }
     },
     "pose4": {
       "X": { "ref": "value4" },
       "Y": { "ref": "value5" },
-      "Heading": { "val": 1.571 },
-      "inRadians": true
+      "heading": { "ref": "pose1" }
     },
     "pose5": { "ref": "pose4" }
   },
@@ -43,18 +39,15 @@
       "point": { "X": { "ref": "value6" }, "Y": { "ref": "value5" } }
     },
     "facing3": { "ref": "facing1" },
-    "constant1": { "heading": { "val": 1.57 }, "inRadians": true },
+    "constant1": { "heading": { "angle": { "val": 1.57 }, "inRadians": true } },
     "constantA": {
-      "heading": {
-        "X": 13,
-        "Y": 52,
-        "heading": { "val": 75 },
-        "inRadians": false
-      }
+      "heading": { "angle": { "val": 75 }, "inRadians": false }
     },
     "constant2": { "heading": { "ref": "pose3" } },
-    "constant3": { "heading": { "ref": "value6" }, "inRadians": false },
-    "constant4": { "heading": { "val": 135 }, "inRadians": false },
+    "constant3": {
+      "heading": { "angle": { "ref": "value6" }, "inRadians": false }
+    },
+    "constant4": { "heading": { "angle": { "val": 135 }, "inRadians": false } },
     "constant5": { "ref": "constant1" },
     "linear1": { "reversed": true },
     "linear2": { "reversed": true },
