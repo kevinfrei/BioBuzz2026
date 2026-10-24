@@ -37,31 +37,32 @@ public class PedroConstants {
         c.backLeftDirection.set(DcMotorSimple.Direction.REVERSE);
         c.backRightDirection.set(DcMotorSimple.Direction.FORWARD);
     });
-    // Ran on Oct 9 2026
+    // Ran on Oct 23 2026
     public static TwoWheelConfig localizerConfig = new TwoWheelConfig(c -> {
         c.xPodName.set("fbodo");
         c.yPodName.set("strafeodo");
-        c.imuName.set("imu");
-        c.xPodOffset.set(1.73);
-        c.yPodOffset.set(2.12);
-        c.forwardTicksToInches.set(0.00177);
-        c.strafeTicksToInches.set(0.00204);
-        c.xPodDirection.set(Encoder.FORWARD);
-        c.yPodDirection.set(Encoder.FORWARD);
+        c.imuName.set("adafruit-imu");
+        c.xPodOffset.set(-3.95);
+        c.yPodOffset.set(-5.67);
+        c.forwardTicksToInches.set(0.002014);
+        c.strafeTicksToInches.set(0.002014);
+        c.xPodDirection.set(Encoder.REVERSE);
+        c.yPodDirection.set(Encoder.REVERSE);
         c.imu.set(
             new RevHubIMU(
                 new RevHubOrientationOnRobot(
-                    RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
-                    RevHubOrientationOnRobot.UsbFacingDirection.UP
+                    RevHubOrientationOnRobot.LogoFacingDirection.UP,
+                    RevHubOrientationOnRobot.UsbFacingDirection.RIGHT
                 )
             )
         );
     });
+
     public static ForesightConfig foresightConfig = new ForesightConfig(c -> {
-        Controller primaryTranslationalForward = Controller.proportional(0.27971881633553536);
-        Controller secondaryTranslationalForward = Controller.proportional(0.10334862841155307);
-        Controller primaryTranslationalLateral = Controller.proportional(0.48144662310086206);
-        Controller secondaryTranslationalLateral = Controller.proportional(0.17788166274507058);
+        Controller primaryTranslationalForward = Controller.proportional(0.2833077272955512);
+        Controller secondaryTranslationalForward = Controller.proportional(0.1046746351138119);
+        Controller primaryTranslationalLateral = Controller.proportional(0.42485505706781734);
+        Controller secondaryTranslationalLateral = Controller.proportional(0.1569725912503547);
 
         c.forwardTranslational.set(
             Controller.piecewise(secondaryTranslationalForward).put(
@@ -76,20 +77,21 @@ public class PedroConstants {
             )
         );
 
-        c.coast.set(Controller.proportionalFeedforward(0.013777419288337794));
-        c.brake.set(Controller.proportionalFeedforward(0.011710806395087125));
-        // manually set this one
-        c.headingFeedback.set(Controller.proportional(6.24639824160929));
+        c.coast.set(Controller.proportionalFeedforward(0.011880823934200879));
+        c.brake.set(Controller.proportionalFeedforward(0.010098700344070746));
+
+        // Lower values jiggle *less8
+        c.headingFeedback.set(Controller.proportional(3.263295808015299));
         c.headingBrakeCoefficients.set(
-            Vector2D.cartesian(0.04756241922901685, 0.00551561844341756)
+            Vector2D.cartesian(0.06854604503841423, -0.0019709745617720845)
         );
 
-        c.linearBrakeCoefficients.set(Matrix.diag(0.05735053908285078, 0.058135013547529826));
-        c.quadraticBrakeCoefficients.set(Matrix.diag(0.0022600197083254797, 0.0012621399803019945));
+        c.linearBrakeCoefficients.set(Matrix.diag(0.08929294098815413, 0.05156861139370113));
+        c.quadraticBrakeCoefficients.set(Matrix.diag(0.0019785707157205295, 0.002581734940604227));
 
-        c.maxAchievableForwardVelocity.set(71.88837428192382);
-        c.maxAchievableStrafeVelocity.set(62.44050152401113);
-        c.naturalForwardDeceleration.set(27.50243954601577);
-        c.naturalStrafeDeceleration.set(59.156372270294554);
+        c.maxAchievableForwardVelocity.set(80.2824047715213);
+        c.maxAchievableStrafeVelocity.set(54.2807052003325);
+        c.naturalForwardDeceleration.set(26.27966579345643);
+        c.naturalStrafeDeceleration.set(50.71530641366674);
     });
 }
