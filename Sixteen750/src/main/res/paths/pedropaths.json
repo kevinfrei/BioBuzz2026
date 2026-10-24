@@ -1,103 +1,281 @@
 {
   "values": {
-    "value1": { "val": 1.0 },
-    "value2": { "val": 2.0 },
-    "value3": { "ref": "value1" },
-    "value4": { "val": 4.0 },
-    "value5": { "val": 5.0 },
-    "value6": { "val": 6.5 }
+    "value1": {
+      "val": 1
+    },
+    "value2": {
+      "val": 2
+    },
+    "value3": {
+      "ref": "value1"
+    },
+    "value4": {
+      "val": 4
+    },
+    "value5": {
+      "val": 5
+    },
+    "value6": {
+      "val": 6.5
+    }
   },
   "poses": {
     "pose1": {
-      "X": { "val": 2.0 },
-      "Y": { "val": 3.0 },
-      "Heading": { "val": 3.14159 },
-      "inRadians": true
+      "X": {
+        "val": 2
+      },
+      "Y": {
+        "val": 3
+      },
+      "heading": {
+        "angle": {
+          "val": 3.14159
+        },
+        "inRadians": true
+      }
     },
     "pose2": {
-      "X": { "ref": "value1" },
-      "Y": { "val": 4.0 },
-      "Heading": { "val": 45 },
-      "inRadians": false
-    },
-    "pose3": {
-      "X": { "val": 15.0 },
-      "Y": { "ref": "value3" },
-      "Heading": { "ref": "value6" },
-      "inRadians": false
-    },
-    "pose4": {
-      "X": { "ref": "value4" },
-      "Y": { "ref": "value5" },
-      "Heading": { "val": 1.571 },
-      "inRadians": true
-    },
-    "pose5": { "ref": "pose4" }
-  },
-  "interpolations": {
-    "tangent1": { "reversed": true },
-    "tangent2": { "reversed": false },
-    "tangent3": { "ref": "tangent1" },
-    "facing1": { "point": { "X": { "val": 72 }, "Y": { "val": 36 } } },
-    "facing2": {
-      "point": { "X": { "ref": "value6" }, "Y": { "ref": "value5" } }
-    },
-    "facing3": { "ref": "facing1" },
-    "constant1": { "heading": { "val": 1.57 }, "inRadians": true },
-    "constantA": {
+      "X": {
+        "ref": "value1"
+      },
+      "Y": {
+        "val": 4
+      },
       "heading": {
-        "X": 13,
-        "Y": 52,
-        "heading": { "val": 75 },
+        "angle": {
+          "val": 45
+        },
         "inRadians": false
       }
     },
-    "constant2": { "heading": { "ref": "pose3" } },
-    "constant3": { "heading": { "ref": "value6" }, "inRadians": false },
-    "constant4": { "heading": { "val": 135 }, "inRadians": false },
-    "constant5": { "ref": "constant1" },
-    "linear1": { "reversed": true },
-    "linear2": { "reversed": true },
-    "linear3": { "reversed": true },
-    "linear4": { "reversed": true }
+    "pose3": {
+      "X": {
+        "val": 15
+      },
+      "Y": {
+        "ref": "value3"
+      },
+      "heading": {
+        "angle": {
+          "ref": "value6"
+        },
+        "inRadians": false
+      }
+    },
+    "pose4": {
+      "X": {
+        "ref": "value4"
+      },
+      "Y": {
+        "ref": "value5"
+      },
+      "heading": {
+        "ref": "pose1"
+      }
+    },
+    "pose5": {
+      "ref": "pose4"
+    }
+  },
+  "interpolations": {
+    "tangent1": {
+      "reversed": true
+    },
+    "tangent2": {
+      "reversed": false
+    },
+    "tangent3": {
+      "ref": "tangent1"
+    },
+    "facing1": {
+      "point": {
+        "X": {
+          "val": 72
+        },
+        "Y": {
+          "val": 36
+        }
+      }
+    },
+    "facing2": {
+      "point": {
+        "X": {
+          "ref": "value6"
+        },
+        "Y": {
+          "ref": "value5"
+        }
+      }
+    },
+    "facing3": {
+      "ref": "facing1"
+    },
+    "constant1": {
+      "heading": {
+        "angle": {
+          "val": 1.57
+        },
+        "inRadians": true
+      }
+    },
+    "constantA": {
+      "heading": {
+        "angle": {
+          "val": 75
+        },
+        "inRadians": false
+      }
+    },
+    "constant2": {
+      "heading": {
+        "ref": "pose3"
+      }
+    },
+    "constant3": {
+      "heading": {
+        "angle": {
+          "ref": "value6"
+        },
+        "inRadians": false
+      }
+    },
+    "constant4": {
+      "heading": {
+        "angle": {
+          "val": 135
+        },
+        "inRadians": false
+      }
+    },
+    "constant5": {
+      "ref": "constant1"
+    },
+    "linear1": {
+      "reversed": true
+    },
+    "linear2": {
+      "reversed": true
+    },
+    "linear3": {
+      "reversed": true
+    },
+    "linear4": {
+      "reversed": true
+    }
   },
   "curves": {
     "line1": {
       "points": [
-        { "X": { "val": 15 }, "Y": { "val": 25 } },
-        { "ref": "pose3" }
+        {
+          "X": {
+            "val": 17
+          },
+          "Y": {
+            "val": 25
+          }
+        },
+        {
+          "ref": "pose3"
+        }
       ],
-      "interpolation": { "ref": "tangent1" }
+      "interpolation": {
+        "ref": "tangent1"
+      }
     },
     "line2": {
       "points": [
-        { "ref": "pose3" },
-        { "X": { "val": 25 }, "Y": { "val": 20 } }
+        {
+          "ref": "pose3"
+        },
+        {
+          "X": {
+            "val": 25
+          },
+          "Y": {
+            "val": 20
+          }
+        }
       ],
-      "interpolation": { "ref": "tangent1" }
+      "interpolation": {
+        "ref": "tangent1"
+      }
     },
     "curve1": {
       "points": [
-        { "X": { "val": 15 }, "Y": { "val": 25 } },
-        { "X": { "val": 25 }, "Y": { "val": 35 } },
-        { "ref": "pose3" }
+        {
+          "X": {
+            "val": 15
+          },
+          "Y": {
+            "val": 25
+          }
+        },
+        {
+          "X": {
+            "val": 25
+          },
+          "Y": {
+            "val": 35
+          }
+        },
+        {
+          "ref": "pose3"
+        }
       ],
-      "interpolation": { "ref": "tangent1" }
+      "interpolation": {
+        "ref": "tangent1"
+      }
     },
     "curve2": {
       "points": [
-        { "ref": "pose3" },
-        { "X": { "val": 15 }, "Y": { "val": 20 } },
-        { "X": { "val": 25 }, "Y": { "val": 20 } }
+        {
+          "ref": "pose3"
+        },
+        {
+          "X": {
+            "val": 15
+          },
+          "Y": {
+            "val": 20
+          }
+        },
+        {
+          "X": {
+            "val": 25
+          },
+          "Y": {
+            "val": 20
+          }
+        }
       ],
-      "interpolation": { "ref": "tangent1" }
+      "interpolation": {
+        "ref": "tangent1"
+      }
     }
   },
   "paths": {
-    "path1": { "curves": [{ "ref": "line1" }, { "ref": "line2" }] },
+    "path1": {
+      "curves": [
+        {
+          "ref": "line1"
+        },
+        {
+          "ref": "line2"
+        }
+      ]
+    },
     "path2": {
-      "curves": [{ "ref": "curve1" }, { "ref": "curve2" }],
-      "globalInterpolator": { "ref": "constant1" }
+      "curves": [
+        {
+          "ref": "curve1"
+        },
+        {
+          "ref": "curve2"
+        }
+      ],
+      "globalInterpolator": {
+        "ref": "constant1"
+      }
     }
   }
 }
