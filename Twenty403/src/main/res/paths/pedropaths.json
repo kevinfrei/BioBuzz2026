@@ -1,0 +1,82 @@
+{
+  "values": {
+    "newValue1": {
+      "val": 0
+    }
+  },
+  "poses": {
+    "newPose1": {
+      "X": {
+        "val": 65
+      },
+      "Y": {
+        "val": 77
+      },
+      "heading": {
+        "angle": {
+          "val": 45
+        },
+        "inRadians": false
+      }
+    }
+  },
+  "interpolations": {
+    "newInterpolation1": {
+      "reversed": false
+    }
+  },
+  "curves": {
+    "newCurve1": {
+      "points": [
+        {
+          "X": {
+            "val": 18
+          },
+          "Y": {
+            "val": 18
+          }
+        },
+        {
+          "X": {
+            "val": 50
+          },
+          "Y": {
+            "val": 10
+          }
+        }
+      ],
+      "interpolation": {
+        "reversed": false
+      }
+    }
+  },
+  "paths": {
+    "newPath1": {
+      "curves": [
+        {
+          "points": [
+            {
+              "X": {
+                "val": 10
+              },
+              "Y": {
+                "val": 10
+              }
+            },
+            {
+              "X": {
+                "val": 50
+              },
+              "Y": {
+                "val": 10
+              }
+            }
+          ],
+          "interpolation": {
+            "reversed": false
+          }
+        }
+      ]
+    }
+  }
+}
