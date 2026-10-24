@@ -46,6 +46,10 @@ public class TeleCommands {
         return Command.create(r.intakeSubsystem::GateClose);
     }
 
+    public static Command SaveEndOfAuto(Robot r) {
+        return Command.create(r::saveEndOfAutoPose);
+    }
+
     public static Command RampUp(Robot r) {
         return Command.create(r.intakeSubsystem::RampUp);
     }

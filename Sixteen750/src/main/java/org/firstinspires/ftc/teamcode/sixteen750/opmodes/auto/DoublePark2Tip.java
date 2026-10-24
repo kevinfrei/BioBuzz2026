@@ -14,6 +14,7 @@ import org.firstinspires.ftc.teamcode.sixteen750.commands.PedroDriver;
 import org.firstinspires.ftc.teamcode.sixteen750.commands.PedroPathCommand;
 import org.firstinspires.ftc.teamcode.sixteen750.commands.TeleCommands;
 import org.firstinspires.ftc.teamcode.sixteen750.commands.auto.AutoCommands;
+import org.firstinspires.ftc.teamcode.sixteen750.commands.driving.DrivingCommands;
 import org.firstinspires.ftc.teamcode.sixteen750.controls.DriverController;
 import org.firstinspires.ftc.teamcode.sixteen750.helpers.StartingPosition;
 import org.firstinspires.ftc.teamcode.sixteen750.pedro.meepmeep.Paths;
@@ -78,6 +79,7 @@ public class DoublePark2Tip extends CommandOpMode {
                 a.Fire(robot),
                 new PedroPathCommand(robot.follower, p.DLaunch3ToPark()),
                 t.GateClose(robot),
+                t.SaveEndOfAuto(robot),
                 CommandScheduler::terminateOpMode
             ),
             OpModeState.RUN

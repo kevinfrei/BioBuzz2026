@@ -15,6 +15,7 @@ import com.technototes.library.util.MathUtils;
 import com.technototes.library.util.PIDFController;
 import java.util.Locale;
 import java.util.function.DoubleSupplier;
+import org.firstinspires.ftc.teamcode.sixteen750.Robot;
 import org.firstinspires.ftc.teamcode.sixteen750.Setup;
 import org.firstinspires.ftc.teamcode.sixteen750.Setup.OtherSettings;
 import org.firstinspires.ftc.teamcode.sixteen750.subsystems.LimelightSubsystem;
@@ -55,8 +56,17 @@ public class PedroDriver implements Command, Loggable {
     public void ResetPosition1() {
         follower.setPose(new Pose(6.75, 6.75, 0)); // 6.75, 6.75 , 0
     }
+
     public void ResetPosition2() {
-        follower.setPose(new Pose(7,58,0));
+        follower.setPose(new Pose(7, 58, 0));
+    }
+
+    public void StorePose(Pose pose) {
+        Robot.endOfAutoPose = pose;
+    }
+
+    public void RestorePose() {
+        follower.setPose(Robot.endOfAutoPose);
     }
 
     public void SetSnailSpeed() {
