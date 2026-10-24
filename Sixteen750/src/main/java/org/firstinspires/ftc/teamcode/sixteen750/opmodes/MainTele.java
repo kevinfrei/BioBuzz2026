@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.sixteen750.opmodes;
 
 import static org.firstinspires.ftc.teamcode.sixteen750.Setup.HardwareNames.AprilTag_Pipeline;
+import static org.firstinspires.ftc.teamcode.sixteen750.pedro.meepmeep.Paths.follower;
 
 import com.bylazar.telemetry.PanelsTelemetry;
 import com.bylazar.telemetry.TelemetryManager;
@@ -17,6 +18,7 @@ import com.technototes.library.util.HeadingHelper;
 import org.firstinspires.ftc.teamcode.sixteen750.Hardware;
 import org.firstinspires.ftc.teamcode.sixteen750.Robot;
 import org.firstinspires.ftc.teamcode.sixteen750.Setup;
+import org.firstinspires.ftc.teamcode.sixteen750.commands.PedroDriver;
 import org.firstinspires.ftc.teamcode.sixteen750.commands.driving.DrivingCommands;
 import org.firstinspires.ftc.teamcode.sixteen750.controls.DriverController;
 import org.firstinspires.ftc.teamcode.sixteen750.controls.OperatorController;
@@ -33,6 +35,7 @@ public class MainTele extends CommandOpMode implements Loggable {
     public Hardware hardware;
     private Limelight3A limelight;
     public TelemetryManager ptel;
+    public PedroDriver pd;
 
     @Override
     public void uponInit() {
@@ -70,8 +73,6 @@ public class MainTele extends CommandOpMode implements Loggable {
              * Starts polling for data.  If you neglect to call start(), getLatestResult() will return null.
              */
             limelight.start();
-
-
         }
         if (Setup.Connected.TURRETSUBSYSTEM) {
             // CommandScheduler.register(robot.launcherSubsystem);
@@ -81,15 +82,18 @@ public class MainTele extends CommandOpMode implements Loggable {
     @Override
     public void uponStart() {
         robot.prepForStart();
+        if (Robot.endOfAutoPose != null) {
+            robot.follower.setPose(Robot.endOfAutoPose);
+        }
     }
 
     @Override
     public void runLoop() {
         robot.follower.update();
-       ptel.addData("targetvelo", TurretSubsystem.targetVelo);
-       ptel.addData("currentvelo", TurretSubsystem.currentVelo);
-       ptel.addData("Err", TurretSubsystem.error);
-       ptel.update();
+        ptel.addData("targetvelo", TurretSubsystem.targetVelo);
+        ptel.addData("currentvelo", TurretSubsystem.currentVelo);
+        ptel.addData("Err", TurretSubsystem.error);
+        ptel.update();
     }
 
     @Override

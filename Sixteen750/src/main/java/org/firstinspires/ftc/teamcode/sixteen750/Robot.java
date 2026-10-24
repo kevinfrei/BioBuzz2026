@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.sixteen750;
 
 import com.pedropathing.follower.Follower;
+import com.pedropathing.math.Pose;
+import com.technototes.library.command.Command;
 import com.technototes.library.logger.Loggable;
 import com.technototes.library.util.Alliance;
 import org.firstinspires.ftc.teamcode.sixteen750.helpers.StartingPosition;
@@ -13,7 +15,7 @@ public class Robot implements Loggable {
 
     public StartingPosition position;
     public Alliance alliance;
-
+    public static Pose endOfAutoPose;
     public double initialVoltage;
 
     public IntakeSubsystem intakeSubsystem;
@@ -55,4 +57,8 @@ public class Robot implements Loggable {
     }
 
     public void prepForStart() {}
+
+    public void saveEndOfAutoPose() {
+        Robot.endOfAutoPose = follower.pose();
+    }
 }
