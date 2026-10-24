@@ -26,8 +26,8 @@ import org.firstinspires.ftc.teamcode.sixteen750.Setup;
 public class TurretSubsystem implements Loggable, Subsystem {
 
     final Robot robot;
-    Pose HIVE_TARGET1 = new Pose(57, 51);
-    Pose HIVE_TARGET2 = new Pose(57, 93);
+    Pose HIVE_TARGET1 = new Pose(56.5, 51);
+    Pose HIVE_TARGET2 = new Pose(56.5, 93);
 
     public static double TARGET_SWITCH_THRESHOLD = 72;
     public static double TURRET_CENTER = 0.5;
@@ -36,8 +36,10 @@ public class TurretSubsystem implements Loggable, Subsystem {
     // @Log.Number (name = "target servo Pos")
     public static double targetServoPos = 0;
     public static double FLIGHT_TIME = 0.3;
+
     @Log.Number(name = "xvelo")
     public static double xVelo = 0;
+
     @Log.Number(name = "yvelo")
     public static double yVelo = 0;
 
@@ -55,6 +57,7 @@ public class TurretSubsystem implements Loggable, Subsystem {
 
     @Log(name = "Target Pose")
     public static Pose targetPose = new Pose(0, 0);
+
     @Log(name = "sotm targetPose")
     public static Pose sotmTargetPose = new Pose(0, 0);
 
@@ -66,7 +69,7 @@ public class TurretSubsystem implements Loggable, Subsystem {
 
     public static double HOOD_INCREMENT = 0.01; // amount to manually adjust hood by for tuning
     public static double HOOD_POSITION_TO_ANGLE_CONSTANT = 43.42105; // did math to get this it is how the position relates to the angle in degrees
-    public static double hoodCompScalar = -0.032; // the ratio between our error in velocity ~in the couple of hundreds and the change in hood angle 21-38 degrees;
+    public static double hoodCompScalar = -0.0324; // the ratio between our error in velocity ~in the couple of hundreds and the change in hood angle 21-38 degrees;
     public static double HOOD_MIN = 0.1;
     public static double HOOD_MAX = 0.5;
     public static double INCREASE = 15; // extremely jank increment and decrement
@@ -84,7 +87,7 @@ public class TurretSubsystem implements Loggable, Subsystem {
     public static double HOOD_REGRESSION_B = -0.0003136;
     public static double HOOD_REGRESSION_C = 0.0153873;
     public static double HOOD_REGRESSION_D = -0.315317;
-    public static double HOOD_REGRESSION_E = 2.94479; // offset to the slope (y intercept)
+    public static double HOOD_REGRESSION_E = 2.91; // offset to the slope (y intercept)
     public static double LAUNCHER_REGRESSION_A = 0.00657618; // slope of launcher regression
     public static double LAUNCHER_REGRESSION_B = -0.960648;
     public static double LAUNCHER_REGRESSION_C = 51.54356;
@@ -94,6 +97,7 @@ public class TurretSubsystem implements Loggable, Subsystem {
 
     @Log.Number(name = "rawdistance")
     public static double distanceToTarget = 0; // distance to the hive we are aiming at in inches
+
     @Log.Number(name = "SOTMdistance")
     public static double sotmDistanceToTarget = 0; // distance for sotm
 
@@ -184,10 +188,10 @@ public class TurretSubsystem implements Loggable, Subsystem {
             AngleUnit.RADIANS
         ); // sets robotHead to robot heading and normalizes to delta radians
 
-        //dx = targetPose.x() - x; // difference between target x and robot x
-        dx = sotmTargetPose.x() - x;
-        //dy = targetPose.y() - y; // difference between target y and robot y
-        dy = sotmTargetPose.y() - y;
+        dx = targetPose.x() - x; // difference between target x and robot x
+        //dx = sotmTargetPose.x() - x;
+        dy = targetPose.y() - y; // difference between target y and robot y
+        //dy = sotmTargetPose.y() - y;
         absoluteAngle = Math.atan2(dy, dx); // in radians the target angle of the turret relative to the field
 
         angle = absoluteAngle - robotHead; // still in radians.......
@@ -203,6 +207,7 @@ public class TurretSubsystem implements Loggable, Subsystem {
 
         return clamp(Distance, 20, 48);
     }
+
     //returns the distance from the sotm target made the clamp slightly bigger cause why not ig
     public double getSotmDistance() {
         Pose robotPose = robot.follower.pose();
@@ -210,7 +215,7 @@ public class TurretSubsystem implements Loggable, Subsystem {
 
         double sotmDistance = robotPose.distance(sotmTargetPose);
 
-        return clamp(sotmDistance, 16,52);
+        return clamp(sotmDistance, 16, 52);
     }
 
     // increment ignore how sus this implementation is btw
@@ -240,6 +245,7 @@ public class TurretSubsystem implements Loggable, Subsystem {
 
         return targetPose;
     }
+
     // gets our predicted pose by shifting the hive target by our velocity multiplied times our flight time (might have to make flight time a function we will see)
     public Pose getSotmTargetPose() {
         double Y, dx, dy;
@@ -250,9 +256,15 @@ public class TurretSubsystem implements Loggable, Subsystem {
         dy = getYVelo();
 
         if (Y < TARGET_SWITCH_THRESHOLD) {
-           sotmTargetPose = new Pose (HIVE_TARGET1.x() - (dx * FLIGHT_TIME), HIVE_TARGET1.y() - (dy * FLIGHT_TIME));
+            sotmTargetPose = new Pose(
+                HIVE_TARGET1.x() - dx * FLIGHT_TIME,
+                HIVE_TARGET1.y() - dy * FLIGHT_TIME
+            );
         } else {
-            sotmTargetPose = new Pose(HIVE_TARGET2.x() - (dx * FLIGHT_TIME), HIVE_TARGET2.y() - (dy * FLIGHT_TIME));
+            sotmTargetPose = new Pose(
+                HIVE_TARGET2.x() - dx * FLIGHT_TIME,
+                HIVE_TARGET2.y() - dy * FLIGHT_TIME
+            );
         }
 
         return sotmTargetPose;
@@ -288,8 +300,8 @@ public class TurretSubsystem implements Loggable, Subsystem {
 
     // returns the target angle we want our hood to be at in degrees before we compensate for velocity
     public double getHoodTargetPos() {
-        //double x = distanceTotarget;
-        double x = sotmDistanceToTarget; // distance in inches
+        double x = distanceToTarget;
+        //double x = sotmDistanceToTarget; // distance in inches
 
         hoodTargetPos =
             HOOD_REGRESSION_A * Math.pow(x, 4) +
@@ -356,8 +368,8 @@ public class TurretSubsystem implements Loggable, Subsystem {
 
     // takes distance and returns AUTO_VELOCITY by plugging it into the regression
     public double getAutoVelocity() {
-        //double x = distanceToTarget;
-        double x = sotmDistanceToTarget;
+        double x = distanceToTarget;
+        //double x = sotmDistanceToTarget;
 
         autoVelocity =
             LAUNCHER_REGRESSION_A * Math.pow(x, 4) +
@@ -378,15 +390,17 @@ public class TurretSubsystem implements Loggable, Subsystem {
         turret1.setPosition(pos);
         turret2.setPosition(pos);
     }
+
     //gets our x velocity in in/s clamping it to not make the launcher have a seizure
     public double getXVelo() {
         xVelo = robot.follower.velocity().vx;
-        return clamp(xVelo, -50,50);
+        return clamp(xVelo, -50, 50);
     }
+
     //gets our y velocity in in/s clamping it to not make the launcher have a seizure
     public double getYVelo() {
         yVelo = robot.follower.velocity().vy;
-        return clamp(yVelo, -50,50);
+        return clamp(yVelo, -50, 50);
     }
 
     private void setHoodPos(double pos) {

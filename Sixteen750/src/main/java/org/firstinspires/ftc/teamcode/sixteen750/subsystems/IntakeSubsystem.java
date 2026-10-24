@@ -22,8 +22,8 @@ public class IntakeSubsystem implements Loggable, Subsystem {
     public static double TRANSFER2_HOLD_VELOCITY = 0.5;
     public static double INTAKE_FEED_VELOCITY = 0.6;
     public static double TRANSFER1_FEED_VELOCITY = 1;
-    public static double TRANSFER2_FEED_VELOCITY = 0.92;
-    public static double BLOCK_POSITION = 0.53;
+    public static double TRANSFER2_FEED_VELOCITY = 1;
+    public static double BLOCK_POSITION = 0.46;
     public static double REGURGITATE_VELOCITY = -0.7;
 
     public static double FIRE_POSITION = 0.3;

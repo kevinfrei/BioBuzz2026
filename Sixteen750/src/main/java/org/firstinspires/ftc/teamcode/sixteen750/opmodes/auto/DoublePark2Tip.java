@@ -1,4 +1,5 @@
 package org.firstinspires.ftc.teamcode.sixteen750.opmodes.auto;
+
 import com.bylazar.telemetry.PanelsTelemetry;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -39,41 +40,47 @@ public class DoublePark2Tip extends CommandOpMode {
         panelsTelemetry = PanelsTelemetry.INSTANCE;
         robot.follower.setPose(Poses.StartPoses.getStart());
         CommandScheduler.scheduleForState(
-                new SequentialCommandGroup(
-                        new PedroPathCommand(robot.follower, p.DStartToPartnerPark()),
-                        new PedroPathCommand(robot.follower, p.DPartnerParkToLaunch1()),
-                        new WaitCommand(0.5),
-                        a.Fire(robot),
-                        new PedroPathCommand(robot.follower, p.DLaunch1ToGardenPreInt()).alongWith(
-                                t.Intake(robot)
-                        ),
-                        new PedroPathCommand(robot.follower, p.DGardenPreIntToGardenInt()).withTimeout(2),
-                        new WaitCommand(1.5),
-                        new PedroPathCommand(robot.follower, p.DGardenIntToLaunch2()),
-                        new WaitCommand(0.3),
-                        a.Fire(robot),
-                        new PedroPathCommand(robot.follower, p.DLaunch2ToNearFlowerPreInt()).alongWith(
-                                t.Intake(robot),
-                                t.RampDown(robot)
-                        ),
-                        new PedroPathCommand(robot.follower, p.DNearFlowerPreIntToNearFlowerInt()).withTimeout(1.5),
-                        new PedroPathCommand(robot.follower, p.DNearFlowerIntToLaunch3()),
-                        new WaitCommand(0.5),
-                        a.Fire(robot),
-                        new PedroPathCommand(robot.follower, p.DLaunch3ToSideFlowerPreInt()).alongWith(
-                                t.Intake(robot)
-                        ),
-                        new PedroPathCommand(robot.follower, p.DSideFlowerPreIntToSideFlowerInt()).withTimeout(1.5),
-                        new PedroPathCommand(robot.follower, p.DSideFlowerIntToLaunch3()),
-                        new WaitCommand(0.3).alongWith(
-                                t.RampUp(robot)
-                        ),
-                        a.Fire(robot),
-                        new PedroPathCommand(robot.follower, p.DLaunch3ToPark()),
-                        t.GateClose(robot),
-                        CommandScheduler::terminateOpMode
+            new SequentialCommandGroup(
+                new PedroPathCommand(robot.follower, p.DStartToPartnerPark()),
+                new PedroPathCommand(robot.follower, p.DPartnerParkToLaunch1()),
+                new WaitCommand(0.8),
+                a.Fire(robot),
+                new PedroPathCommand(robot.follower, p.DLaunch1ToGardenPreInt()).alongWith(
+                    t.Intake(robot)
                 ),
-                OpModeState.RUN
+                new PedroPathCommand(robot.follower, p.DGardenPreIntToGardenInt()).withTimeout(2),
+                new WaitCommand(1.3),
+                new PedroPathCommand(robot.follower, p.DGardenIntToLaunch2()),
+                new WaitCommand(0.5),
+                a.Fire(robot),
+                new PedroPathCommand(robot.follower, p.DLaunch2ToNearFlowerPreInt()).alongWith(
+                    t.Reject(robot),
+                    t.RampDown(robot)
+                ),
+                new PedroPathCommand(robot.follower, p.DNearFlowerPreIntToNearFlowerInt())
+                    .alongWith(t.Intake(robot))
+                    .withTimeout(1.5),
+                new WaitCommand(1.1),
+
+                new PedroPathCommand(robot.follower, p.DNearFlowerIntToLaunch3()),
+                new WaitCommand(0.5),
+                a.Fire(robot),
+                new PedroPathCommand(robot.follower, p.DLaunch3ToSideFlowerPreInt()).alongWith(
+                    t.Intake(robot)
+                ),
+                new PedroPathCommand(
+                    robot.follower,
+                    p.DSideFlowerPreIntToSideFlowerInt()
+                ).withTimeout(1.5),
+                new WaitCommand(1.1),
+                new PedroPathCommand(robot.follower, p.DSideFlowerIntToLaunch3()),
+                new WaitCommand(0.3).alongWith(t.RampUp(robot)),
+                a.Fire(robot),
+                new PedroPathCommand(robot.follower, p.DLaunch3ToPark()),
+                t.GateClose(robot),
+                CommandScheduler::terminateOpMode
+            ),
+            OpModeState.RUN
         );
     }
 
