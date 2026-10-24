@@ -28,10 +28,10 @@ public class PedroConstants {
 
     // TODO: Run the tuners on the bot, fill these it with the results:
     public static MecanumConfig drivetrainConfig = new MecanumConfig(c -> {
-        c.frontLeftName.set("fl");
-        c.frontRightName.set("fr");
-        c.backLeftName.set("rl");
-        c.backRightName.set("rr");
+        c.frontLeftName.set(Setup.HardwareNames.FLMOTOR);
+        c.frontRightName.set(Setup.HardwareNames.FRMOTOR);
+        c.backLeftName.set(Setup.HardwareNames.RLMOTOR);
+        c.backRightName.set(Setup.HardwareNames.RRMOTOR);
         c.frontLeftDirection.set(DcMotorSimple.Direction.REVERSE);
         c.frontRightDirection.set(DcMotorSimple.Direction.REVERSE);
         c.backLeftDirection.set(DcMotorSimple.Direction.REVERSE);
@@ -39,9 +39,11 @@ public class PedroConstants {
     });
     // Ran on Oct 23 2026
     public static TwoWheelConfig localizerConfig = new TwoWheelConfig(c -> {
-        c.xPodName.set("fbodo");
-        c.yPodName.set("strafeodo");
-        c.imuName.set("adafruit-imu");
+        c.xPodName.set(Setup.HardwareNames.FB_ODO);
+        c.yPodName.set(Setup.HardwareNames.STRAFE_ODO);
+        c.imuName.set(
+            Setup.Connected.EXTERNALIMU ? Setup.HardwareNames.EXTERNALIMU : Setup.HardwareNames.IMU
+        );
         c.xPodOffset.set(-3.95);
         c.yPodOffset.set(-5.67);
         c.forwardTicksToInches.set(0.002014);
@@ -51,8 +53,12 @@ public class PedroConstants {
         c.imu.set(
             new RevHubIMU(
                 new RevHubOrientationOnRobot(
-                    RevHubOrientationOnRobot.LogoFacingDirection.UP,
-                    RevHubOrientationOnRobot.UsbFacingDirection.RIGHT
+                    Setup.Connected.EXTERNALIMU
+                        ? RevHubOrientationOnRobot.LogoFacingDirection.UP
+                        : RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
+                    Setup.Connected.EXTERNALIMU
+                        ? RevHubOrientationOnRobot.UsbFacingDirection.RIGHT
+                        : RevHubOrientationOnRobot.UsbFacingDirection.UP
                 )
             )
         );

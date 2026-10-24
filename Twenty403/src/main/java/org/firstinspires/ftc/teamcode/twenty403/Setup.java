@@ -24,6 +24,8 @@ public class Setup {
         public static String RRMOTOR = "rr";
         public static String IMU = "imu";
         public static String EXTERNALIMU = "adafruit-imu";
+        public static String FB_ODO = "fbodo";
+        public static String STRAFE_ODO = "strafeodo";
         public static String LAUNCHER = "launch";
         public static String WINDMILL = "spin";
         public static String LEFTINTAKESERVO = "lintake";
