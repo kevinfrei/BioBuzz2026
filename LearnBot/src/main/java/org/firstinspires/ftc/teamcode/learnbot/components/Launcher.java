@@ -28,13 +28,13 @@ public class Launcher {
     public static class Config {
 
         // This should be the motor that has the encoder
-        public static String MotorName1 = "launcher1";
+        public static String MotorName1 = "launch";
 
         // Set this to null if there's only one motor
-        public static String MotorName2 = "launcher2-odo1";
+        public static String MotorName2 = null;
 
         // Is the primary intake motor reversed?
-        public static boolean PrimaryReversed = false;
+        public static boolean PrimaryReversed = true;
         // This should probably track the PrimaryReversed value
         // but if you're using the encoder from the secondary, it might not.
         // The FeedFwd helper tell you the correct value.
