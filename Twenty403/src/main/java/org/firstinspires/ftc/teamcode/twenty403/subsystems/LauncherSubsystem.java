@@ -18,14 +18,14 @@ import org.firstinspires.ftc.teamcode.twenty403.Setup;
 @Configurable
 public class LauncherSubsystem implements Loggable, Subsystem {
 
-    public static double TARGET_MOTOR_VELOCITY = 1350; //.58; // 0.5 // /1.0
+    public static double TARGET_MOTOR_VELOCITY = 1275; //.58; // 0.5 // /1.0
     public static double WINDMILL_SPIN = -0.15;
     public static double REVERSE_WINDMILL = 0.15;
     public static double Target_windmill = 250;
     // GoBilda says stall current of 9.2A at 12V, so V = I * R, R = 12 / 9.2 (about 1.3 ohms)
     // As the motor heats up, resistance also increase, so we could increase this a little bit
     // or maybe increase it over time to counteract that, but this is probably good enough.
-    public static double MotorResistance = 12 / 9.2;
+    public static double MotorResistance = 0; //12 / 9.2;
     public static double kVelocityConstant = 0.0043;
     public static double kDynamicFriction = 0.22;
     public static double kStaticFriction = 0.27;
@@ -36,7 +36,7 @@ public class LauncherSubsystem implements Loggable, Subsystem {
     public CRServo windmill;
     // Reverse encoder, Reverse motor
     // this doesn't really matter as much since f calculation is just overriding it :(
-    public static PIDFCoefficients launcherP = new PIDFCoefficients(0.006, 0.0, 0.0, 0);
+    public static PIDFCoefficients launcherP = new PIDFCoefficients(0.0005, 0.00005, 0.0, 0);
     public static double SPIN_F_SCALE = 0.00016;
     public static double SPIN_VOLT_COMP = 0.0216;
     public static double DIFFERENCE = 0.0046;
