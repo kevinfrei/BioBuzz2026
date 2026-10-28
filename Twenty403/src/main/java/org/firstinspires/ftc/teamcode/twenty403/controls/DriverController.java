@@ -73,7 +73,7 @@ public class DriverController {
             launch.whenPressed(EZCmd.Launcher.Launch(robot.launcherSubsystem));
             launch.whenReleased(EZCmd.Launcher.Stop(robot.launcherSubsystem));
             reversewindmill.whenPressed(EZCmd.Launcher.Reverse(robot.launcherSubsystem));
-            reversewindmill.whenReleased(EZCmd.Stop(robot.launcherSubsystem));
+            reversewindmill.whenReleased(EZCmd.Launcher.Stop(robot.launcherSubsystem));
         }
     }
 

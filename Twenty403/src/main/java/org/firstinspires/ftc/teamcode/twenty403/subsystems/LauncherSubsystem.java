@@ -21,7 +21,7 @@ public class LauncherSubsystem implements Loggable, Subsystem {
     public static double TARGET_MOTOR_VELOCITY = 1320; //.58; // 0.5 // /1.0
     public static double WINDMILL_SPIN = -0.15;
     public static double REVERSE_WINDMILL = 0.15;
-    public static double TARGET_WINDILL = 50;
+    public static double TARGET_WINDMILL = 20;
     // GoBilda says stall current of 9.2A at 12V, so V = I * R, R = 12 / 9.2 (about 1.3 ohms)
     // As the motor heats up, resistance also increase, so we could increase this a little bit
     // or maybe increase it over time to counteract that, but this is probably good enough.
@@ -37,7 +37,7 @@ public class LauncherSubsystem implements Loggable, Subsystem {
     public CRServo windmill;
     // Reverse encoder, Reverse motor
     // this doesn't really matter as much since f calculation is just overriding it :(
-    public static PIDFCoefficients launcherP = new PIDFCoefficients(0.0005, 0.00005, 0.0, 0);
+    public static PIDFCoefficients launcherP = new PIDFCoefficients(0.00045, 0.00008, 0.0, 0);
     public static boolean ISLAUNCHMOTORREVERSED = true;
     private static PIDFController launcherPID;
 
@@ -136,7 +136,7 @@ public class LauncherSubsystem implements Loggable, Subsystem {
     }
 
     public boolean IsAtTargetVelocity() {
-        return Math.abs(MOTOR_VELOCITY - TARGET_MOTOR_VELOCITY) < TARGET_WINDILL;
+        return Math.abs(MOTOR_VELOCITY - TARGET_MOTOR_VELOCITY) < TARGET_WINDMILL;
     }
 
     public void Stop() {
