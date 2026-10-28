@@ -83,6 +83,6 @@ public class Poses {
         public static Pose SideFlowerInt = new Pose(47, 130.4);
         public static double SideFlowerIntHead = Math.toRadians(90);
         public static Pose Park = new Pose(12, 122);
-        public static double ParkHead = Math.toRadians(0);
+        public static double ParkHead = Math.toRadians(90);
     }
 }

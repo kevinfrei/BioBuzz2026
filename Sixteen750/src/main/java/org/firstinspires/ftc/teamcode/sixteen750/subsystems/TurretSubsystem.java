@@ -29,7 +29,7 @@ public class TurretSubsystem implements Loggable, Subsystem {
     Pose HIVE_TARGET1 = new Pose(56.5, 51);
     Pose HIVE_TARGET2 = new Pose(56.5, 93);
 
-    public static boolean turretSOTM = true;
+    public static boolean turretSOTM = false;
     public static boolean velocitySOTM = false;
     public static boolean hoodSOTM = false;
 
