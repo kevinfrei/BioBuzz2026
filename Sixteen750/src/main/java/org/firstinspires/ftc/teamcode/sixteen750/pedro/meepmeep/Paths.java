@@ -113,7 +113,12 @@ public class Paths {
     }
 
     public Path DLaunch3ToNearFlowerPreInt() {
-        return curve(p2.Launch3, p2.NearFlowerPreIntCtrl1, p2.NearFlowerPreIntCtrl2, p2.NearFlowerPreInt).tangent();
+        return curve(
+            p2.Launch3,
+            p2.NearFlowerPreIntCtrl1,
+            p2.NearFlowerPreIntCtrl2,
+            p2.NearFlowerPreInt
+        ).tangent();
     }
 
     public Path DNearFlowerPreIntToNearFlowerInt() {
