@@ -29,14 +29,14 @@ public class TurretSubsystem implements Loggable, Subsystem {
     Pose HIVE_TARGET1 = new Pose(56.5, 51);
     Pose HIVE_TARGET2 = new Pose(56.5, 93);
 
-    public static boolean turretSOTM = false;
+    public static boolean turretSOTM = true;
     public static boolean velocitySOTM = false;
     public static boolean hoodSOTM = false;
 
     public static double TARGET_SWITCH_THRESHOLD = 72;
     public static double TURRET_CENTER = 0.5;
-    public static double TURRET_MIN = 0.03;
-    public static double TURRET_MAX = 0.97;
+    public static double TURRET_MIN = 0.01;
+    public static double TURRET_MAX = 0.99;
     // @Log.Number (name = "target servo Pos")
     public static double targetServoPos = 0;
     public static double FLIGHT_TIME = 0.57;
@@ -204,7 +204,7 @@ public class TurretSubsystem implements Loggable, Subsystem {
         absoluteAngle = Math.atan2(dy, dx); // in radians the target angle of the turret relative to the field
 
         angle = absoluteAngle - robotHead; // still in radians.......
-        return angle;
+        return MathUtils.normalizeDeltaRadians(angle);
     }
 
     //returns the distance from the selected hive target in inches
@@ -214,7 +214,7 @@ public class TurretSubsystem implements Loggable, Subsystem {
 
         double Distance = robotPose.distance(targetPose);
 
-        return clamp(Distance, 20, 48);
+        return clamp(Distance, 24, 48);
     }
 
     //returns the distance from the sotm target made the clamp slightly bigger cause why not ig
@@ -224,7 +224,7 @@ public class TurretSubsystem implements Loggable, Subsystem {
 
         double sotmDistance = robotPose.distance(sotmTargetPose);
 
-        return clamp(sotmDistance, 16, 52);
+        return clamp(sotmDistance, 23, 48);
     }
 
     // increment ignore how sus this implementation is btw
@@ -383,7 +383,7 @@ public class TurretSubsystem implements Loggable, Subsystem {
             LAUNCHER_REGRESSION_B * Math.pow(x, 3) +
             LAUNCHER_REGRESSION_C * Math.pow(x, 2) +
             LAUNCHER_REGRESSION_D * x +
-            //   LAUNCHER_REGRESSION_E; // comment when use SOTM
+            // LAUNCHER_REGRESSION_E; // comment when use SOTM
             LAUNCHER_REGRESSION_E_SOTM;
         return autoVelocity;
     }
