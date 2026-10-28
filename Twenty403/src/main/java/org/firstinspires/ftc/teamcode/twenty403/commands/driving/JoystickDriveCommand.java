@@ -30,8 +30,8 @@ public class JoystickDriveCommand implements Command {
     @Override
     public void execute() {
         double fwd = -y.getAsDouble();
-        double strafe = -x.getAsDouble();
-        double rotate = -r.getAsDouble();
+        double strafe = x.getAsDouble();
+        double rotate = r.getAsDouble();
         drivebase.setControllerInputs(fwd, strafe, rotate);
     }
 

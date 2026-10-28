@@ -13,21 +13,6 @@ import org.firstinspires.ftc.teamcode.twenty403.subsystems.LauncherSubsystem;
 @Configurable
 public class Robot implements Loggable {
 
-    @Log(name = "H")
-    public double gyro;
-
-    @Log(name = "X")
-    public double xv;
-
-    @Log(name = "Y")
-    public double yv;
-
-    @Log(name = "R")
-    public double rv;
-
-    @Log(name = "Launcher")
-    public double launcherVelociy;
-
     public StartingPosition position;
     public Alliance alliance;
     public double initialVoltage;

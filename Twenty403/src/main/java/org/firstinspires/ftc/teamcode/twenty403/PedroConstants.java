@@ -44,10 +44,10 @@ public class PedroConstants {
         c.imuName.set(
             Setup.Connected.EXTERNALIMU ? Setup.HardwareNames.EXTERNALIMU : Setup.HardwareNames.IMU
         );
-        c.xPodOffset.set(-3.95);
+        c.xPodOffset.set(-0.413);
         c.yPodOffset.set(-5.67);
-        c.forwardTicksToInches.set(0.002014);
-        c.strafeTicksToInches.set(0.002014);
+        c.forwardTicksToInches.set(0.0020135);
+        c.strafeTicksToInches.set(0.0020135);
         c.xPodDirection.set(Encoder.REVERSE);
         c.yPodDirection.set(Encoder.REVERSE);
         c.imu.set(
@@ -65,10 +65,10 @@ public class PedroConstants {
     });
 
     public static ForesightConfig foresightConfig = new ForesightConfig(c -> {
-        Controller primaryTranslationalForward = Controller.proportional(0.2833077272955512);
-        Controller secondaryTranslationalForward = Controller.proportional(0.1046746351138119);
-        Controller primaryTranslationalLateral = Controller.proportional(0.42485505706781734);
-        Controller secondaryTranslationalLateral = Controller.proportional(0.1569725912503547);
+        Controller primaryTranslationalForward = Controller.proportional(3.140914166223175);
+        Controller secondaryTranslationalForward = Controller.proportional(1.16048385764724);
+        Controller primaryTranslationalLateral = Controller.proportional(0.3869868831953519);
+        Controller secondaryTranslationalLateral = Controller.proportional(0.1429813128607202);
 
         c.forwardTranslational.set(
             Controller.piecewise(secondaryTranslationalForward).put(
@@ -83,21 +83,21 @@ public class PedroConstants {
             )
         );
 
-        c.coast.set(Controller.proportionalFeedforward(0.011880823934200879));
-        c.brake.set(Controller.proportionalFeedforward(0.010098700344070746));
+        c.coast.set(Controller.proportionalFeedforward(0.013173340432575217));
+        c.brake.set(Controller.proportionalFeedforward(0.011197339367688934));
 
-        // Lower values jiggle *less8
-        c.headingFeedback.set(Controller.proportional(3.263295808015299));
+        // Lower values jiggle *less*
+        c.headingFeedback.set(Controller.proportional(1.5));
         c.headingBrakeCoefficients.set(
-            Vector2D.cartesian(0.06854604503841423, -0.0019709745617720845)
+            Vector2D.cartesian(0.06921667217831645, 0.003996514850370519)
         );
 
-        c.linearBrakeCoefficients.set(Matrix.diag(0.08929294098815413, 0.05156861139370113));
-        c.quadraticBrakeCoefficients.set(Matrix.diag(0.0019785707157205295, 0.002581734940604227));
+        c.linearBrakeCoefficients.set(Matrix.diag(0.07879625092892711, 0.0581106795791841));
+        c.quadraticBrakeCoefficients.set(Matrix.diag(0.0024436056663298777, 0.0024037888882513982));
 
-        c.maxAchievableForwardVelocity.set(80.2824047715213);
-        c.maxAchievableStrafeVelocity.set(54.2807052003325);
-        c.naturalForwardDeceleration.set(26.27966579345643);
-        c.naturalStrafeDeceleration.set(50.71530641366674);
+        c.maxAchievableForwardVelocity.set(82.19934633520977);
+        c.maxAchievableStrafeVelocity.set(54.62715311683887);
+        c.naturalForwardDeceleration.set(28.310017444938694);
+        c.naturalStrafeDeceleration.set(105.43819925978954);
     });
 }

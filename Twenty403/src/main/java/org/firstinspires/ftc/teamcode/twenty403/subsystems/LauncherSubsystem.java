@@ -18,14 +18,15 @@ import org.firstinspires.ftc.teamcode.twenty403.Setup;
 @Configurable
 public class LauncherSubsystem implements Loggable, Subsystem {
 
-    public static double TARGET_MOTOR_VELOCITY = 1275; //.58; // 0.5 // /1.0
+    public static double TARGET_MOTOR_VELOCITY = 1320; //.58; // 0.5 // /1.0
     public static double WINDMILL_SPIN = -0.15;
     public static double REVERSE_WINDMILL = 0.15;
-    public static double Target_windmill = 250;
+    public static double TARGET_WINDILL = 50;
     // GoBilda says stall current of 9.2A at 12V, so V = I * R, R = 12 / 9.2 (about 1.3 ohms)
     // As the motor heats up, resistance also increase, so we could increase this a little bit
     // or maybe increase it over time to counteract that, but this is probably good enough.
-    public static double MotorResistance = 0; //12 / 9.2;
+    // Setting this to zero erases motor resistance compensation
+    public static double MotorResistance = 0; // 12 / 9.2;
     public static double kVelocityConstant = 0.0043;
     public static double kDynamicFriction = 0.22;
     public static double kStaticFriction = 0.27;
@@ -37,10 +38,6 @@ public class LauncherSubsystem implements Loggable, Subsystem {
     // Reverse encoder, Reverse motor
     // this doesn't really matter as much since f calculation is just overriding it :(
     public static PIDFCoefficients launcherP = new PIDFCoefficients(0.0005, 0.00005, 0.0, 0);
-    public static double SPIN_F_SCALE = 0.00016;
-    public static double SPIN_VOLT_COMP = 0.0216;
-    public static double DIFFERENCE = 0.0046;
-    public static double PEAK_VOLTAGE = 13;
     public static boolean ISLAUNCHMOTORREVERSED = true;
     private static PIDFController launcherPID;
 
@@ -77,12 +74,6 @@ public class LauncherSubsystem implements Loggable, Subsystem {
                 launchMotor.setDirection(DcMotorSimple.Direction.FORWARD);
             }
 
-            double ADDITION = PEAK_VOLTAGE - h.voltage();
-            if (ADDITION == 0) {
-                SPIN_VOLT_COMP = SPIN_VOLT_COMP + 0.001;
-            } else {
-                SPIN_VOLT_COMP = SPIN_VOLT_COMP + ADDITION * DIFFERENCE;
-            }
             launcherPID = new PIDFController(
                 launcherP,
                 target ->
@@ -145,7 +136,7 @@ public class LauncherSubsystem implements Loggable, Subsystem {
     }
 
     public boolean IsAtTargetVelocity() {
-        return Math.abs(MOTOR_VELOCITY - TARGET_MOTOR_VELOCITY) < Target_windmill;
+        return Math.abs(MOTOR_VELOCITY - TARGET_MOTOR_VELOCITY) < TARGET_WINDILL;
     }
 
     public void Stop() {
@@ -201,7 +192,7 @@ public class LauncherSubsystem implements Loggable, Subsystem {
         if (launching && IsAtTargetVelocity()) {
             setWindmillPower(WINDMILL_SPIN);
         } else if (reverse) {
-            setWindmillPower(-WINDMILL_SPIN);
+            setWindmillPower(REVERSE_WINDMILL);
         } else setWindmillPower(0.0);
     }
     // launcherP.f =  SPIN_F_SCALE * target + SPIN_VOLT_COMP * Math.min(PEAK_VOLTAGE, Hardware.voltage());
