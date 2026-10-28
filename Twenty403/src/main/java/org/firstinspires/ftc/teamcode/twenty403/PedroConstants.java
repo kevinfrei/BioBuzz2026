@@ -8,6 +8,7 @@ import com.pedropathing.math.Matrix;
 import com.pedropathing.math.Vector2D;
 import com.pedropathing.revhub.drivetrains.Mecanum;
 import com.pedropathing.revhub.drivetrains.MecanumConfig;
+import com.pedropathing.revhub.localizers.CustomIMU;
 import com.pedropathing.revhub.localizers.Encoder;
 import com.pedropathing.revhub.localizers.RevHubIMU;
 import com.pedropathing.revhub.localizers.TwoWheelConfig;
@@ -15,6 +16,7 @@ import com.pedropathing.revhub.localizers.TwoWheelLocalizer;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import org.firstinspires.ftc.teamcode.twenty403.helpers.AdafruitCustomIMU;
 
 public class PedroConstants {
 
@@ -44,6 +46,10 @@ public class PedroConstants {
         c.imuName.set(
             Setup.Connected.EXTERNALIMU ? Setup.HardwareNames.EXTERNALIMU : Setup.HardwareNames.IMU
         );
+        if (Setup.Connected.EXTERNALIMU) {
+            AdafruitCustomIMU imu = new AdafruitCustomIMU();
+            c.imu.set(imu);
+        }
         c.xPodOffset.set(-0.413);
         c.yPodOffset.set(-5.67);
         c.forwardTicksToInches.set(0.0020135);

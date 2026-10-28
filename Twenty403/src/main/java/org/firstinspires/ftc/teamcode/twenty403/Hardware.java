@@ -57,13 +57,17 @@ public class Hardware implements Loggable {
         }
         if (Setup.Connected.EXTERNALIMU) {
             imu = new AdafruitIMU(Setup.HardwareNames.EXTERNALIMU, AdafruitIMU.Orientation.Yaw);
-        } else {
+        }
+        /*
+            Pedro manages the IMU, so we don't need this.
+            else {
             imu = new IMU(
                 Setup.HardwareNames.IMU,
                 RevHubOrientationOnRobot.LogoFacingDirection.RIGHT,
                 RevHubOrientationOnRobot.UsbFacingDirection.FORWARD
             );
         }
+        */
     }
 
     // We can read the voltage from the different hubs for fun...

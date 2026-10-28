@@ -57,7 +57,7 @@ public class DrivebaseSubsystem implements Subsystem, Loggable {
         Pose pose = follower.pose();
         X = pose.x();
         Y = pose.y();
-        H = pose.heading();
+        H = (pose.heading() * 180) / Math.PI;
         if (!follower.isBusy()) {
             follower.manual(
                 ManualDrive.fieldCentric(
