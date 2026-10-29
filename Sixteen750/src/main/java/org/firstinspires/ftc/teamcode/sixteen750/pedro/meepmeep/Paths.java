@@ -77,10 +77,13 @@ public class Paths {
         return curve(p1.Launch, p1.ParkCtrl, p1.Park).constant(p1.ParkHead);
     }
 
-    Poses.DoublePark2TipPoses p2 = new Poses.DoublePark2TipPoses();
+    Poses.Park2TipPoses p2 = new Poses.Park2TipPoses();
 
     public Path DStartToPartnerPark() {
         return line(sp.Start, p2.PartnerPark).constant(p2.PartnerParkHead);
+    }
+    public Path DStartToLaunch1() {
+        return line(sp.Start, p2.Launch1).linear(p2.PartnerParkHead, p2.Launch1Head);
     }
 
     public Path DPartnerParkToLaunch1() {
@@ -143,10 +146,13 @@ public class Paths {
     }
 
     public Path DSideFlowerIntToLaunch3() {
-        return line(p2.SideFlowerInt, p2.Launch3).linear(p2.SideFlowerIntHead, Math.toRadians(0));
+        return line(p2.SideFlowerInt, p2.Launch3).linear(p2.SideFlowerIntHead, p2.MidParkHead);
     }
 
-    public Path DLaunch3ToPark() {
-        return line(p2.Launch3, p2.Park).constant(p2.ParkHead);
+    public Path DLaunch3ToSidePark() {
+        return line(p2.Launch3, p2.SidePark).constant(p2.SideParkHead);
+    }
+    public Path DLaunch3ToMidPark() {
+        return line(p2.Launch3, p2.MidPark).constant(p2.MidParkHead);
     }
 }

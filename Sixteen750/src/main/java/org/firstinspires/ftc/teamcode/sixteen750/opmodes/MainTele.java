@@ -84,7 +84,7 @@ public class MainTele extends CommandOpMode implements Loggable {
         robot.prepForStart();
         if (Robot.endOfAutoPose != null) {
             robot.follower.setPose(Robot.endOfAutoPose);
-            robot.follower.setHeading(Math.toRadians(90));
+            robot.follower.setHeading(Robot.endHead);
         }
     }
 

@@ -80,9 +80,10 @@ public class DoublePark2Tip extends CommandOpMode {
                 new PedroPathCommand(robot.follower, p.DSideFlowerIntToLaunch3()),
                 new WaitCommand(0.3).alongWith(t.RampUp(robot)),
                 a.Fire(robot),
-                new PedroPathCommand(robot.follower, p.DLaunch3ToPark()),
+                new PedroPathCommand(robot.follower, p.DLaunch3ToSidePark()),
                 t.GateClose(robot),
                 t.SaveEndOfAuto(robot),
+                t.SaveEndHead(robot),
                 CommandScheduler::terminateOpMode
             ),
             OpModeState.RUN
