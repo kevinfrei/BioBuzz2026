@@ -14,15 +14,14 @@ import org.firstinspires.ftc.teamcode.sixteen750.commands.PedroDriver;
 import org.firstinspires.ftc.teamcode.sixteen750.commands.PedroPathCommand;
 import org.firstinspires.ftc.teamcode.sixteen750.commands.TeleCommands;
 import org.firstinspires.ftc.teamcode.sixteen750.commands.auto.AutoCommands;
-import org.firstinspires.ftc.teamcode.sixteen750.commands.driving.DrivingCommands;
 import org.firstinspires.ftc.teamcode.sixteen750.controls.DriverController;
 import org.firstinspires.ftc.teamcode.sixteen750.helpers.StartingPosition;
 import org.firstinspires.ftc.teamcode.sixteen750.pedro.meepmeep.Paths;
 import org.firstinspires.ftc.teamcode.sixteen750.pedro.meepmeep.Poses;
 
-@Autonomous(name = "Park2Tip", preselectTeleOp = "MainTele")
+@Autonomous(name = "SidePark2Tip", preselectTeleOp = "MainTele")
 @SuppressWarnings("unused")
-public class Park2Tip extends CommandOpMode {
+public class SidePark2Tip extends CommandOpMode {
 
     public Robot robot;
     public DriverController controls;
@@ -79,7 +78,7 @@ public class Park2Tip extends CommandOpMode {
                         new PedroPathCommand(robot.follower, p.DSideFlowerIntToLaunch3()),
                         new WaitCommand(0.3).alongWith(t.RampUp(robot)),
                         a.Fire(robot),
-                        new PedroPathCommand(robot.follower, p.DLaunch3ToMidPark()),
+                        new PedroPathCommand(robot.follower, p.DLaunch3ToSidePark()),
                         t.GateClose(robot),
                         t.SaveEndOfAuto(robot),
                         t.SaveEndHead(robot),
