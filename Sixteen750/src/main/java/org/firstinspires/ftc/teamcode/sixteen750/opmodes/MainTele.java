@@ -98,7 +98,7 @@ public class MainTele extends CommandOpMode implements Loggable {
         double ms = loopTimer.milliseconds();
         loopTimer.reset();
         hertz = hertz * 0.9 + (1000.0 / ms) * 0.1; // a way to smooth out the values slightly
-        robot.follower.update();
+        //robot.follower.update(); // no need to call this since dt does it for us just adds i2c reads which are not great
         ptel.addData("targetvelo", TurretSubsystem.targetVelo);
         ptel.addData("currentvelo", TurretSubsystem.currentVelo);
         ptel.addData("Err", TurretSubsystem.error);

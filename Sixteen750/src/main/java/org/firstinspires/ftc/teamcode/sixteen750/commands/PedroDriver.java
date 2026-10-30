@@ -270,7 +270,7 @@ public class PedroDriver implements Command, Loggable {
         // If subsystem is busy it is running a path, just ignore the stick.
         ShowDriveInfo(driveStyle, driveMode, follower);
         if (follower.isBusy() || driveStyle == DrivingStyle.Hold) {
-            follower.update();
+            //follower.update(); // not needed either
             drvVec = "busy";
             return;
         }
@@ -311,7 +311,7 @@ public class PedroDriver implements Command, Loggable {
         // different friction between motors, motor speeds, etc... will be less frustrating to deal
         // with, as well..
 
-        follower.update();
+       // follower.update(); // shouldnt be needed
     }
 
     double getRotation(double fwdVal, double strafeVal) {

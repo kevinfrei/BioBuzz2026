@@ -92,6 +92,6 @@ public class PedroPathCommand implements Command {
 
     @Override
     public void execute() {
-        follower.update();
+        //follower.update(); // also additional calling of follower that we dont need since we have dt subsystem
     }
 }
