@@ -6,10 +6,14 @@ import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import com.pedropathing.api.Paths;
 import com.pedropathing.math.Pose;
 import com.pedropathing.paths.Path;
 import com.pedropathing.paths.curves.Curve;
+import com.pedropathing.paths.curves.Line;
+import com.pedropathing.paths.curves.bezier.BezierCurve;
 import com.pedropathing.paths.interpolator.Interpolator;
+import com.pedropathing.paths.interpolator.PiecewiseInterpolator;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -22,6 +26,7 @@ public class PedroJsonLoader {
     private static NamedItems dto;
     private static PedroItems items;
 
+    // TODO: add loading from the 'upload only the paths' path, too...
     public static boolean loadPathFromJson(Context context) {
         try (
             Reader reader = new InputStreamReader(context.getAssets().open("paths/pedropaths.json"))
@@ -34,6 +39,22 @@ public class PedroJsonLoader {
             e.printStackTrace();
             return false;
         }
+    }
+
+    public static Path getPath(String name) {
+        return items.paths.get(name);
+    }
+
+    public static Path getCurve(String name) {
+        return items.curves.get(name);
+    }
+
+    public static Pose getPose(String name) {
+        return items.poses.get(name);
+    }
+
+    public static Double getValue(String name) {
+        return items.values.get(name);
     }
 
     public static void main(String[] args) {
@@ -159,64 +180,316 @@ public class PedroJsonLoader {
         public Map<String, DTOPath> paths;
     }
 
+    static class Piece {
+
+        public double until;
+        public InterpDescr interp;
+
+        public Piece(double until, InterpDescr id) {
+            this.until = until;
+            interp = id;
+        }
+    }
+
+    static class InterpDescr {
+
+        public String type;
+        public boolean revOrLongWay;
+        public double heading1X, heading2Y;
+        public Piece[] pieces;
+
+        /// Tangent
+        public InterpDescr(boolean rev) {
+            type = "tangent";
+            revOrLongWay = rev;
+        }
+
+        /// Constant
+        public InterpDescr(double heading) {
+            type = "constant";
+            heading1X = heading;
+        }
+
+        /// Linear
+        public InterpDescr(double start, double end, boolean longWay) {
+            type = "linear";
+            revOrLongWay = longWay;
+            heading1X = start;
+            heading2Y = end;
+        }
+
+        /// Facing
+        public InterpDescr(double x, double y) {
+            type = "facing";
+            heading1X = x;
+            heading2Y = y;
+        }
+
+        /// Piece-wise
+        public InterpDescr(Piece[] pieceList) {
+            type = "pieces";
+            pieces = pieceList;
+        }
+    }
+
     static class PedroItems {
 
         Map<String, Double> values;
         Map<String, Pose> poses;
-        Map<String, Interpolator> interpolations;
-        Map<String, Curve> curves;
+        Map<String, InterpDescr> interpolations;
+        Map<String, Path> curves;
         Map<String, Path> paths;
+        List<String> errors;
 
         public PedroItems(NamedItems dto) {
-            values = EvalValues(dto);
-            poses = EvalPoses(dto);
-            interpolations = EvalInterpolations(dto);
-            curves = EvalCurves(dto);
-            paths = EvalPaths(dto);
+            errors = new ArrayList<>();
+            EvalValues(dto);
+            EvalPoses(dto);
+            EvalInterpolations(dto);
+            EvalCurves(dto);
+            EvalPaths(dto);
         }
 
-        Map<String, Double> EvalValues(NamedItems dto) {
-            Map<String, Double> res = new HashMap<>(dto.values.size());
+        private static <T> void TransitiveAssignment(
+            Map<String, T> res,
+            Map<String, List<String>> pending,
+            String name,
+            T value
+        ) {
+            // Transitively set any pending value refs
+            Stack<String> resolve = new Stack<>();
+            resolve.push(name);
+            do {
+                name = resolve.pop();
+                res.put(name, value);
+                List<String> toAssign = pending.get(name);
+                if (toAssign != null) {
+                    for (String n : toAssign) {
+                        resolve.push(n);
+                    }
+                    pending.remove(name);
+                }
+            } while (!resolve.empty());
+        }
+
+        Double getValue(RValue<DTOValue> valRef) {
+            if (valRef.isRef()) {
+                return values.get(valRef.getRef());
+            } else {
+                return valRef.getValue().val;
+            }
+        }
+
+        void EvalValues(NamedItems dto) {
+            values = new HashMap<>(dto.values.size());
             Map<String, List<String>> pending = new HashMap<>(dto.values.size());
             for (Map.Entry<String, RValue<DTOValue>> rval : dto.values.entrySet()) {
                 String name = rval.getKey();
-                RValue<DTOValue> val = rval.getValue();
-                Double evaluated = null;
-                // If it's a ref, see if we've already evaluated it
-                if (val.isRef()) {
-                    if (res.containsKey(val.ref)) {
-                        // We've already got it's target. Set the value in 'res'
-                        evaluated = res.get(val.ref);
-                        // don't continue yet, because we'll resolve any potential pending later
-                    } else {
-                        // We haven't already seen this one: Add it to the list
-                        pending.computeIfAbsent(val.ref, k -> new ArrayList<>()).add(name);
-                        // Now continue with the next value
-                        continue;
-                    }
+                RValue<DTOValue> valRef = rval.getValue();
+                Double evaluated = getValue(valRef);
+                if (evaluated != null) {
+                    // We've got the full value.
+                    // Take care of it, and any transitive definitions.
+                    TransitiveAssignment(values, pending, name, evaluated);
                 } else {
-                    evaluated = val.getValue().val;
+                    // We haven't seen this value yet:
+                    // Add the name to the pending list for the ref, and keep going
+                    pending.computeIfAbsent(valRef.getRef(), k -> new ArrayList<>()).add(name);
                 }
-                res.put(name, evaluated);
             }
-            return res;
+            if (!pending.isEmpty()) {
+                // TODO: Fill this in with more/better details
+                errors.add("Errors evaluating values");
+            }
         }
 
-        Map<String, Pose> EvalPoses(NamedItems dto) {
-            Map<String, Pose> res = new HashMap<>(dto.poses.size());
-            res.put("This", new Pose(1, 1, 1));
-            return res;
+        Double getHeading(RValue<DTOHeading> heading) {
+            if (heading.isRef()) {
+                // It's a poseref;
+                RValue<DTOPose> poseRef = new RValue<>();
+                poseRef.ref = heading.getRef();
+                Pose p = getPose(poseRef);
+                if (p == null) {
+                    return null;
+                }
+                return p.heading();
+            }
+            DTOHeading h = heading.getValue();
+            Double val = getValue(h.angle);
+            if (val != null) {
+                return h.inRadians ? val : (val * Math.PI) / 180.0;
+            }
+            return null;
         }
 
-        Map<String, Interpolator> EvalInterpolations(NamedItems dto) {
-            Map<String, Interpolator> res = new HashMap<>(dto.interpolations.size());
-            res.put("This", Interpolator.tangent);
-            return res;
+        Pose getPose(RValue<DTOPose> poseRef) {
+            if (poseRef.isRef()) {
+                return poses.get(poseRef.getRef());
+            } else {
+                DTOPose dtoPose = poseRef.getValue();
+                Double X = getValue(dtoPose.X);
+                Double Y = getValue(dtoPose.Y);
+                Double Heading = getHeading(dtoPose.heading);
+                return X != null && Y != null && Heading != null ? new Pose(X, Y, Heading) : null;
+            }
         }
 
-        Map<String, Curve> EvalCurves(NamedItems dto) {
-            Map<String, Curve> res = new HashMap<>(dto.curves.size());
-            return res;
+        void EvalPoses(NamedItems dto) {
+            poses = new HashMap<>(dto.poses.size());
+            Map<String, List<String>> pending = new HashMap<>(dto.poses.size());
+            for (Map.Entry<String, RValue<DTOPose>> rval : dto.poses.entrySet()) {
+                String name = rval.getKey();
+                RValue<DTOPose> poseRef = rval.getValue();
+                Pose evaluated = getPose(poseRef);
+                if (evaluated != null) {
+                    // We've got the full value.
+                    // Take care of it, and any transitive definitions.
+                    TransitiveAssignment(poses, pending, name, evaluated);
+                } else {
+                    // We haven't seen this value yet:
+                    // Add the name to the pending list for the ref, and keep going
+                    pending.computeIfAbsent(poseRef.getRef(), k -> new ArrayList<>()).add(name);
+                }
+            }
+            if (!pending.isEmpty()) {
+                // TODO: Fill this in with more/better details
+                errors.add("Errors evaluating poses");
+            }
+        }
+
+        InterpDescr getInterpolator(RValue<DTOInterpolator> interpRef) {
+            if (interpRef.isRef()) {
+                return interpolations.get(interpRef.getRef());
+            } else {
+                DTOInterpolator value = interpRef.getValue();
+                if (value instanceof DTOTangent) {
+                    return new InterpDescr(((DTOTangent) value).reversed);
+                } else if (value instanceof DTOLinear) {
+                    DTOLinear dto = (DTOLinear) value;
+                    Double startHeading = getHeading(dto.startHeading);
+                    Double endHeading = getHeading(dto.endHeading);
+                    if (startHeading != null && endHeading != null) {
+                        return new InterpDescr(startHeading, endHeading, dto.longWay);
+                    } else {
+                        return null;
+                    }
+                } else if (value instanceof DTOConstant) {
+                    DTOConstant dto = (DTOConstant) value;
+                    Double heading = getHeading(dto.heading);
+                    return heading == null ? null : new InterpDescr(heading);
+                } else if (value instanceof DTOFacingPoint) {
+                    DTOFacingPoint dto = (DTOFacingPoint) value;
+                    Pose pose = getPose(dto.point);
+                    return pose == null ? null : new InterpDescr(pose.x(), pose.y());
+                } else if (value instanceof DTOPieceWise) {
+                    DTOPieceWise dto = (DTOPieceWise) value;
+                    Piece[] lst = new Piece[dto.pieces.size()];
+                    int i = 0;
+                    for (DTOPiecePortion p : dto.pieces) {
+                        Double until = getValue(p.until);
+                        InterpDescr id = getInterpolator(p.interpolator);
+                        if (until == null || id == null) {
+                            return null;
+                        }
+                        lst[i++] = new Piece(until, id);
+                    }
+                    return new InterpDescr(lst);
+                }
+            }
+            return null;
+        }
+
+        void EvalInterpolations(NamedItems dto) {
+            interpolations = new HashMap<>(dto.interpolations.size());
+            Map<String, List<String>> pending = new HashMap<>(dto.interpolations.size());
+            for (Map.Entry<String, RValue<DTOInterpolator>> rval : dto.interpolations.entrySet()) {
+                String name = rval.getKey();
+                RValue<DTOInterpolator> interpRef = rval.getValue();
+                InterpDescr evaluated = getInterpolator(interpRef);
+                if (evaluated != null) {
+                    // We've got the full value.
+                    // Take care of it, and any transitive definitions.
+                    TransitiveAssignment(interpolations, pending, name, evaluated);
+                } else {
+                    // We haven't seen this value yet:
+                    // Add the name to the pending list for the ref, and keep going
+                    pending.computeIfAbsent(interpRef.ref, k -> new ArrayList<>()).add(name);
+                }
+            }
+            if (!pending.isEmpty()) {
+                // TODO: Fill this in with more/better details
+                errors.add("Errors evaluating interpolators");
+            }
+        }
+
+        Path getCurve(RValue<DTOCurve> curveRef) {
+            if (curveRef.isRef()) {
+                return curves.get(curveRef.getRef());
+            } else {
+                DTOCurve dtoCurve = curveRef.getValue();
+                InterpDescr id = getInterpolator(dtoCurve.interpolation);
+                Pose[] poses = new Pose[dtoCurve.points.size()];
+                int i = 0;
+                for (RValue<DTOPose> pose : dtoCurve.points) {
+                    Pose p = getPose(pose);
+                    if (p == null) {
+                        return null;
+                    }
+                    poses[i++] = p;
+                }
+                if (id == null) {
+                    return null;
+                }
+                Path p = null;
+                if (poses.length == 2) {
+                    p = Paths.line(poses[0], poses[1]);
+                } else {
+                    p = Paths.curve(poses);
+                }
+                switch (id.type) {
+                    case "tangent":
+                        return id.revOrLongWay ? p.reverseTangent() : p.tangent();
+                    case "constant":
+                        return p.constant(id.heading1X);
+                    case "linear":
+                        return p.linear(id.heading1X, id.heading2Y);
+                    case "facing":
+                        return p.facingPoint(new Pose(id.heading1X, id.heading2Y));
+                    case "piece": {
+                        /* TODO: Make this work
+            PiecewiseInterpolator pi = Interpolator.piecewise();
+            for (Piece piece: id.pieces) {
+              pi = pi.until(piece.until, piece.interp);
+            }
+            */
+                        return null;
+                    }
+                }
+            }
+            return null;
+        }
+
+        void EvalCurves(NamedItems dto) {
+            curves = new HashMap<>(dto.curves.size());
+            Map<String, List<String>> pending = new HashMap<>(dto.curves.size());
+            for (Map.Entry<String, RValue<DTOCurve>> rval : dto.curves.entrySet()) {
+                String name = rval.getKey();
+                RValue<DTOCurve> curveRef = rval.getValue();
+                Path evaluated = getCurve(curveRef);
+                if (evaluated != null) {
+                    // We've got the full value.
+                    // Take care of it, and any transitive definitions.
+                    TransitiveAssignment(curves, pending, name, evaluated);
+                } else {
+                    // We haven't seen this value yet:
+                    // Add the name to the pending list for the ref, and keep going
+                    pending.computeIfAbsent(curveRef.ref, k -> new ArrayList<>()).add(name);
+                }
+            }
+            if (!pending.isEmpty()) {
+                // TODO: Fill this in with more/better details
+                errors.add("Errors evaluating curves");
+            }
         }
 
         Map<String, Path> EvalPaths(NamedItems dto) {
@@ -228,8 +501,8 @@ public class PedroJsonLoader {
     @JsonAdapter(RValue.AdapterFactory.class)
     public static class RValue<T> {
 
-        private String ref;
-        private T value;
+        String ref;
+        T value;
 
         public boolean isRef() {
             return ref != null && !ref.isEmpty();
