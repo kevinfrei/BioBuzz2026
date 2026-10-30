@@ -8,9 +8,11 @@ import com.bylazar.telemetry.TelemetryManager;
 import com.pedropathing.math.Pose;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.util.ElapsedTime;
 import com.technototes.library.command.Command;
 import com.technototes.library.command.CommandScheduler;
 import com.technototes.library.command.SequentialCommandGroup;
+import com.technototes.library.logger.Log;
 import com.technototes.library.logger.Loggable;
 import com.technototes.library.structure.CommandOpMode;
 import com.technototes.library.util.Alliance;
@@ -36,6 +38,9 @@ public class MainTele extends CommandOpMode implements Loggable {
     private Limelight3A limelight;
     public TelemetryManager ptel;
     public PedroDriver pd;
+    @Log.Number (name = "HZ")
+    public double hertz = 0;
+    private final ElapsedTime loopTimer = new ElapsedTime();
 
     @Override
     public void uponInit() {
@@ -90,6 +95,9 @@ public class MainTele extends CommandOpMode implements Loggable {
 
     @Override
     public void runLoop() {
+        double ms = loopTimer.milliseconds();
+        loopTimer.reset();
+        hertz = hertz * 0.9 + (1000.0 / ms) * 0.1; // a way to smooth out the values slightly
         robot.follower.update();
         ptel.addData("targetvelo", TurretSubsystem.targetVelo);
         ptel.addData("currentvelo", TurretSubsystem.currentVelo);
