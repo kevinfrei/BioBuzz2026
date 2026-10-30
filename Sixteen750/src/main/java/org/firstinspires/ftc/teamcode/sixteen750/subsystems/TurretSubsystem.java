@@ -331,8 +331,9 @@ public class TurretSubsystem implements Loggable, Subsystem {
 
     // returns the final position in servo position (0-1) that we want our hood servo to be at after velocity compensation
     public double getHoodAutoPos() {
+        double hoodTarget = getHoodTargetPos();
         hoodAutoPos =
-            /*hoodTargetPos commented out for manual testing*/ hoodTargetPos +
+            /*hoodTargetPos commented out for manual testing*/ hoodTarget +
             (error * hoodCompScalar) / HOOD_POSITION_TO_ANGLE_CONSTANT; // takes our target and subtracts our error times a scalar
         return clamp(hoodAutoPos, HOOD_MIN, HOOD_MAX); // clamp it again so it doesnt try and unionize (i think you only need to clamp it once but by doing it twice both the compensated and uncompensated values are actually usable)
     }
@@ -345,15 +346,12 @@ public class TurretSubsystem implements Loggable, Subsystem {
     public void periodic() {
         targetServoPos = getTurretPos();
         targetPose = getTargetPose();
-        turretHead = getTurretAngle();
         robotHead = robot.follower.pose().heading();
         targetVelo = getVelocityTarget();
         currentVelo = getActualVelocity();
         autoVelocity = getAutoVelocity();
         distanceToTarget = getDistance();
         hoodAutoPos = getHoodAutoPos();
-        getHoodAutoPos();
-        getHoodTargetPos();
         sotmDistanceToTarget = getSotmDistance();
         error = pidfController.getLastError();
 
