@@ -37,7 +37,7 @@ public class TurretSubsystem implements Loggable, Subsystem {
     public static double TURRET_CENTER = 0.5;
     public static double TURRET_MIN = 0.01;
     public static double TURRET_MAX = 0.99;
-    // @Log.Number (name = "target servo Pos")
+     @Log.Number (name = "target servo Pos")
     public static double targetServoPos = 0;
     public static double FLIGHT_TIME = 0.57;
 
@@ -50,7 +50,7 @@ public class TurretSubsystem implements Loggable, Subsystem {
     @Log.Number(name = "Robot Heading")
     public static double robotHead = 0;
 
-    @Log.Number(name = "Turret Heading")
+    //@Log.Number(name = "Turret Heading")
     public static double turretHead = 0;
 
     @Log.Number(name = "Target Velocity")
@@ -62,13 +62,13 @@ public class TurretSubsystem implements Loggable, Subsystem {
     @Log(name = "Target Pose")
     public static Pose targetPose = new Pose(0, 0);
 
-    @Log(name = "sotm targetPose")
+    //@Log(name = "sotm targetPose")
     public static Pose sotmTargetPose = new Pose(0, 0);
 
-    @Log.Number(name = "final hood pose")
+    //@Log.Number(name = "final hood pose")
     public static double hoodAutoPos = 0.5; // final value we feed into the hood for position
 
-    @Log.Number(name = "Manual hood pos")
+    //@Log.Number(name = "Manual hood pos")
     public static double manualHoodPos = 0.5; // manual hood pos stuff for tuning
 
     public static double HOOD_INCREMENT = 0.01; // amount to manually adjust hood by for tuning
@@ -78,7 +78,7 @@ public class TurretSubsystem implements Loggable, Subsystem {
     public static double HOOD_MAX = 0.5;
     public static double INCREASE = 15; // extremely jank increment and decrement
 
-    @Log.Number(name = "hood calculated Pos")
+    //@Log.Number(name = "hood calculated Pos")
     public static double hoodTargetPos = 0.5;
 
     public static double actualTarget = 0; // target for manual velocity tuning
