@@ -28,7 +28,10 @@ public class AdafruitIMU extends Sensor<AdafruitBNO055IMU> implements IGyro, Dou
         super(deviceName);
         imuDirection = o;
         units = AngleUnit.DEGREES;
-        this.getRawDevice().initialize(new BNO055IMU.Parameters());
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.angleUnit = BNO055IMU.AngleUnit.RADIANS;
+        parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        this.getRawDevice().initialize(parameters);
         resetRadians = getHeadingInRadians();
     }
 
@@ -36,7 +39,10 @@ public class AdafruitIMU extends Sensor<AdafruitBNO055IMU> implements IGyro, Dou
         super(device, deviceName);
         imuDirection = o;
         units = AngleUnit.DEGREES;
-        this.getRawDevice().initialize(new BNO055IMU.Parameters());
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.angleUnit = BNO055IMU.AngleUnit.RADIANS;
+        parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        this.getRawDevice().initialize(parameters);
         resetRadians = getHeadingInRadians();
     }
 

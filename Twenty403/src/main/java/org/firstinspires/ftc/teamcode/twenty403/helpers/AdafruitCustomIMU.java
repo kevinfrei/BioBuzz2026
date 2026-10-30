@@ -6,12 +6,14 @@ import com.technototes.library.hardware.sensor.AdafruitIMU;
 
 public class AdafruitCustomIMU implements CustomIMU {
 
-    AdafruitIMU imu;
+    private final AdafruitIMU imu;
+
+    public AdafruitCustomIMU(AdafruitIMU i) {
+        imu = i;
+    }
 
     @Override
-    public void initialize(HardwareMap hardwareMap, String hardwareMapName) {
-        imu = new AdafruitIMU(hardwareMapName, AdafruitIMU.Orientation.Yaw);
-    }
+    public void initialize(HardwareMap hardwareMap, String hardwareMapName) {}
 
     @Override
     public double getHeading() {
