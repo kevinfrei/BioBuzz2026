@@ -92,7 +92,7 @@ public class DoublePark2Tip extends CommandOpMode {
 
     @Override
     public void runLoop() {
-        robot.follower.update();
+       // robot.follower.update();
         robot.turretsubsystem.Launch();
         robot.turretsubsystem.setTurretTarget();
         robot.turretsubsystem.setHoodAutoPos();
