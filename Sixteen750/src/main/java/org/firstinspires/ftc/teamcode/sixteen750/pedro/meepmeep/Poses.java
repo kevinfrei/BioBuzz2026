@@ -60,7 +60,7 @@ public class Poses {
     }
 
     @Configurable
-    public static class DoublePark2TipPoses {
+    public static class Park2TipPoses {
 
         public static Pose PartnerPark = new Pose(11, 83);
         public static double PartnerParkHead = Math.toRadians(0);
@@ -79,10 +79,13 @@ public class Poses {
         public static Pose Launch3 = new Pose(58, 121);
         public static Pose Launch3Ctrl1 = new Pose(68.5, 23.5);
         public static Pose Launch3Ctrl2 = new Pose(58.5, 60);
+        public static double Launch3Head = 270;
         public static Pose SideFlowerPreInt = new Pose(47, 118);
         public static Pose SideFlowerInt = new Pose(47, 130.4);
         public static double SideFlowerIntHead = Math.toRadians(90);
-        public static Pose Park = new Pose(12, 122);
-        public static double ParkHead = Math.toRadians(90);
+        public static Pose SidePark = new Pose(12, 122);
+        public static double SideParkHead = Math.toRadians(90);
+        public static Pose MidPark = new Pose(15, 93);
+        public static double MidParkHead = Math.toRadians(0);
     }
 }

@@ -16,6 +16,7 @@ public class Robot implements Loggable {
     public StartingPosition position;
     public Alliance alliance;
     public static Pose endOfAutoPose;
+    public static double endHead;
     public double initialVoltage;
 
     public IntakeSubsystem intakeSubsystem;
@@ -57,6 +58,10 @@ public class Robot implements Loggable {
     }
 
     public void prepForStart() {}
+
+    public void saveEndHead() {
+        Robot.endHead = follower.pose().heading();
+    }
 
     public void saveEndOfAutoPose() {
         Robot.endOfAutoPose = follower.pose();
