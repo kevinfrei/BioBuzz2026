@@ -39,6 +39,14 @@ public class DrivingCommands {
         return pd::ResetGyro;
     }
 
+    public static Command SlowSpeed(PedroDriver pd) {
+        return pd::SetSlowSpeed;
+    }
+
+    public static Command RegularSpeed(PedroDriver pd) {
+        return pd::SetRegularSpeed;
+    }
+
     public static Command SnapDriving(PedroDriver pd, double target) {
         return () -> pd.EnableSnapTargetDriving(target);
     }

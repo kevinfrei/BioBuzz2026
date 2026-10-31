@@ -26,8 +26,8 @@ import org.firstinspires.ftc.teamcode.sixteen750.Setup;
 public class TurretSubsystem implements Loggable, Subsystem {
 
     final Robot robot;
-    Pose HIVE_TARGET1 = new Pose(56.5, 51);
-    Pose HIVE_TARGET2 = new Pose(56.5, 93);
+    Pose HIVE_TARGET1 = new Pose(56.5, 52.5);
+    Pose HIVE_TARGET2 = new Pose(56.5, 91.5);
 
     public static boolean turretSOTM = true;
     public static boolean velocitySOTM = false;
@@ -37,8 +37,10 @@ public class TurretSubsystem implements Loggable, Subsystem {
     public static double TURRET_CENTER = 0.5;
     public static double TURRET_MIN = 0.01;
     public static double TURRET_MAX = 0.99;
-    // @Log.Number (name = "target servo Pos")
+
+    @Log.Number(name = "target servo Pos")
     public static double targetServoPos = 0;
+
     public static double FLIGHT_TIME = 0.57;
 
     @Log.Number(name = "xvelo")
@@ -50,7 +52,7 @@ public class TurretSubsystem implements Loggable, Subsystem {
     @Log.Number(name = "Robot Heading")
     public static double robotHead = 0;
 
-    @Log.Number(name = "Turret Heading")
+    //@Log.Number(name = "Turret Heading")
     public static double turretHead = 0;
 
     @Log.Number(name = "Target Velocity")
@@ -62,13 +64,13 @@ public class TurretSubsystem implements Loggable, Subsystem {
     @Log(name = "Target Pose")
     public static Pose targetPose = new Pose(0, 0);
 
-    @Log(name = "sotm targetPose")
+    //@Log(name = "sotm targetPose")
     public static Pose sotmTargetPose = new Pose(0, 0);
 
-    @Log.Number(name = "final hood pose")
+    //@Log.Number(name = "final hood pose")
     public static double hoodAutoPos = 0.5; // final value we feed into the hood for position
 
-    @Log.Number(name = "Manual hood pos")
+    //@Log.Number(name = "Manual hood pos")
     public static double manualHoodPos = 0.5; // manual hood pos stuff for tuning
 
     public static double HOOD_INCREMENT = 0.01; // amount to manually adjust hood by for tuning
@@ -78,7 +80,7 @@ public class TurretSubsystem implements Loggable, Subsystem {
     public static double HOOD_MAX = 0.5;
     public static double INCREASE = 15; // extremely jank increment and decrement
 
-    @Log.Number(name = "hood calculated Pos")
+    //@Log.Number(name = "hood calculated Pos")
     public static double hoodTargetPos = 0.5;
 
     public static double actualTarget = 0; // target for manual velocity tuning
@@ -122,7 +124,7 @@ public class TurretSubsystem implements Loggable, Subsystem {
     // It's output is a power value in the -1 to +1 range.
     // So, P is probably in the range of .001-ish.
     // For a velocity-targeting PIDF, we probably want an I value, not a D value.
-    public static PIDFCoefficients launchPID = new PIDFCoefficients(0.006, 0.000019, 0.0, 0); // 10/3/26 added a p value seems pretty decent
+    public static PIDFCoefficients launchPID = new PIDFCoefficients(0.0059, 0.00002, 0.0, 0); // 10/3/26 added a p value seems pretty decent
     private Hardware hardware;
     // Stuff used for the Feed Forward function.
     // This one is highly variable, based on the amount of friction in the system
@@ -345,15 +347,14 @@ public class TurretSubsystem implements Loggable, Subsystem {
     public void periodic() {
         targetServoPos = getTurretPos();
         targetPose = getTargetPose();
-        turretHead = getTurretAngle();
         robotHead = robot.follower.pose().heading();
         targetVelo = getVelocityTarget();
         currentVelo = getActualVelocity();
         autoVelocity = getAutoVelocity();
         distanceToTarget = getDistance();
         hoodAutoPos = getHoodAutoPos();
-        getHoodAutoPos();
         getHoodTargetPos();
+        getHoodAutoPos();
         sotmDistanceToTarget = getSotmDistance();
         error = pidfController.getLastError();
 

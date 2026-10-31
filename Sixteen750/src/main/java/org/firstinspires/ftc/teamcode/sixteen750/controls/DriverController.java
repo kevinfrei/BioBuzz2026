@@ -21,7 +21,7 @@ public class DriverController implements Loggable {
 
     public Stick driveLeftStick, driveRightStick;
     public CommandButton resetGyroButton;
-    public CommandButton snailButton;
+    public CommandButton slowButton;
     public CommandButton launchButton;
     public CommandButton spitButton;
     public CommandButton gateButton;
@@ -71,7 +71,7 @@ public class DriverController implements Loggable {
         veloDownButton = gamepad.dpadDown;
         hoodUpButton = gamepad.dpadRight;
         hoodDownButton = gamepad.dpadLeft;
-        snailButton = gamepad.leftBumper;
+        slowButton = gamepad.leftBumper;
         launchButton = gamepad.rightBumper;
         flywheelButton = gamepad.ps_circle;
         spitButton = gamepad.ps_square;
@@ -92,12 +92,12 @@ public class DriverController implements Loggable {
         );
         CommandScheduler.scheduleJoystick(pedroDriver);
 
-        snailButton.whenPressedReleased(
-            DrivingCommands.SnailDriving(pedroDriver),
-            DrivingCommands.NormalDriving(pedroDriver)
+        slowButton.whenPressedReleased(
+            DrivingCommands.SlowSpeed(pedroDriver),
+            DrivingCommands.RegularSpeed(pedroDriver)
         );
 
-       // resetGyroButton.whenPressed(DrivingCommands.ResetGyro(pedroDriver));
+        // resetGyroButton.whenPressed(DrivingCommands.ResetGyro(pedroDriver));
         reloc1Button.whenPressed(DrivingCommands.ResetPosition1(pedroDriver));
         reloc2Button.whenPressed(DrivingCommands.ResetPosition2(pedroDriver));
     }

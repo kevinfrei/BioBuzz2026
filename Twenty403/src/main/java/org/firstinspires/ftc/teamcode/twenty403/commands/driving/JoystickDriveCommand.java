@@ -18,7 +18,7 @@ import org.firstinspires.ftc.teamcode.twenty403.subsystems.DrivebaseSubsystem;
 public class JoystickDriveCommand implements Command {
 
     public DrivebaseSubsystem drivebase;
-    public DoubleSupplier x, y, r;
+    public DoubleSupplier x, y, r, h;
 
     public JoystickDriveCommand(DrivebaseSubsystem drive, Stick xyStick, Stick rotStick) {
         x = xyStick.getXSupplier();
@@ -32,7 +32,8 @@ public class JoystickDriveCommand implements Command {
         double fwd = -y.getAsDouble();
         double strafe = -x.getAsDouble();
         double rotate = -r.getAsDouble();
-        drivebase.setControllerInputs(fwd, strafe, rotate);
+        double head = -h.getAsDouble();
+        drivebase.setControllerInputs(fwd, strafe, rotate, head);
     }
 
     @Override

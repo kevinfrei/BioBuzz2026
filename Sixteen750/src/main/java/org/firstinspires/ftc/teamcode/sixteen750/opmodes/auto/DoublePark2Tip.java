@@ -50,7 +50,7 @@ public class DoublePark2Tip extends CommandOpMode {
                     t.Intake(robot)
                 ),
                 new PedroPathCommand(robot.follower, p.DGardenPreIntToGardenInt()).withTimeout(2),
-                new WaitCommand(1.3),
+                new WaitCommand(1.15),
                 new PedroPathCommand(robot.follower, p.DGardenIntToLaunch2()),
                 new WaitCommand(0.5),
                 a.Fire(robot),

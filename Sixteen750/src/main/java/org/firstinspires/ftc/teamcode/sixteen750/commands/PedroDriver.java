@@ -41,6 +41,9 @@ import org.firstinspires.ftc.teamcode.sixteen750.subsystems.LimelightSubsystem;
 public class PedroDriver implements Command, Loggable {
 
     public static double VISION_TURN_SCALE = 0.7;
+    public static double SLOW_SPEED = 0.5;
+    public static double REGULAR_SPEED = 1;
+    public static double driveSpeed = 1;
     public static PIDFCoefficients vizPIDValues = new PIDFCoefficients(0.012, 0.0000, 0.001, 0);
     public static PIDFCoefficients snapPIDValues = new PIDFCoefficients(0.0005, 0, 0.00, 0);
     PIDFController vizPid;
@@ -67,6 +70,14 @@ public class PedroDriver implements Command, Loggable {
 
     public void RestorePose() {
         follower.setPose(Robot.endOfAutoPose);
+    }
+
+    public void SetSlowSpeed() {
+        driveSpeed = SLOW_SPEED;
+    }
+
+    public void SetRegularSpeed() {
+        driveSpeed = REGULAR_SPEED;
     }
 
     public void SetSnailSpeed() {
@@ -277,8 +288,8 @@ public class PedroDriver implements Command, Loggable {
 
         // Recall that pushing a stick forward goes *negative* and pushing a stick to the left
         // goes *negative* as well (both are opposite Pedro's coordinate system)
-        double fwdVal = -y.getAsDouble();
-        double strafeVal = -x.getAsDouble();
+        double fwdVal = -y.getAsDouble() * driveSpeed;
+        double strafeVal = -x.getAsDouble() * driveSpeed;
         if (driveStyle == DrivingStyle.Straight || driveStyle == DrivingStyle.Square) {
             // for straight/square driving, we only use one of the two translation directions:
             if (Math.abs(fwdVal) > Math.abs(strafeVal)) {
