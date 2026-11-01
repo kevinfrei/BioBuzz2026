@@ -1,6 +1,9 @@
 package org.firstinspires.ftc.teamcode.jsonloader;
 
 import android.content.Context;
+import android.content.res.AssetManager;
+import com.bylazar.configurables.annotations.Configurable;
+import com.bylazar.telemetry.TelemetryManager;
 import com.google.gson.*;
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.reflect.TypeToken;
@@ -14,31 +17,97 @@ import com.pedropathing.paths.curves.Line;
 import com.pedropathing.paths.curves.bezier.BezierCurve;
 import com.pedropathing.paths.interpolator.Interpolator;
 import com.pedropathing.paths.interpolator.PiecewiseInterpolator;
+import com.qualcomm.ftccommon.FtcRobotControllerService;
+import com.qualcomm.robotcore.hardware.HardwareMap;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.nio.file.Files;
 import java.util.*;
+import org.firstinspires.ftc.robotcontroller.internal.FtcRobotControllerActivity;
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 
+@Configurable
 public class PedroJsonLoader {
+
+    public static String ExternalFileName = "paths/pedropaths.json";
+    public static String AssetFileName = "paths/pedropaths.json";
+    public static String status = "";
+    public static String FILE_PATH = "";
+    public static String[] FILES = null;
 
     private static NamedItems dto;
     private static PedroItems items;
 
+    public HardwareMap hwmap;
+    public boolean loaded;
+
+    private InputStream getLatestFile() {
+        Context context = hwmap.appContext;
+        File overrideFile = new File(context.getExternalFilesDir(null), ExternalFileName);
+        if (overrideFile.exists()) {
+            // External override file selected over assets
+            try {
+                return new FileInputStream(overrideFile);
+            } catch (IOException ignored) {}
+        }
+        AssetManager assetManager = context.getAssets();
+        try {
+            return assetManager.open(AssetFileName);
+        } catch (IOException ignored) {}
+        try {
+            String[] files = assetManager.list(FILE_PATH);
+            status = String.format("%d files", files.length);
+            FILES = files;
+            return null;
+        } catch (IOException ignored) {}
+        status = "Never found any files";
+        return null;
+    }
+
     // TODO: add loading from the 'upload only the paths' path, too...
-    public static boolean loadPathFromJson(Context context) {
-        try (
-            Reader reader = new InputStreamReader(context.getAssets().open("paths/pedropaths.json"))
-        ) {
+    public boolean loadPathFromJson() {
+        InputStream inputStream = getLatestFile();
+        if (inputStream == null) {
+            return false;
+        }
+        try (Reader reader = new InputStreamReader(inputStream)) {
+            status = "Reader created";
             Gson gson = new Gson();
             dto = gson.fromJson(reader, NamedItems.class);
+            if (dto == null) {
+                status = "DTO is null";
+                return false;
+            }
+            status = "DTO created";
             items = new PedroItems(dto);
+            if (items == null) {
+                status = "items is null";
+            }
+            status = String.format(
+                "%d %d %d %d %d",
+                items.values.size(),
+                items.poses.size(),
+                items.interpolations.size(),
+                items.curves.size(),
+                items.paths.size(),
+                items.errors.size()
+            );
             return true;
         } catch (Exception e) {
             e.printStackTrace();
             return false;
         }
+    }
+
+    public PedroJsonLoader(HardwareMap map) {
+        this.hwmap = map;
+        this.loaded = loadPathFromJson();
     }
 
     public static Path getPath(String name) {
@@ -55,120 +124,6 @@ public class PedroJsonLoader {
 
     public static Double getValue(String name) {
         return items.values.get(name);
-    }
-
-    public static void main(String[] args) {
-        /*
-        DTOValue dtoValue = new DTOValue(Math.PI);
-        DTOValue dtoValue2 = new DTOValue(Math.E);
-        DTOValue zero = new DTOValue(0.0);
-        DTOPose dtoPose = new DTOPose(dtoValue, dtoValue2, zero, true);
-        DTOPose dtoOther = new DTOPose("v1", "v2", "v3", true);
-        List<RValue<DTOPose>> points = new ArrayList<>();
-        points.add(new RValue<>(dtoPose));
-        points.add(new RValue<DTOPose>("pose"));
-        points.add(new RValue<>(dtoOther));
-        FacingPoint facingPoint = new FacingPoint("facing");
-        RValue<Interpolator> interpolation = new RValue<Interpolator>("pose");
-        RValue<Interpolator> interpolation2 = new RValue<Interpolator>(facingPoint);
-        DTOCurve dtoCurve = new DTOCurve(points, interpolation);
-        dtoCurve.interpolation = interpolation;
-        DTOPath dtoPath = new DTOPath();
-        dtoPath.curves = new ArrayList<>();
-        dtoPath.curves.add(new RValue<>(dtoCurve));
-        dtoPath.globalInterpolator = interpolation;
-        NamedItems items = new NamedItems();
-        items.values = new HashMap<>();
-        items.values.put("v1", dtoValue);
-        items.values.put("v2", dtoValue2);
-        items.values.put("v3", zero);
-        items.poses = new HashMap<>();
-        items.poses.put("pose", dtoPose);
-        items.poses.put("otherPose", dtoOther);
-        items.curves = new HashMap<>();
-        items.curves.put("curve", dtoCurve);
-        items.interpolations = new HashMap<>();
-        items.interpolations.put("facing", facingPoint);
-        items.paths = new HashMap<>();
-        items.paths.put("aPath", dtoPath);
-        */
-        Gson gson = new Gson();
-        String vals =
-            "{\n" +
-            "  \"values\": {\n" +
-            "    \"v1\": { \"val\": 3.141592653589793 },\n" +
-            "    \"v2\": { \"val\": 2.718281828459045 },\n" +
-            "    \"v3\": { \"val\": 0.0 },\n" +
-            "    \"v4\": { \"ref\": \"v2\" }\n" +
-            "  },\n" +
-            "  \"poses\": {\n" +
-            "    \"p1\": {\n" +
-            "      \"X\": { \"ref\": \"v1\" },\n" +
-            "      \"Y\": { \"ref\": \"v2\" },\n" +
-            "      \"Heading\": { \"ref\": \"p2\" }\n" +
-            "    },\n" +
-            "    \"p2\": {\n" +
-            "      \"X\": { \"val\": 3.141592653589793 },\n" +
-            "      \"Y\": { \"val\": 2.718281828459045 },\n" +
-            "      \"Heading\": { \"angle\":{\"ref\": \"v3\" }, \"inRadians\": true }\n" +
-            "    },\n" +
-            "    \"p3\" : { \"ref\": \"p1\" }\n" +
-            "  },\n" +
-            "  \"curves\": {\n" +
-            "    \"c1\": {\n" +
-            "      \"points\": [\n" +
-            "        {\n" +
-            "          \"X\": { \"val\": 3.141592653589793 },\n" +
-            "          \"Y\": { \"val\": 2.718281828459045 },\n" +
-            "          \"Heading\": { \"angle\": {\"val\": 0.0 }, \"inRadians\": true }\n" +
-            "        },\n" +
-            "        { \"ref\": \"p1\" },\n" +
-            "        {\n" +
-            "          \"X\": { \"ref\": \"v1\" },\n" +
-            "          \"Y\": { \"ref\": \"v2\" },\n" +
-            "          \"Heading\": {\"angle\": { \"ref\": \"v1\" }, \"inRadians\": true }\n" +
-            "        }\n" +
-            "      ],\n" +
-            "      \"interpolation\": { \"ref\": \"p1\" }\n" +
-            "    },\n" +
-            "    \"refCurve\": {\"ref\":\"c1\"}\n" +
-            "  },\n" +
-            "  \"interpolations\": {\n" +
-            "    \"i1\": { \"point\": { \"ref\": \"p1\" }, \"type\": \"FacingPoint\" },\n" +
-            "    \"i2\": {\"ref\": \"i1\"}\n" +
-            "  },\n" +
-            "  \"paths\": {\n" +
-            "    \"path1\": {\n" +
-            "      \"curves\": [\n" +
-            "        {\n" +
-            "          \"points\": [\n" +
-            "            {\n" +
-            "              \"X\": { \"val\": 3.141592653589793 },\n" +
-            "              \"Y\": { \"val\": 2.718281828459045 },\n" +
-            "              \"heading\": {\"angle\":{ \"val\": 0.0 }, \"inRadians\": false}\n" +
-            "            },\n" +
-            "            { \"ref\": \"p1\" },\n" +
-            "            {\n" +
-            "              \"X\": { \"ref\": \"v1\" },\n" +
-            "              \"Y\": { \"ref\": \"v2\" },\n" +
-            "              \"heading\": {\"angle\":{ \"ref\": \"v3\" }, \"inRadians\": true }\n" +
-            "            }\n" +
-            "          ],\n" +
-            "          \"interpolation\": { \"ref\": \"i1\" }\n" +
-            "        },\n" +
-            "        {\"ref\":\"c2\"}\n" +
-            "      ],\n" +
-            "      \"globalInterpolator\": { \"ref\": \"i2\" }\n" +
-            "    }\n" +
-            "  }\n" +
-            "}\n";
-        // gson.toJson(items);
-        NamedItems roundTrip = gson.fromJson(vals, NamedItems.class);
-        System.out.printf("%d%n", roundTrip.values.size());
-        System.out.printf("%d%n", roundTrip.poses.size());
-        System.out.printf("%d%n", roundTrip.curves.size());
-        System.out.printf("%d%n", roundTrip.interpolations.size());
-        System.out.printf("%d%n", roundTrip.paths.size());
     }
 
     static class NamedItems {
@@ -737,6 +692,7 @@ public class PedroJsonLoader {
                 JsonParser jp = new JsonParser();
                 JsonObject jsonObject = jp.parse(in).getAsJsonObject();
 
+                // TODO: Fix this stuff here. It ain't right yet.
                 if (!jsonObject.has("type")) {
                     throw new JsonParseException(
                         "Missing 'type' discriminator field for DTOInterpolator"
