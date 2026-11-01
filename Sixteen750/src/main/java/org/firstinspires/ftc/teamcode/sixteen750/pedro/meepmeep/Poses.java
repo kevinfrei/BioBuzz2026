@@ -74,14 +74,14 @@ public class Poses {
         public static Pose NearFlowerPreInt = new Pose(24, 47);
         public static Pose NearFlowerPreIntCtrl1 = new Pose(68, 79);
         public static Pose NearFlowerPreIntCtrl2 = new Pose(67.5, 10.5);
-        public static Pose NearFlowerInt = new Pose(13.3, 47);
+        public static Pose NearFlowerInt = new Pose(12.7, 47);
         public static double NearFlowerIntHead = Math.toRadians(180);
         public static Pose Launch3 = new Pose(58, 121);
         public static Pose Launch3Ctrl1 = new Pose(68.5, 23.5);
         public static Pose Launch3Ctrl2 = new Pose(58.5, 60);
         public static double Launch3Head = 270;
         public static Pose SideFlowerPreInt = new Pose(47, 118);
-        public static Pose SideFlowerInt = new Pose(47, 130.4);
+        public static Pose SideFlowerInt = new Pose(47, 131.0);
         public static double SideFlowerIntHead = Math.toRadians(90);
         public static Pose SidePark = new Pose(14, 122);
         public static double SideParkHead = Math.toRadians(90);

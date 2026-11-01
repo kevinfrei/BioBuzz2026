@@ -51,7 +51,9 @@ public class DoublePark2Tip extends CommandOpMode {
                 ),
                 new PedroPathCommand(robot.follower, p.DGardenPreIntToGardenInt()).withTimeout(2),
                 new WaitCommand(1.15),
-                new PedroPathCommand(robot.follower, p.DGardenIntToLaunch2()),
+                new PedroPathCommand(robot.follower, p.DGardenIntToLaunch2()).alongWith(
+                    t.Reject(robot)
+                ),
                 new WaitCommand(0.5),
                 a.Fire(robot),
                 new PedroPathCommand(robot.follower, p.DLaunch2ToNearFlowerPreInt()).alongWith(
@@ -60,7 +62,7 @@ public class DoublePark2Tip extends CommandOpMode {
                 ),
                 new PedroPathCommand(robot.follower, p.DNearFlowerPreIntToNearFlowerInt())
                     .alongWith(t.Intake(robot))
-                    .withTimeout(1.5),
+                    .withTimeout(1.3),
                 new WaitCommand(1.1),
 
                 new PedroPathCommand(robot.follower, p.DNearFlowerIntToLaunch3()),
@@ -72,7 +74,7 @@ public class DoublePark2Tip extends CommandOpMode {
                 new PedroPathCommand(
                     robot.follower,
                     p.DSideFlowerPreIntToSideFlowerInt()
-                ).withTimeout(1.5),
+                ).withTimeout(1.3),
                 new WaitCommand(1.1),
                 new PedroPathCommand(robot.follower, p.DSideFlowerIntToLaunch3()),
                 new WaitCommand(0.3).alongWith(t.RampUp(robot)),

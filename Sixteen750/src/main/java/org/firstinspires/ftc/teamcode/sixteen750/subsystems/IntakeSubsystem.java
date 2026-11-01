@@ -81,6 +81,7 @@ public class IntakeSubsystem implements Loggable, Subsystem {
         setTransfer1Power(TRANSFER1_HOLD_VELOCITY);
         setTransfer2Power(TRANSFER2_HOLD_VELOCITY);
         setGatePosition(BLOCK_POSITION);
+        setIntakePower(REJECT_VELOCITY);
     }
 
     public void StopIntake() {
