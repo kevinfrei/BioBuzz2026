@@ -24,7 +24,10 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.io.Reader;
+import java.io.StringWriter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.nio.file.Files;
@@ -35,10 +38,14 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 @Configurable
 public class PedroJsonLoader {
 
+    private static <T> int getSz(Map<String, T> m) {
+        return m == null ? -1 : m.size();
+    }
+
     public static String ExternalFileName = "paths/pedropaths.json";
     public static String AssetFileName = "paths/pedropaths.json";
     public static String status = "";
-    public static String FILE_PATH = "";
+    public static String FILE_PATH = "paths";
     public static String[] FILES = null;
 
     private static NamedItems dto;
@@ -58,14 +65,17 @@ public class PedroJsonLoader {
         }
         AssetManager assetManager = context.getAssets();
         try {
+            String[] files = assetManager.list(FILE_PATH);
+            status = String.format("%d files", files.length);
+            FILES = files;
             return assetManager.open(AssetFileName);
         } catch (IOException ignored) {}
-        try {
+        /*try {
             String[] files = assetManager.list(FILE_PATH);
             status = String.format("%d files", files.length);
             FILES = files;
             return null;
-        } catch (IOException ignored) {}
+        } catch (IOException ignored) {}*/
         status = "Never found any files";
         return null;
     }
@@ -86,21 +96,29 @@ public class PedroJsonLoader {
             }
             status = "DTO created";
             items = new PedroItems(dto);
-            if (items == null) {
-                status = "items is null";
-            }
-            status = String.format(
-                "%d %d %d %d %d",
-                items.values.size(),
-                items.poses.size(),
-                items.interpolations.size(),
-                items.curves.size(),
-                items.paths.size(),
-                items.errors.size()
+            StringBuilder sb = new StringBuilder();
+            sb.append(
+                String.format(
+                    Locale.ENGLISH,
+                    "%d %d %d %d %d %d",
+                    getSz(items.values),
+                    getSz(items.poses),
+                    getSz(items.interpolations),
+                    getSz(items.curves),
+                    getSz(items.paths),
+                    items.errors.size()
+                )
             );
+            for (String s : items.errors) {
+                sb.append(String.format(Locale.ENGLISH, "Error: %s", s));
+            }
+            status = sb.toString();
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            e.printStackTrace(pw);
+            status = sw.toString();
             return false;
         }
     }
@@ -259,6 +277,9 @@ public class PedroJsonLoader {
         }
 
         Double getHeading(RValue<DTOHeading> heading) {
+            if (heading == null) {
+                return null;
+            }
             if (heading.isRef()) {
                 // It's a poseref;
                 RValue<DTOPose> poseRef = new RValue<>();
@@ -373,55 +394,24 @@ public class PedroJsonLoader {
             }
             if (!pending.isEmpty()) {
                 // TODO: Fill this in with more/better details
-                errors.add("Errors evaluating interpolators");
-            }
-        }
-
-        Path getCurve(RValue<DTOCurve> curveRef) {
-            if (curveRef.isRef()) {
-                return curves.get(curveRef.getRef());
-            } else {
-                DTOCurve dtoCurve = curveRef.getValue();
-                InterpDescr id = getInterpolator(dtoCurve.interpolation);
-                Pose[] poses = new Pose[dtoCurve.points.size()];
-                int i = 0;
-                for (RValue<DTOPose> pose : dtoCurve.points) {
-                    Pose p = getPose(pose);
-                    if (p == null) {
-                        return null;
+                errors.add(
+                    String.format(
+                        Locale.ENGLISH,
+                        "Errors evaluating interpolators: %d",
+                        pending.size()
+                    )
+                );
+                for (Map.Entry<String, List<String>> item : pending.entrySet()) {
+                    StringBuilder sb = new StringBuilder();
+                    sb.append(item.getKey());
+                    sb.append(':');
+                    for (String dep : item.getValue()) {
+                        sb.append(dep);
+                        sb.append(',');
                     }
-                    poses[i++] = p;
-                }
-                if (id == null) {
-                    return null;
-                }
-                Path p = null;
-                if (poses.length == 2) {
-                    p = Paths.line(poses[0], poses[1]);
-                } else {
-                    p = Paths.curve(poses);
-                }
-                switch (id.type) {
-                    case "tangent":
-                        return id.revOrLongWay ? p.reverseTangent() : p.tangent();
-                    case "constant":
-                        return p.constant(id.heading1X);
-                    case "linear":
-                        return p.linear(id.heading1X, id.heading2Y);
-                    case "facing":
-                        return p.facingPoint(new Pose(id.heading1X, id.heading2Y));
-                    case "piece": {
-                        /* TODO: Make this work
-            PiecewiseInterpolator pi = Interpolator.piecewise();
-            for (Piece piece: id.pieces) {
-              pi = pi.until(piece.until, piece.interp);
-            }
-            */
-                        return null;
-                    }
+                    errors.add(sb.toString());
                 }
             }
-            return null;
         }
 
         void EvalCurves(NamedItems dto) {
@@ -447,8 +437,95 @@ public class PedroJsonLoader {
             }
         }
 
-        Map<String, Path> EvalPaths(NamedItems dto) {
-            Map<String, Path> res = new HashMap<>(dto.paths.size());
+        Path applyInterpolator(Path p, RValue<DTOInterpolator> dtoInterp, String failMessage) {
+            InterpDescr id = getInterpolator(dtoInterp);
+            if (id == null) {
+                errors.add(failMessage);
+                return null;
+            }
+            switch (id.type) {
+                case "tangent":
+                    return id.revOrLongWay ? p.reverseTangent() : p.tangent();
+                case "constant":
+                    return p.constant(id.heading1X);
+                case "linear":
+                    return p.linear(id.heading1X, id.heading2Y);
+                case "facing":
+                    return p.facingPoint(new Pose(id.heading1X, id.heading2Y));
+                case "piece": {
+                    /* TODO: Make this work
+            PiecewiseInterpolator pi = Interpolator.piecewise();
+            for (Piece piece: id.pieces) {
+              pi = pi.until(piece.until, piece.interp);
+            }
+            */
+                    errors.add("Unsupported piece-wise interpolation");
+                    return null;
+                }
+            }
+            errors.add("Unexpected interpolator error");
+            return null;
+        }
+
+        Path getCurve(RValue<DTOCurve> curveRef) {
+            if (curveRef.isRef()) {
+                return curves.get(curveRef.getRef());
+            } else {
+                DTOCurve dtoCurve = curveRef.getValue();
+                Pose[] poses = new Pose[dtoCurve.points.size()];
+                int i = 0;
+                for (RValue<DTOPose> pose : dtoCurve.points) {
+                    Pose p = getPose(pose);
+                    if (p == null) {
+                        return null;
+                    }
+                    poses[i++] = p;
+                }
+                Path p;
+                if (poses.length == 2) {
+                    p = Paths.line(poses[0], poses[1]);
+                } else {
+                    p = Paths.curve(poses);
+                }
+                if (dtoCurve.interpolation == null) {
+                    return p;
+                }
+                return applyInterpolator(
+                    p,
+                    dtoCurve.interpolation,
+                    "Failed to evaluation interpolator for curve"
+                );
+            }
+        }
+
+        void EvalPaths(NamedItems dto) {
+            paths = new HashMap<>(dto.paths.size());
+            for (Map.Entry<String, DTOPath> val : dto.paths.entrySet()) {
+                String name = val.getKey();
+                Path p = getPath(val.getValue());
+            }
+        }
+
+        Path getPath(DTOPath p) {
+            Path paths[] = new Path[p.curves.size()];
+            int i = 0;
+            for (RValue<DTOCurve> curveRef : p.curves) {
+                Path c = getCurve(curveRef);
+                if (c == null) {
+                    errors.add("Unable to evaluate curve for path");
+                    return null;
+                }
+                paths[i++] = c;
+            }
+            Path res = Paths.path(paths);
+
+            if (p.globalInterpolator != null) {
+                return applyInterpolator(
+                    res,
+                    p.globalInterpolator,
+                    "Error evaluation global interpolator for path"
+                );
+            }
             return res;
         }
     }
@@ -665,24 +742,11 @@ public class PedroJsonLoader {
                     return;
                 }
 
-                // 1. Let Gson convert the concrete class into a JsonElement tree
+                // Let Gson convert the concrete class into a JsonElement tree
                 JsonElement tree = gson.toJsonTree(value, value.getClass());
                 JsonObject jsonObject = tree.getAsJsonObject();
 
-                // 2. Inject the correct "type" discriminator based on the subclass
-                if (value instanceof DTOTangent) {
-                    jsonObject.addProperty("type", "Tangent");
-                } else if (value instanceof DTOLinear) {
-                    jsonObject.addProperty("type", "Linear");
-                } else if (value instanceof DTOConstant) {
-                    jsonObject.addProperty("type", "Constant");
-                } else if (value instanceof DTOFacingPoint) {
-                    jsonObject.addProperty("type", "FacingPoint");
-                } else if (value instanceof DTOPieceWise) {
-                    jsonObject.addProperty("type", "PieceWise");
-                }
-
-                // 3. Write the modified tree out to the stream
+                // Write the modified tree out to the stream
                 gson.toJson(jsonObject, out);
             }
 
@@ -692,38 +756,24 @@ public class PedroJsonLoader {
                 JsonParser jp = new JsonParser();
                 JsonObject jsonObject = jp.parse(in).getAsJsonObject();
 
-                // TODO: Fix this stuff here. It ain't right yet.
-                if (!jsonObject.has("type")) {
-                    throw new JsonParseException(
-                        "Missing 'type' discriminator field for DTOInterpolator"
-                    );
-                }
-
-                String type = jsonObject.get("type").getAsString();
                 Class<? extends DTOInterpolator> targetClass;
-
-                // 2. Map the string type to the correct concrete Java class
-                switch (type) {
-                    case "Tangent":
-                        targetClass = DTOTangent.class;
-                        break;
-                    case "Linear":
-                        targetClass = DTOLinear.class;
-                        break;
-                    case "Constant":
-                        targetClass = DTOConstant.class;
-                        break;
-                    case "FacingPoint":
-                        targetClass = DTOFacingPoint.class;
-                        break;
-                    case "PieceWise":
-                        targetClass = DTOPieceWise.class;
-                        break;
-                    default:
-                        throw new JsonParseException("Unknown heading interpolation type: " + type);
+                if (jsonObject.has("reversed")) {
+                    targetClass = DTOTangent.class;
+                } else if (jsonObject.has("point")) {
+                    targetClass = DTOFacingPoint.class;
+                } else if (jsonObject.has("heading")) {
+                    targetClass = DTOConstant.class;
+                } else if (jsonObject.has("start")) {
+                    targetClass = DTOLinear.class;
+                } else if (jsonObject.has("pieces")) {
+                    targetClass = DTOPieceWise.class;
+                } else {
+                    StringBuilder sb = new StringBuilder();
+                    sb.append("Unrecognized child type for DTOInterpolator: ");
+                    sb.append(jsonObject.toString());
+                    throw new JsonParseException(sb.toString());
                 }
-
-                // 3. Delegate the object mapping back to Gson for the specific subclass
+                // Delegate the object mapping back to Gson for the specific subclass
                 return gson.fromJson(jsonObject, targetClass);
             }
         }
