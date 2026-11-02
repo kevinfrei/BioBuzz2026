@@ -12,6 +12,8 @@ import com.google.gson.stream.*;
 import com.pedropathing.api.Paths;
 import com.pedropathing.math.Pose;
 import com.pedropathing.paths.Path;
+import com.pedropathing.paths.interpolator.Interpolator;
+import com.pedropathing.paths.interpolator.PiecewiseInterpolator;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import java.io.*;
 import java.lang.reflect.ParameterizedType;
@@ -25,10 +27,14 @@ public class PedroJsonLoader {
         return m == null ? -1 : m.size();
     }
 
+    static String sfmt(String format, Object... args) {
+        return String.format(Locale.ENGLISH, format, args);
+    }
+
     public static String ExternalFileName = "paths/pedropaths.json";
     public static String AssetFileName = "paths/pedropaths.json";
     public static String status = "";
-
+    public static String other = "other";
     static NamedItems dto;
     public static PedroItems items;
 
@@ -36,26 +42,42 @@ public class PedroJsonLoader {
     public boolean loaded;
 
     @Nullable
-    private InputStream getLatestFile() {
-        Context context = hardwareMap.appContext;
-        File overrideFile = new File(context.getExternalFilesDir(null), ExternalFileName);
-        if (overrideFile.exists()) {
-            try {
-                // External override file selected over assets
-                return new FileInputStream(overrideFile);
-            } catch (IOException ignored) {}
-        }
+    private InputStream getAdbDeployedFileStream(Context context) {
+        try {
+            File adbFile = new File(context.getExternalFilesDir(null), ExternalFileName);
+            other = adbFile.getAbsolutePath();
+            return adbFile.exists() ? new FileInputStream(adbFile) : null;
+        } catch (IOException ignored) {}
+        return null;
+    }
+
+    @Nullable
+    private InputStream getAssetFileStream(Context context) {
         AssetManager assetManager = context.getAssets();
         try {
             return assetManager.open(AssetFileName);
         } catch (IOException ignored) {}
+        return null;
+    }
+
+    @Nullable
+    private InputStream getJsonFileStream() {
+        Context context = hardwareMap.appContext;
+        InputStream adbStream = getAdbDeployedFileStream(context);
+        if (adbStream != null) {
+            return adbStream;
+        }
+        InputStream assetStream = getAssetFileStream(context);
+        if (assetStream != null) {
+            return assetStream;
+        }
         status = "Never found any files";
         return null;
     }
 
     // TODO: add loading from the 'upload only the paths' path, too...
     public boolean loadPathFromJson() {
-        InputStream inputStream = getLatestFile();
+        InputStream inputStream = getJsonFileStream();
         if (inputStream == null) {
             return false;
         }
@@ -69,9 +91,8 @@ public class PedroJsonLoader {
             items = new PedroItems(dto);
             StringBuilder sb = new StringBuilder();
             sb.append(
-                String.format(
-                    Locale.ENGLISH,
-                    "v:%d p:%d i:%d c:%d P:%d errs:%d",
+                sfmt(
+                    "vals:%d poses:%d interps:%d curves:%d paths:%d errs:%d",
                     getSz(items.values),
                     getSz(items.poses),
                     getSz(items.interpolations),
@@ -81,7 +102,7 @@ public class PedroJsonLoader {
                 )
             );
             for (String s : items.errors) {
-                sb.append(String.format(Locale.ENGLISH, "%nErr: %s", s.trim()));
+                sb.append(sfmt("%nErr: %s", s.trim()));
             }
             status = sb.toString();
             return true;
@@ -99,20 +120,24 @@ public class PedroJsonLoader {
         this.loaded = loadPathFromJson();
     }
 
+    @Nullable
     public static Path getPath(String name) {
-        return items.paths.get(name);
+        return items != null && items.paths != null ? items.paths.get(name) : null;
     }
 
+    @Nullable
     public static Path getCurve(String name) {
-        return items.curves.get(name);
+        return items != null && items.curves != null ? items.curves.get(name) : null;
     }
 
+    @Nullable
     public static Pose getPose(String name) {
-        return items.poses.get(name);
+        return items != null && items.poses != null ? items.poses.get(name) : null;
     }
 
+    @Nullable
     public static Double getValue(String name) {
-        return items.values.get(name);
+        return items != null && items.values != null ? items.values.get(name) : null;
     }
 
     static class NamedItems {
@@ -124,39 +149,39 @@ public class PedroJsonLoader {
         public Map<String, DTOPath> paths;
     }
 
-    static class Piece {
-
-        public double until;
-        public InterpDescr interp;
-
-        public Piece(double until, InterpDescr id) {
-            this.until = until;
-            interp = id;
-        }
-    }
-
     static class InterpDescr {
 
-        public String type;
+        static class Piece {
+
+            public double until;
+            public InterpDescr interp;
+
+            public Piece(double until, InterpDescr id) {
+                this.until = until;
+                interp = id;
+            }
+        }
+
+        public char type;
         public boolean revOrLongWay;
         public double heading1X, heading2Y;
         public Piece[] pieces;
 
         /// Tangent
         public InterpDescr(boolean rev) {
-            type = "tangent";
+            type = 't';
             revOrLongWay = rev;
         }
 
         /// Constant
         public InterpDescr(double heading) {
-            type = "constant";
+            type = 'c';
             heading1X = heading;
         }
 
         /// Linear
         public InterpDescr(double start, double end, boolean longWay) {
-            type = "linear";
+            type = 'l';
             revOrLongWay = longWay;
             heading1X = start;
             heading2Y = end;
@@ -164,14 +189,14 @@ public class PedroJsonLoader {
 
         /// Facing
         public InterpDescr(double x, double y) {
-            type = "facing";
+            type = 'f';
             heading1X = x;
             heading2Y = y;
         }
 
         /// Piece-wise
         public InterpDescr(Piece[] pieceList) {
-            type = "pieces";
+            type = 'p';
             pieces = pieceList;
         }
     }
@@ -185,7 +210,7 @@ public class PedroJsonLoader {
         Map<String, Path> paths;
         List<String> errors;
 
-        public PedroItems(NamedItems dto) {
+        PedroItems(NamedItems dto) {
             errors = new ArrayList<>();
             EvalValues(dto);
             EvalPoses(dto);
@@ -334,7 +359,7 @@ public class PedroJsonLoader {
                     return pose == null ? null : new InterpDescr(pose.x(), pose.y());
                 } else if (value instanceof DTOPieceWise) {
                     DTOPieceWise dto = (DTOPieceWise) value;
-                    Piece[] lst = new Piece[dto.pieces.size()];
+                    InterpDescr.Piece[] lst = new InterpDescr.Piece[dto.pieces.size()];
                     int i = 0;
                     for (DTOPiecePortion p : dto.pieces) {
                         Double until = getValue(p.until);
@@ -342,7 +367,7 @@ public class PedroJsonLoader {
                         if (until == null || id == null) {
                             return null;
                         }
-                        lst[i++] = new Piece(until, id);
+                        lst[i++] = new InterpDescr.Piece(until, id);
                     }
                     return new InterpDescr(lst);
                 }
@@ -368,13 +393,7 @@ public class PedroJsonLoader {
                 }
             }
             if (!pending.isEmpty()) {
-                errors.add(
-                    String.format(
-                        Locale.ENGLISH,
-                        "Errors evaluating interpolators: %d",
-                        pending.size()
-                    )
-                );
+                errors.add(sfmt("Errors evaluating interpolators: %d", pending.size()));
                 for (Map.Entry<String, List<String>> item : pending.entrySet()) {
                     StringBuilder sb = new StringBuilder();
                     sb.append(item.getKey());
@@ -412,34 +431,37 @@ public class PedroJsonLoader {
             }
         }
 
+        Interpolator getInterpForDescr(InterpDescr pi) {
+            switch (pi.type) {
+                case 't':
+                    return pi.revOrLongWay ? Interpolator.tangent.reverse() : Interpolator.tangent;
+                case 'c':
+                    return Interpolator.constant(pi.heading1X);
+                case 'l':
+                    return pi.revOrLongWay
+                        ? Interpolator.longLinear(pi.heading1X, pi.heading2Y)
+                        : Interpolator.linear(pi.heading1X, pi.heading2Y);
+                case 'f':
+                    return Interpolator.facingPoint(new Pose(pi.heading1X, pi.heading2Y));
+                case 'p': {
+                    PiecewiseInterpolator i = Interpolator.piecewise();
+                    for (InterpDescr.Piece piece : pi.pieces) {
+                        i = i.until(piece.until, getInterpForDescr(piece.interp));
+                    }
+                    return i;
+                }
+                default:
+                    return Interpolator.tangent;
+            }
+        }
+
         Path applyInterpolator(Path p, RValue<DTOInterpolator> dtoInterp, String failMessage) {
             InterpDescr id = getInterpolator(dtoInterp);
             if (id == null) {
                 errors.add(failMessage);
                 return null;
             }
-            switch (id.type) {
-                case "tangent":
-                    return id.revOrLongWay ? p.reverseTangent() : p.tangent();
-                case "constant":
-                    return p.constant(id.heading1X);
-                case "linear":
-                    return p.linear(id.heading1X, id.heading2Y);
-                case "facing":
-                    return p.facingPoint(new Pose(id.heading1X, id.heading2Y));
-                case "piece": {
-                    /* TODO: Make this work
-            PiecewiseInterpolator pi = Interpolator.piecewise();
-            for (Piece piece: id.pieces) {
-              pi = pi.until(piece.until, piece.interp);
-            }
-            */
-                    errors.add("Unsupported piece-wise interpolation");
-                    return null;
-                }
-            }
-            errors.add("Unexpected interpolator error");
-            return null;
+            return p.heading(getInterpForDescr(id));
         }
 
         Path getCurve(@NonNull RValue<DTOCurve> curveRef) {
@@ -560,18 +582,7 @@ public class PedroJsonLoader {
 
             @Override
             public void write(JsonWriter out, RValue<T> value) throws IOException {
-                if (value == null) {
-                    out.nullValue();
-                    return;
-                }
-                if (value.isRef()) {
-                    out.beginObject();
-                    out.name("ref").value(value.getRef());
-                    out.endObject();
-                } else {
-                    // Delegate writing the inline value to its native adapter
-                    innerAdapter.write(out, value.getItem());
-                }
+                throw new IOException("Unsupported");
             }
 
             @Override
@@ -602,7 +613,7 @@ public class PedroJsonLoader {
     public static class DTOCurve {
 
         public List<RValue<DTOPose>> points;
-        public RValue<DTOInterpolator> interpolation; // nullable
+        public RValue<DTOInterpolator> interpolation; // nul    lable
     }
 
     public static class DTOPath {
@@ -625,6 +636,11 @@ public class PedroJsonLoader {
     }
 
     // Heading Interpolators:
+
+    public static class DTOTangent extends DTOInterpolator {
+
+        public boolean reversed = false;
+    }
 
     public static class DTOConstant extends DTOInterpolator {
 
@@ -654,11 +670,6 @@ public class PedroJsonLoader {
         public List<DTOPiecePortion> pieces;
     }
 
-    public static class DTOTangent extends DTOInterpolator {
-
-        public boolean reversed = false;
-    }
-
     @JsonAdapter(DTOInterpolator.AdapterFactory.class)
     public abstract static class DTOInterpolator {
 
@@ -669,9 +680,6 @@ public class PedroJsonLoader {
                 if (!DTOInterpolator.class.isAssignableFrom(type.getRawType())) {
                     return null;
                 }
-
-                // Delegate to runtime mapping or handle sub-typing logic here
-                // This keeps your GsonBuilder completely clean of navigation rules.
                 return (TypeAdapter<T>) new Adapter(gson);
             }
         }
@@ -680,24 +688,13 @@ public class PedroJsonLoader {
 
             private final Gson gson;
 
-            // Gson passes itself into the adapter factory, which we forward here
             public Adapter(Gson gson) {
                 this.gson = gson;
             }
 
             @Override
             public void write(JsonWriter out, DTOInterpolator value) throws IOException {
-                if (value == null) {
-                    out.nullValue();
-                    return;
-                }
-
-                // Let Gson convert the concrete class into a JsonElement tree
-                JsonElement tree = gson.toJsonTree(value, value.getClass());
-                JsonObject jsonObject = tree.getAsJsonObject();
-
-                // Write the modified tree out to the stream
-                gson.toJson(jsonObject, out);
+                throw new IOException("Unsupported");
             }
 
             @Override
