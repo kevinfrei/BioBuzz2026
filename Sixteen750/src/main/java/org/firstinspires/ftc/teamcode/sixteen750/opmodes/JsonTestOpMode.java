@@ -30,11 +30,6 @@ public class JsonTestOpMode extends OpMode implements Loggable {
     @Override
     public void loop() {
         ptel.addLine(PedroJsonLoader.status);
-        if (PedroJsonLoader.FILES != null) {
-            for (String l : PedroJsonLoader.FILES) {
-                ptel.addLine(l);
-            }
-        }
         ptel.update(telemetry);
     }
 }
