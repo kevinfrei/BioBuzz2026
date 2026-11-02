@@ -2,80 +2,53 @@ package org.firstinspires.ftc.teamcode.jsonloader;
 
 import android.content.Context;
 import android.content.res.AssetManager;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import com.bylazar.configurables.annotations.Configurable;
-import com.bylazar.telemetry.TelemetryManager;
 import com.google.gson.*;
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.reflect.TypeToken;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
+import com.google.gson.stream.*;
 import com.pedropathing.api.Paths;
 import com.pedropathing.math.Pose;
 import com.pedropathing.paths.Path;
-import com.pedropathing.paths.curves.Curve;
-import com.pedropathing.paths.curves.Line;
-import com.pedropathing.paths.curves.bezier.BezierCurve;
-import com.pedropathing.paths.interpolator.Interpolator;
-import com.pedropathing.paths.interpolator.PiecewiseInterpolator;
-import com.qualcomm.ftccommon.FtcRobotControllerService;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.PrintStream;
-import java.io.PrintWriter;
-import java.io.Reader;
-import java.io.StringWriter;
+import java.io.*;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.nio.file.Files;
 import java.util.*;
-import org.firstinspires.ftc.robotcontroller.internal.FtcRobotControllerActivity;
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 @Configurable
 public class PedroJsonLoader {
 
-    private static <T> int getSz(Map<String, T> m) {
+    static <T> int getSz(Map<String, T> m) {
         return m == null ? -1 : m.size();
     }
 
     public static String ExternalFileName = "paths/pedropaths.json";
     public static String AssetFileName = "paths/pedropaths.json";
     public static String status = "";
-    public static String FILE_PATH = "paths";
-    public static String[] FILES = null;
 
-    private static NamedItems dto;
-    private static PedroItems items;
+    static NamedItems dto;
+    public static PedroItems items;
 
-    public HardwareMap hwmap;
+    public HardwareMap hardwareMap;
     public boolean loaded;
 
+    @Nullable
     private InputStream getLatestFile() {
-        Context context = hwmap.appContext;
+        Context context = hardwareMap.appContext;
         File overrideFile = new File(context.getExternalFilesDir(null), ExternalFileName);
         if (overrideFile.exists()) {
-            // External override file selected over assets
             try {
+                // External override file selected over assets
                 return new FileInputStream(overrideFile);
             } catch (IOException ignored) {}
         }
         AssetManager assetManager = context.getAssets();
         try {
-            String[] files = assetManager.list(FILE_PATH);
-            status = String.format("%d files", files.length);
-            FILES = files;
             return assetManager.open(AssetFileName);
         } catch (IOException ignored) {}
-        /*try {
-            String[] files = assetManager.list(FILE_PATH);
-            status = String.format("%d files", files.length);
-            FILES = files;
-            return null;
-        } catch (IOException ignored) {}*/
         status = "Never found any files";
         return null;
     }
@@ -87,20 +60,18 @@ public class PedroJsonLoader {
             return false;
         }
         try (Reader reader = new InputStreamReader(inputStream)) {
-            status = "Reader created";
             Gson gson = new Gson();
             dto = gson.fromJson(reader, NamedItems.class);
             if (dto == null) {
-                status = "DTO is null";
+                status = "DTO JSON loading failed";
                 return false;
             }
-            status = "DTO created";
             items = new PedroItems(dto);
             StringBuilder sb = new StringBuilder();
             sb.append(
                 String.format(
                     Locale.ENGLISH,
-                    "%d %d %d %d %d %d",
+                    "v:%d p:%d i:%d c:%d P:%d errs:%d",
                     getSz(items.values),
                     getSz(items.poses),
                     getSz(items.interpolations),
@@ -110,7 +81,7 @@ public class PedroJsonLoader {
                 )
             );
             for (String s : items.errors) {
-                sb.append(String.format(Locale.ENGLISH, "Error: %s", s));
+                sb.append(String.format(Locale.ENGLISH, "%nErr: %s", s.trim()));
             }
             status = sb.toString();
             return true;
@@ -118,13 +89,13 @@ public class PedroJsonLoader {
             StringWriter sw = new StringWriter();
             PrintWriter pw = new PrintWriter(sw);
             e.printStackTrace(pw);
-            status = sw.toString();
+            status += sw.toString();
             return false;
         }
     }
 
     public PedroJsonLoader(HardwareMap map) {
-        this.hwmap = map;
+        this.hardwareMap = map;
         this.loaded = loadPathFromJson();
     }
 
@@ -205,7 +176,7 @@ public class PedroJsonLoader {
         }
     }
 
-    static class PedroItems {
+    public static class PedroItems {
 
         Map<String, Double> values;
         Map<String, Pose> poses;
@@ -224,8 +195,8 @@ public class PedroJsonLoader {
         }
 
         private static <T> void TransitiveAssignment(
-            Map<String, T> res,
-            Map<String, List<String>> pending,
+            @NonNull Map<String, T> res,
+            @NonNull Map<String, List<String>> pending,
             String name,
             T value
         ) {
@@ -245,15 +216,15 @@ public class PedroJsonLoader {
             } while (!resolve.empty());
         }
 
-        Double getValue(RValue<DTOValue> valRef) {
+        Double getValue(@NonNull RValue<DTOValue> valRef) {
             if (valRef.isRef()) {
                 return values.get(valRef.getRef());
             } else {
-                return valRef.getValue().val;
+                return valRef.getItem().val;
             }
         }
 
-        void EvalValues(NamedItems dto) {
+        void EvalValues(@NonNull NamedItems dto) {
             values = new HashMap<>(dto.values.size());
             Map<String, List<String>> pending = new HashMap<>(dto.values.size());
             for (Map.Entry<String, RValue<DTOValue>> rval : dto.values.entrySet()) {
@@ -290,7 +261,7 @@ public class PedroJsonLoader {
                 }
                 return p.heading();
             }
-            DTOHeading h = heading.getValue();
+            DTOHeading h = heading.getItem();
             Double val = getValue(h.angle);
             if (val != null) {
                 return h.inRadians ? val : (val * Math.PI) / 180.0;
@@ -298,19 +269,23 @@ public class PedroJsonLoader {
             return null;
         }
 
-        Pose getPose(RValue<DTOPose> poseRef) {
+        Pose getPose(@NonNull RValue<DTOPose> poseRef) {
             if (poseRef.isRef()) {
                 return poses.get(poseRef.getRef());
             } else {
-                DTOPose dtoPose = poseRef.getValue();
+                DTOPose dtoPose = poseRef.getItem();
                 Double X = getValue(dtoPose.X);
                 Double Y = getValue(dtoPose.Y);
                 Double Heading = getHeading(dtoPose.heading);
-                return X != null && Y != null && Heading != null ? new Pose(X, Y, Heading) : null;
+                if (Heading == null) {
+                    return X != null && Y != null ? new Pose(X, Y) : null;
+                } else {
+                    return X != null && Y != null ? new Pose(X, Y, Heading) : null;
+                }
             }
         }
 
-        void EvalPoses(NamedItems dto) {
+        void EvalPoses(@NonNull NamedItems dto) {
             poses = new HashMap<>(dto.poses.size());
             Map<String, List<String>> pending = new HashMap<>(dto.poses.size());
             for (Map.Entry<String, RValue<DTOPose>> rval : dto.poses.entrySet()) {
@@ -333,11 +308,11 @@ public class PedroJsonLoader {
             }
         }
 
-        InterpDescr getInterpolator(RValue<DTOInterpolator> interpRef) {
+        InterpDescr getInterpolator(@NonNull RValue<DTOInterpolator> interpRef) {
             if (interpRef.isRef()) {
                 return interpolations.get(interpRef.getRef());
             } else {
-                DTOInterpolator value = interpRef.getValue();
+                DTOInterpolator value = interpRef.getItem();
                 if (value instanceof DTOTangent) {
                     return new InterpDescr(((DTOTangent) value).reversed);
                 } else if (value instanceof DTOLinear) {
@@ -375,7 +350,7 @@ public class PedroJsonLoader {
             return null;
         }
 
-        void EvalInterpolations(NamedItems dto) {
+        void EvalInterpolations(@NonNull NamedItems dto) {
             interpolations = new HashMap<>(dto.interpolations.size());
             Map<String, List<String>> pending = new HashMap<>(dto.interpolations.size());
             for (Map.Entry<String, RValue<DTOInterpolator>> rval : dto.interpolations.entrySet()) {
@@ -393,7 +368,6 @@ public class PedroJsonLoader {
                 }
             }
             if (!pending.isEmpty()) {
-                // TODO: Fill this in with more/better details
                 errors.add(
                     String.format(
                         Locale.ENGLISH,
@@ -409,12 +383,13 @@ public class PedroJsonLoader {
                         sb.append(dep);
                         sb.append(',');
                     }
+                    sb.append('\n');
                     errors.add(sb.toString());
                 }
             }
         }
 
-        void EvalCurves(NamedItems dto) {
+        void EvalCurves(@NonNull NamedItems dto) {
             curves = new HashMap<>(dto.curves.size());
             Map<String, List<String>> pending = new HashMap<>(dto.curves.size());
             for (Map.Entry<String, RValue<DTOCurve>> rval : dto.curves.entrySet()) {
@@ -467,11 +442,11 @@ public class PedroJsonLoader {
             return null;
         }
 
-        Path getCurve(RValue<DTOCurve> curveRef) {
+        Path getCurve(@NonNull RValue<DTOCurve> curveRef) {
             if (curveRef.isRef()) {
                 return curves.get(curveRef.getRef());
             } else {
-                DTOCurve dtoCurve = curveRef.getValue();
+                DTOCurve dtoCurve = curveRef.getItem();
                 Pose[] poses = new Pose[dtoCurve.points.size()];
                 int i = 0;
                 for (RValue<DTOPose> pose : dtoCurve.points) {
@@ -498,15 +473,16 @@ public class PedroJsonLoader {
             }
         }
 
-        void EvalPaths(NamedItems dto) {
+        void EvalPaths(@NonNull NamedItems dto) {
             paths = new HashMap<>(dto.paths.size());
             for (Map.Entry<String, DTOPath> val : dto.paths.entrySet()) {
                 String name = val.getKey();
                 Path p = getPath(val.getValue());
+                paths.put(name, p);
             }
         }
 
-        Path getPath(DTOPath p) {
+        Path getPath(@NonNull DTOPath p) {
             Path paths[] = new Path[p.curves.size()];
             int i = 0;
             for (RValue<DTOCurve> curveRef : p.curves) {
@@ -544,7 +520,7 @@ public class PedroJsonLoader {
             return ref;
         }
 
-        public T getValue() {
+        public T getItem() {
             return value;
         }
 
@@ -594,7 +570,7 @@ public class PedroJsonLoader {
                     out.endObject();
                 } else {
                     // Delegate writing the inline value to its native adapter
-                    innerAdapter.write(out, value.getValue());
+                    innerAdapter.write(out, value.getItem());
                 }
             }
 
@@ -652,30 +628,15 @@ public class PedroJsonLoader {
 
     public static class DTOConstant extends DTOInterpolator {
 
-        @Override
-        public String getType() {
-            return "Constant";
-        }
-
         public RValue<DTOHeading> heading;
     }
 
     public static class DTOFacingPoint extends DTOInterpolator {
 
-        @Override
-        public String getType() {
-            return "FacingPoint";
-        }
-
         public RValue<DTOPose> point;
     }
 
     public static class DTOLinear extends DTOInterpolator {
-
-        @Override
-        public String getType() {
-            return "Linear";
-        }
 
         public RValue<DTOHeading> startHeading;
         public RValue<DTOHeading> endHeading;
@@ -690,27 +651,16 @@ public class PedroJsonLoader {
 
     public static class DTOPieceWise extends DTOInterpolator {
 
-        @Override
-        public String getType() {
-            return "PieceWise";
-        }
-
         public List<DTOPiecePortion> pieces;
     }
 
     public static class DTOTangent extends DTOInterpolator {
-
-        public String getType() {
-            return "Tangent";
-        }
 
         public boolean reversed = false;
     }
 
     @JsonAdapter(DTOInterpolator.AdapterFactory.class)
     public abstract static class DTOInterpolator {
-
-        public abstract String getType();
 
         static class AdapterFactory implements TypeAdapterFactory {
 
@@ -768,10 +718,9 @@ public class PedroJsonLoader {
                 } else if (jsonObject.has("pieces")) {
                     targetClass = DTOPieceWise.class;
                 } else {
-                    StringBuilder sb = new StringBuilder();
-                    sb.append("Unrecognized child type for DTOInterpolator: ");
-                    sb.append(jsonObject.toString());
-                    throw new JsonParseException(sb.toString());
+                    String err =
+                        "Unrecognized child type for DTOInterpolator: " + jsonObject.toString();
+                    throw new JsonParseException(err);
                 }
                 // Delegate the object mapping back to Gson for the specific subclass
                 return gson.fromJson(jsonObject, targetClass);
