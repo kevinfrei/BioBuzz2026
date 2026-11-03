@@ -44,13 +44,13 @@ public class DoublePark2Tip extends CommandOpMode {
             new SequentialCommandGroup(
                 new PedroPathCommand(robot.follower, p.DStartToPartnerPark()),
                 new PedroPathCommand(robot.follower, p.DPartnerParkToLaunch1()),
-                new WaitCommand(0.8),
+                new WaitCommand(0.55),
                 a.Fire(robot),
                 new PedroPathCommand(robot.follower, p.DLaunch1ToGardenPreInt()).alongWith(
                     t.Intake(robot)
                 ),
                 new PedroPathCommand(robot.follower, p.DGardenPreIntToGardenInt()).withTimeout(2),
-                new WaitCommand(1.15),
+                new WaitCommand(1),
                 new PedroPathCommand(robot.follower, p.DGardenIntToLaunch2()).alongWith(
                     t.Reject(robot)
                 ),

@@ -78,7 +78,7 @@ public class TurretSubsystem implements Loggable, Subsystem {
     public static double hoodCompScalar = -0.0324; // the ratio between our error in velocity ~in the couple of hundreds and the change in hood angle 21-38 degrees;
     public static double HOOD_MIN = 0.1;
     public static double HOOD_MAX = 0.5;
-    public static double INCREASE = 15; // extremely jank increment and decrement
+    public static double INCREASE = 10; // extremely jank increment and decrement
 
     //@Log.Number(name = "hood calculated Pos")
     public static double hoodTargetPos = 0.5;

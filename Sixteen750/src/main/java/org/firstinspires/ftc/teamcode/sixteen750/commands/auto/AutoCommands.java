@@ -12,7 +12,7 @@ public class AutoCommands {
     public static SequentialCommandGroup Fire (Robot r) {
         return new SequentialCommandGroup(
                 r.intakeSubsystem::Feed,
-        new WaitCommand(.8));
+        new WaitCommand(.75));
     }
     public static SequentialCommandGroup FireHalf (Robot r)  {
         return new SequentialCommandGroup(
