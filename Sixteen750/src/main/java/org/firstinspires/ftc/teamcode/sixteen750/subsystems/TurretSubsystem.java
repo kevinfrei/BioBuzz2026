@@ -4,10 +4,12 @@ import static java.lang.Math.clamp;
 
 import com.bylazar.configurables.annotations.Configurable;
 import com.pedropathing.math.Pose;
+import com.pedropathing.math.Velocity;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
+import com.qualcomm.robotcore.util.ElapsedTime;
 import com.technototes.library.command.CommandScheduler;
 import com.technototes.library.hardware.motor.EncodedMotor;
 import com.technototes.library.hardware.servo.Servo;
@@ -32,6 +34,12 @@ public class TurretSubsystem implements Loggable, Subsystem {
     public static boolean turretSOTM = true;
     public static boolean velocitySOTM = false;
     public static boolean hoodSOTM = false;
+
+    public static Velocity previousVeloSOTM;
+    private static ElapsedTime velocityTimer = new ElapsedTime();
+    public static Velocity acceleration = null;
+
+    public static double futureVeloDelay = .2;
 
     public static double TARGET_SWITCH_THRESHOLD = 72;
     public static double TURRET_CENTER = 0.5;
@@ -170,6 +178,10 @@ public class TurretSubsystem implements Loggable, Subsystem {
                     kVelocityConstant * target) /
                 hardware.voltage()
         );
+    }
+
+    public static void setElapsedTime(double elapsedTime) {
+        ElapsedTime = elapsedTime;
     }
 
     public void Launch() {
@@ -409,6 +421,22 @@ public class TurretSubsystem implements Loggable, Subsystem {
     public double getYVelo() {
         yVelo = robot.follower.velocity().vy;
         return clamp(yVelo, -50, 50);
+    }
+
+    public Velocity getAcceleration(boolean update) {
+        com.pedropathing.math.Velocity currentVelocity = robot.follower.velocity();
+        if (previousVeloSOTM != null && update) {
+            Velocity changeVelocity = currentVelocity.minus(previousVeloSOTM);
+            double changeTime = velocityTimer.seconds();
+            previousVeloSOTM = currentVelocity;
+            velocityTimer.reset();
+            acceleration = changeVelocity.scale(1 / changeTime);
+        } else if (previousVeloSOTM == null) {
+            previousVeloSOTM = currentVelocity;
+            velocityTimer.reset();
+            acceleration = currentVelocity;
+        }
+        return acceleration;
     }
 
     private void setHoodPos(double pos) {
