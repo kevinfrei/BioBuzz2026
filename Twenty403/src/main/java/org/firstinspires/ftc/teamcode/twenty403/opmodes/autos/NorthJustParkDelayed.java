@@ -31,7 +31,7 @@ public class NorthJustParkDelayed extends CommandOpMode {
         robot.follower.setPose(PedroConstants.Poses.North);
         CommandScheduler.scheduleForState(
             new SequentialCommandGroup(
-                new WaitCommand(0.2),
+                new WaitCommand(5),
                 new DriveAutoCommand(robot.drivebaseSubsystem, 0.1, -0.5),
                 new WaitCommand(.7),
                 new DriveAutoCommand(robot.drivebaseSubsystem, 0, 0),
