@@ -124,17 +124,17 @@ public class TurretSubsystem implements Loggable, Subsystem {
     // It's output is a power value in the -1 to +1 range.
     // So, P is probably in the range of .001-ish.
     // For a velocity-targeting PIDF, we probably want an I value, not a D value.
-    public static PIDFCoefficients launchPID = new PIDFCoefficients(0.0059, 0.00002, 0.0, 0); // 10/3/26 added a p value seems pretty decent
+    public static PIDFCoefficients launchPID = new PIDFCoefficients(0.00127, 0.00001, 0.0, 0); // 10/3/26 added a p value seems pretty decent 0.0059,0.00002     0.0044,    0.0000614
     private Hardware hardware;
     // Stuff used for the Feed Forward function.
     // This one is highly variable, based on the amount of friction in the system
 
-    public static double kStaticFriction = 0.47; // measured 10/12
+    public static double kStaticFriction = 0.604; // measured 10/12 .35
 
-    public static double kDynamicFriction = 0.463; // measured 10/12
+    public static double kDynamicFriction = .536; // measured 10/12 1.5
 
     // This one tends to be somewhere between 0.0035 to 0.005 or so.
-    public static double kVelocityConstant = 0.0043;
+    public static double kVelocityConstant = 0.0045;
     public static double MotorResistance = 12 / 9.2;
 
     public static double GetFrictionConstant(boolean inMotion) {
@@ -156,7 +156,7 @@ public class TurretSubsystem implements Loggable, Subsystem {
             hood = h.hood;
             CommandScheduler.register(this);
             gamepad = null;
-            launcher.setDirection(DcMotorSimple.Direction.REVERSE);
+            launcher.setDirection(DcMotorSimple.Direction.FORWARD);
         } else {
             launcher = null;
             turret1 = null;
@@ -191,7 +191,7 @@ public class TurretSubsystem implements Loggable, Subsystem {
         x = robot.follower.pose().x(); // sets x to robots current y position
         y = robot.follower.pose().y(); // sets y to robots current y position
         robotHead = MathUtils.normalizeDeltaAngle(
-            robot.follower.pose().heading(),
+            robot.follower.pose().heading() + Math.PI,
             AngleUnit.RADIANS
         ); // sets robotHead to robot heading and normalizes to delta radians
 
