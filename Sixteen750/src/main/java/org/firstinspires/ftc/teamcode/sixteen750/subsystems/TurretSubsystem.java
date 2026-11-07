@@ -39,7 +39,7 @@ public class TurretSubsystem implements Loggable, Subsystem {
     private static ElapsedTime velocityTimer = new ElapsedTime();
     public static Velocity acceleration = null;
 
-    public static double futureVeloDelay = .2;
+    public static double ejectiontime = .2;
 
     public static double TARGET_SWITCH_THRESHOLD = 72;
     public static double TURRET_CENTER = 0.5;
@@ -180,10 +180,6 @@ public class TurretSubsystem implements Loggable, Subsystem {
         );
     }
 
-    public static void setElapsedTime(double elapsedTime) {
-        ElapsedTime = elapsedTime;
-    }
-
     public void Launch() {
         // Spin the motors
         setVelocityTarget(autoVelocity);
@@ -275,9 +271,21 @@ public class TurretSubsystem implements Loggable, Subsystem {
         Pose sotmTargetPose;
 
         Y = robot.follower.pose().y();
-        dx = getXVelo();
-        dy = getYVelo();
+        dx = getXVelo() + acceleration.vx * ejectiontime;
+        dy = getYVelo() + acceleration.vy * ejectiontime;
 
+        Pose targetPose;
+        if (Y < TARGET_SWITCH_THRESHOLD) {
+            targetPose = HIVE_TARGET1;
+        } else {
+            targetPose = HIVE_TARGET2;
+        }
+
+        sotmTargetPose = new Pose(
+            targetPose.x() - dx * FLIGHT_TIME,
+            targetPose.y() - dy * FLIGHT_TIME
+        );
+        /*
         if (Y < TARGET_SWITCH_THRESHOLD) {
             sotmTargetPose = new Pose(
                 HIVE_TARGET1.x() - dx * FLIGHT_TIME,
@@ -289,7 +297,7 @@ public class TurretSubsystem implements Loggable, Subsystem {
                 HIVE_TARGET2.y() - dy * FLIGHT_TIME
             );
         }
-
+*/
         return sotmTargetPose;
     }
 
@@ -373,6 +381,7 @@ public class TurretSubsystem implements Loggable, Subsystem {
         // Add an item to the array and update the index for the next update to the 'circular' array
         double power = pidfController.update(getActualVelocity());
         setLauncherPower(power);
+        updateAcceleration(true);
     }
 
     private double getMotor1Current() {
@@ -423,6 +432,7 @@ public class TurretSubsystem implements Loggable, Subsystem {
         return clamp(yVelo, -50, 50);
     }
 
+    /*
     public Velocity getAcceleration(boolean update) {
         com.pedropathing.math.Velocity currentVelocity = robot.follower.velocity();
         if (previousVeloSOTM != null && update) {
@@ -437,6 +447,22 @@ public class TurretSubsystem implements Loggable, Subsystem {
             acceleration = currentVelocity;
         }
         return acceleration;
+    }
+     */
+
+    public void updateAcceleration(boolean update) {
+        com.pedropathing.math.Velocity currentVelocity = robot.follower.velocity();
+        if (previousVeloSOTM != null && update) {
+            Velocity changeVelocity = currentVelocity.minus(previousVeloSOTM);
+            double changeTime = velocityTimer.seconds();
+            previousVeloSOTM = currentVelocity;
+            velocityTimer.reset();
+            acceleration = changeVelocity.scale(1 / changeTime);
+        } else if (previousVeloSOTM == null) {
+            previousVeloSOTM = currentVelocity;
+            velocityTimer.reset();
+            acceleration = new Velocity(0, 0, 0);
+        }
     }
 
     private void setHoodPos(double pos) {
