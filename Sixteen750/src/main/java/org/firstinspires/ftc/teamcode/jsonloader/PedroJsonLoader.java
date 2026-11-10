@@ -120,21 +120,41 @@ public class PedroJsonLoader {
         this.loaded = loadPathFromJson();
     }
 
+    /**
+     * Get a path by case-sensitive name that was specified in the JSON file
+     * @param name The name of the path
+     * @return null if not found, otherwise, the PedroPath.
+     */
     @Nullable
     public static Path getPath(String name) {
         return items != null && items.paths != null ? items.paths.get(name) : null;
     }
 
+    /**
+     * Get a curve or line by case-sensitive name that was specified in the JSON file
+     * @param name The name of the curve or line
+     * @return null if not found, otherwise, the PedroPath curve or line.
+     */
     @Nullable
     public static Path getCurve(String name) {
         return items != null && items.curves != null ? items.curves.get(name) : null;
     }
 
+    /**
+     * Get a pose by case-sensitive name that was specified in the JSON file
+     * @param name The name of the pose
+     * @return null if not found, otherwise, the PedroPath Pose. All headings are in Radians.
+     */
     @Nullable
     public static Pose getPose(String name) {
         return items != null && items.poses != null ? items.poses.get(name) : null;
     }
 
+    /**
+     * Get a numeric value by case-sensitive name that was specified in the JSON file
+     * @param name The name of the value
+     * @return null if not found, otherwise, the value.
+     */
     @Nullable
     public static Double getValue(String name) {
         return items != null && items.values != null ? items.values.get(name) : null;
