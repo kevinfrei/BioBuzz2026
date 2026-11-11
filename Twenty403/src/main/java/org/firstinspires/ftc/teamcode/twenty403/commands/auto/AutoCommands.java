@@ -7,27 +7,27 @@ import org.firstinspires.ftc.teamcode.twenty403.Robot;
 
 public class AutoCommands {
 
-    public static SequentialCommandGroup Fire(Robot r) {
-        return new SequentialCommandGroup(r.intakeSubsystem::Intake, new WaitCommand(1));
+    public static Command Launch(Robot r) {
+        return r.launcherSubsystem::Launch;
     }
 
-    abstract static class AutoTurret implements Command {
-
-        @Override
-        public boolean isFinished() {
-            return false;
-        }
+    public static Command StopLaunch(Robot r) {
+        return r.launcherSubsystem::Stop;
     }
 
-    abstract static class AutoLaunch implements Command {
+    public static Command Intake(Robot r) {
+        return r.intakeSubsystem::Intake;
+    }
 
-        @Override
-        public boolean isFinished() {
-            return false;
-        }
+    public static Command StopIntake(Robot r) {
+        return r.intakeSubsystem::Stop;
+    }
 
-        public static Command AutoVelo(Robot r) {
-            return Command.create(r.launcherSubsystem::Launch);
-        }
+    public static Command AutoFirePollen(Robot r) {
+        return new SequentialCommandGroup(
+            AutoCommands.Launch(r),
+            new WaitCommand(1.5),
+            AutoCommands.StopLaunch(r)
+        );
     }
 }

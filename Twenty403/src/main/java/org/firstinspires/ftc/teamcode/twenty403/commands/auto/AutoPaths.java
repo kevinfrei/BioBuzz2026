@@ -20,19 +20,19 @@ public class AutoPaths {
     private final Pose point4 = poseFactory.of(14.0421, 93.099, -90);
     private final Pose point4Control1 = poseFactory.of(15.5412, 36.8921, 0);
 
-    public Path pathStarting() {
+    public Path pathStartToGardenLaunch() {
         return Paths.curve(start, point1Control1, point1).constant(point1);
     }
 
-    public Path pathOneTip() {
+    public Path pathGardenLaunchToGarden() {
         return Paths.curve(point1, point2Control1, point2).tangent();
     }
 
-    public Path pathTwoTip() {
+    public Path pathGardenToGardenLaunch() {
         return Paths.curve(point3Start, point3Control1, point3).linear(point3Start, point3);
     }
 
-    public Path path_park() {
+    public Path pathGardenLaunchToPark() {
         return Paths.curve(point3, point4Control1, point4).constant(point4);
     }
 }

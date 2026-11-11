@@ -9,12 +9,10 @@ import com.technototes.library.command.WaitCommand;
 import com.technototes.library.structure.CommandOpMode;
 import com.technototes.library.util.Alliance;
 import org.firstinspires.ftc.teamcode.twenty403.Hardware;
-import org.firstinspires.ftc.teamcode.twenty403.PedroConstants;
 import org.firstinspires.ftc.teamcode.twenty403.Robot;
 import org.firstinspires.ftc.teamcode.twenty403.commands.PedroPathCommand;
 import org.firstinspires.ftc.teamcode.twenty403.commands.auto.AutoCommands;
 import org.firstinspires.ftc.teamcode.twenty403.commands.auto.AutoPaths;
-import org.firstinspires.ftc.teamcode.twenty403.subsystems.LauncherSubsystem;
 
 @Autonomous(name = "TwoTipAuto", preselectTeleOp = "2 Controller Drive \uD83D\uDDFF")
 @SuppressWarnings("unused")
@@ -33,16 +31,18 @@ public class TwoTipAuto extends CommandOpMode {
         paths = new AutoPaths();
         panelsTelemetry = PanelsTelemetry.INSTANCE;
         //robot.follower.setPose(PedroConstants.Poses.South);
-        robot.follower.setPose(paths.pathStarting().get(0));
+        robot.follower.setPose(paths.pathStartToGardenLaunch().get(0));
         CommandScheduler.scheduleForState(
             new SequentialCommandGroup(
-                new PedroPathCommand(robot.follower, paths.pathStarting()),
-                new WaitCommand(.5),
-                new PedroPathCommand(robot.follower, paths.pathOneTip()),
-                new WaitCommand(.5),
-                new PedroPathCommand(robot.follower, paths.pathTwoTip()),
-                new WaitCommand(.5),
-                new PedroPathCommand(robot.follower, paths.path_park()),
+                new PedroPathCommand(robot.follower, paths.pathStartToGardenLaunch()),
+                AutoCommands.AutoFirePollen(robot),
+                AutoCommands.Intake(robot),
+                new PedroPathCommand(robot.follower, paths.pathGardenLaunchToGarden()),
+                new WaitCommand(1.5),
+                AutoCommands.StopIntake(robot),
+                new PedroPathCommand(robot.follower, paths.pathGardenToGardenLaunch()),
+                AutoCommands.AutoFirePollen(robot),
+                new PedroPathCommand(robot.follower, paths.pathGardenLaunchToPark()),
                 CommandScheduler::terminateOpMode
             ),
             OpModeState.RUN
