@@ -39,12 +39,12 @@ public class TurretSubsystem implements Loggable, Subsystem {
     private static ElapsedTime velocityTimer = new ElapsedTime();
     public static Velocity acceleration;
 
-    public static double ejectiontime = .07 ;
+    public static double ejectiontime = .07;
 
     public static double TARGET_SWITCH_THRESHOLD = 72;
     public static double TURRET_CENTER = 0.5;
-    public static double TURRET_MIN = 0.01;
-    public static double TURRET_MAX = 0.99;
+    public static double TURRET_MIN = 0;
+    public static double TURRET_MAX = 1;
 
     @Log.Number(name = "target servo Pos")
     public static double targetServoPos = 0;
@@ -382,7 +382,6 @@ public class TurretSubsystem implements Loggable, Subsystem {
         // Add an item to the array and update the index for the next update to the 'circular' array
         double power = pidfController.update(getActualVelocity());
         setLauncherPower(power);
-
     }
 
     private double getMotor1Current() {

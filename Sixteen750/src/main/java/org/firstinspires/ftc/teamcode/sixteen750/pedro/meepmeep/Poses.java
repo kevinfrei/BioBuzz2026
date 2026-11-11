@@ -62,12 +62,12 @@ public class Poses {
     @Configurable
     public static class Park2TipPoses {
 
-        public static Pose PartnerPark = new Pose(11, 83);
+        public static Pose PartnerPark = new Pose(10, 79);
         public static double PartnerParkHead = Math.toRadians(0);
-        public static Pose Launch1 = new Pose(52, 17);
+        public static Pose Launch1 = new Pose(52, 20);
         public static double Launch1Head = Math.toRadians(90);
-        public static Pose GardenPreInt = new Pose(7, 22);
-        public static Pose GardenInt = new Pose(6.7, 7.7);
+        public static Pose GardenPreInt = new Pose(7, 19);
+        public static Pose GardenInt = new Pose(6.7, 7.4);
         public static double GardenIntHead = Math.toRadians(270);
         public static Pose Launch2 = new Pose(48.5, 121);
         public static double Launch2Head = Math.toRadians(255);

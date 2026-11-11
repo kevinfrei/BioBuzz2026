@@ -9,18 +9,19 @@ import org.firstinspires.ftc.teamcode.sixteen750.Robot;
 import org.firstinspires.ftc.teamcode.sixteen750.subsystems.IntakeSubsystem;
 
 public class AutoCommands {
-    public static SequentialCommandGroup Fire (Robot r) {
-        return new SequentialCommandGroup(
-                r.intakeSubsystem::Feed,
-        new WaitCommand(.8));
+
+    public static SequentialCommandGroup Fire(Robot r) {
+        return new SequentialCommandGroup(r.intakeSubsystem::Feed, new WaitCommand(.92));
     }
-    public static SequentialCommandGroup FireHalf (Robot r)  {
+
+    public static SequentialCommandGroup FireHalf(Robot r) {
         return new SequentialCommandGroup(
-                r.intakeSubsystem::Feed,
-                new WaitCommand(.3),
-                r.intakeSubsystem::Hold
+            r.intakeSubsystem::Feed,
+            new WaitCommand(.3),
+            r.intakeSubsystem::Hold
         );
     }
+
     abstract static class AutoTurret implements Command {
 
         @Override
@@ -32,6 +33,7 @@ public class AutoCommands {
             return Command.create(r.turretsubsystem::setTurretTarget);
         }
     }
+
     abstract static class AutoLaunch implements Command {
 
         @Override
