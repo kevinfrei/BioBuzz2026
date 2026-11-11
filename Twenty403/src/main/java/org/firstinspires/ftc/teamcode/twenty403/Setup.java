@@ -9,7 +9,7 @@ public class Setup {
 
         public static boolean DRIVEBASE = true;
         public static boolean ODO = true;
-        public static boolean EXTERNALIMU = true;
+        public static boolean EXTERNALIMU = false;
         public static boolean LAUNCHER = true;
         public static boolean INTAKE = true;
         public static boolean LIMELIGHT = false;

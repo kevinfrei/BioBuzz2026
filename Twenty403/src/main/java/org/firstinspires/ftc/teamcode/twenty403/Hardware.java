@@ -49,8 +49,8 @@ public class Hardware implements Loggable {
             follower = PedroConstants.create(hwmap);
         }
         if (Setup.Connected.ODO) {
-            fbOdo = new MotorEncoder(PedroConstants.localizerConfig.xPodName.get());
-            strafeOdo = new MotorEncoder(PedroConstants.localizerConfig.yPodName.get());
+            // fbOdo = new MotorEncoder(PedroConstants.localizerConfig.xPodName.get());
+            // strafeOdo = new MotorEncoder(PedroConstants.localizerConfig.yPodName.get());
         }
         if (Setup.Connected.LAUNCHER) {
             launcher = new EncodedMotor<>(Setup.HardwareNames.LAUNCHER);

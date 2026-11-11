@@ -11,13 +11,17 @@ import com.pedropathing.revhub.drivetrains.Mecanum;
 import com.pedropathing.revhub.drivetrains.MecanumConfig;
 import com.pedropathing.revhub.localizers.CustomIMU;
 import com.pedropathing.revhub.localizers.Encoder;
+import com.pedropathing.revhub.localizers.OctoQuadConfig;
+import com.pedropathing.revhub.localizers.OctoQuadLocalizer;
 import com.pedropathing.revhub.localizers.RevHubIMU;
 import com.pedropathing.revhub.localizers.TwoWheelConfig;
 import com.pedropathing.revhub.localizers.TwoWheelLocalizer;
+import com.qualcomm.hardware.digitalchickenlabs.OctoQuad;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.technototes.library.hardware.sensor.AdafruitIMU;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.twenty403.helpers.AdafruitCustomIMU;
 
 public class PedroConstants {
@@ -27,7 +31,7 @@ public class PedroConstants {
 
     public static Follower create(HardwareMap h) {
         return new Follower(
-            new TwoWheelLocalizer(h, localizerConfig),
+            new OctoQuadLocalizer(h, localizerConfig),
             new Mecanum(h, drivetrainConfig),
             new Foresight(foresightConfig)
         );
@@ -45,7 +49,21 @@ public class PedroConstants {
         c.backRightDirection.set(DcMotorSimple.Direction.FORWARD);
     });
     // Ran on Oct 23 2026
-    public static TwoWheelConfig localizerConfig = new TwoWheelConfig(c -> {
+    public static OctoQuadConfig localizerConfig = new OctoQuadConfig(c -> {
+        c.name.set("octoquad");
+        c.xPodPort.set(3);
+        c.yPodPort.set(2);
+        c.ticksPerUnit.set(505.316944406);
+        c.xPodOffset.set(-0.05905511811023623);
+        c.yPodOffset.set(-6.141732283464568);
+        c.xPodDirection.set(OctoQuad.EncoderDirection.REVERSE);
+        c.yPodDirection.set(OctoQuad.EncoderDirection.REVERSE);
+        c.globalDistanceUnit.set(DistanceUnit.INCH);
+        c.offsetUnits.set(DistanceUnit.INCH);
+        c.i2cRecoveryMode.set(OctoQuad.I2cRecoveryMode.MODE_1_PERIPH_RST_ON_FRAME_ERR);
+        c.headingScalar.set(1.0172521379226043);
+    });
+    public static TwoWheelConfig oldLocalizerConfig = new TwoWheelConfig(c -> {
         c.xPodName.set(Setup.HardwareNames.FB_ODO);
         c.yPodName.set(Setup.HardwareNames.STRAFE_ODO);
         c.imuName.set(
@@ -76,10 +94,10 @@ public class PedroConstants {
     });
 
     public static ForesightConfig foresightConfig = new ForesightConfig(c -> {
-        Controller primaryTranslationalForward = Controller.proportional(3.140914166223175);
-        Controller secondaryTranslationalForward = Controller.proportional(1.16048385764724);
-        Controller primaryTranslationalLateral = Controller.proportional(0.3869868831953519);
-        Controller secondaryTranslationalLateral = Controller.proportional(0.1429813128607202);
+        Controller primaryTranslationalForward = Controller.proportional(0.2785348999832107);
+        Controller secondaryTranslationalForward = Controller.proportional(0.10291120295419666);
+        Controller primaryTranslationalLateral = Controller.proportional(0.4275314354262314);
+        Controller secondaryTranslationalLateral = Controller.proportional(0.15796144153964187);
 
         c.forwardTranslational.set(
             Controller.piecewise(secondaryTranslationalForward).put(
@@ -94,22 +112,21 @@ public class PedroConstants {
             )
         );
 
-        c.coast.set(Controller.proportionalFeedforward(0.013173340432575217));
-        c.brake.set(Controller.proportionalFeedforward(0.011197339367688934));
+        c.coast.set(Controller.proportionalFeedforward(0.012069761957410004));
+        c.brake.set(Controller.proportionalFeedforward(0.010259297663798503));
 
-        // Lower values jiggle *less*
-        c.headingFeedback.set(Controller.proportional(1.5));
+        c.headingFeedback.set(Controller.proportional(3.2073599278729015));
         c.headingBrakeCoefficients.set(
-            Vector2D.cartesian(0.06921667217831645, 0.003996514850370519)
+            Vector2D.cartesian(0.059299684851447654, 0.0069180845214850085)
         );
 
-        c.linearBrakeCoefficients.set(Matrix.diag(0.07879625092892711, 0.0581106795791841));
-        c.quadraticBrakeCoefficients.set(Matrix.diag(0.0024436056663298777, 0.0024037888882513982));
+        c.linearBrakeCoefficients.set(Matrix.diag(0.08611023457568019, 0.04405586069455108));
+        c.quadraticBrakeCoefficients.set(Matrix.diag(0.0022437236542938617, 0.0025909933879756804));
 
-        c.maxAchievableForwardVelocity.set(82.19934633520977);
-        c.maxAchievableStrafeVelocity.set(54.62715311683887);
-        c.naturalForwardDeceleration.set(28.310017444938694);
-        c.naturalStrafeDeceleration.set(105.43819925978954);
+        c.maxAchievableForwardVelocity.set(81.30848431898026);
+        c.maxAchievableStrafeVelocity.set(58.23300640932813);
+        c.naturalForwardDeceleration.set(25.36341634595008);
+        c.naturalStrafeDeceleration.set(47.44720604384475);
     });
 
     public static class Poses {
