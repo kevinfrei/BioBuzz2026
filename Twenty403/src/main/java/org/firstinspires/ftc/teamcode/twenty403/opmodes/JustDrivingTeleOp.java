@@ -78,12 +78,7 @@ public class JustDrivingTeleOp extends CommandOpMode {
             new SequentialCommandGroup(HeadingHelper.RestorePreviousPosition(robot.follower)),
             OpModeState.INIT
         );
-        if (Setup.Connected.LAUNCHER) {
-            CommandScheduler.register(robot.launcherSubsystem);
-        }
-        if (Setup.Connected.INTAKE) {
-            CommandScheduler.register(robot.intakeSubsystem);
-        }
+
         telemetry.addData(">", "Robot Ready.  Press Play.");
         telemetry.update();
     }

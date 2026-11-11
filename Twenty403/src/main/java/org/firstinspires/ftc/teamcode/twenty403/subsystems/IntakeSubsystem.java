@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.twenty403.subsystems;
 import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.technototes.library.command.CommandScheduler;
 import com.technototes.library.hardware.motor.CRServo;
 import com.technototes.library.hardware.motor.Motor;
 import com.technototes.library.logger.Log;
@@ -36,6 +37,7 @@ public class IntakeSubsystem implements Subsystem, Loggable {
             _rightintake = null;
             _intakemotor = null;
         }
+        CommandScheduler.register(this);
     }
 
     public void Intake() {

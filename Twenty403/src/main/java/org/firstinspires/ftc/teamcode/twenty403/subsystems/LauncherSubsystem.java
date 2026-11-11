@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.util.MovingStatistics;
+import com.technototes.library.command.CommandScheduler;
 import com.technototes.library.hardware.motor.CRServo;
 import com.technototes.library.hardware.motor.EncodedMotor;
 import com.technototes.library.logger.Log;
@@ -92,6 +93,7 @@ public class LauncherSubsystem implements Loggable, Subsystem {
         } else {
             launchMotor = null;
         }
+        CommandScheduler.register(this);
     }
 
     public void Launch() {
