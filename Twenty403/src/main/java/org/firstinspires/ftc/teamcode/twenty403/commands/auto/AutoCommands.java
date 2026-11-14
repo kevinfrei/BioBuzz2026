@@ -26,7 +26,7 @@ public class AutoCommands {
     public static Command AutoFirePollen(Robot r) {
         return new SequentialCommandGroup(
             AutoCommands.Launch(r),
-            new WaitCommand(1.5),
+            new WaitCommand(7.5),
             AutoCommands.StopLaunch(r)
         );
     }

@@ -7,15 +7,15 @@ import com.pedropathing.paths.Path;
 
 public class AutoPaths {
 
-    private final PoseFactory poseFactory = PoseFactory.degrees();
+    private static final PoseFactory poseFactory = PoseFactory.degrees();
 
     private final Pose start = poseFactory.of(11.265, 87.872, 90);
-    private final Pose point1 = poseFactory.of(58.2505, 11.1046, -90);
+    private final Pose point1 = poseFactory.of(57.663, 15.2174, -90);
     private final Pose point1Control1 = poseFactory.of(16.565, 20.2398, 0);
-    private final Pose point2 = poseFactory.of(12.4288, 11.7919, -104.9194);
-    private final Pose point2Control1 = poseFactory.of(25.9818, 62.6582, 0);
-    private final Pose point3Start = poseFactory.of(12.4288, 11.7919, -90);
-    private final Pose point3 = poseFactory.of(58.4778, 11.5063, -90);
+    private final Pose point2 = poseFactory.of(16.5416, 12.1836, -90);
+    private final Pose point2Control1 = poseFactory.of(14.2309, 39.9398, 0);
+    private final Pose point3Start = poseFactory.of(16.5416, 12.1836, -90);
+    private final Pose point3 = poseFactory.of(57.6944, 14.8357, -90);
     private final Pose point3Control1 = poseFactory.of(26.9306, 53.832, 0);
     private final Pose point4 = poseFactory.of(14.0421, 93.099, -90);
     private final Pose point4Control1 = poseFactory.of(15.5412, 36.8921, 0);
@@ -25,7 +25,7 @@ public class AutoPaths {
     }
 
     public Path pathGardenLaunchToGarden() {
-        return Paths.curve(point1, point2Control1, point2).tangent();
+        return Paths.curve(point1, point2Control1, point2).constant(point2);
     }
 
     public Path pathGardenToGardenLaunch() {
