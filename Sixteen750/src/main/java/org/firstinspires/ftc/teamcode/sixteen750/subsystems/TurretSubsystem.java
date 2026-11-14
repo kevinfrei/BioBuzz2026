@@ -28,8 +28,8 @@ import org.firstinspires.ftc.teamcode.sixteen750.Setup;
 public class TurretSubsystem implements Loggable, Subsystem {
 
     final Robot robot;
-    Pose HIVE_TARGET1 = new Pose(56.5, 54);
-    Pose HIVE_TARGET2 = new Pose(56.5, 90);
+    Pose HIVE_TARGET1 = new Pose(59, 54);
+    Pose HIVE_TARGET2 = new Pose(59, 90);
 
     public static boolean turretSOTM = true;
     public static boolean velocitySOTM = false;
@@ -49,7 +49,7 @@ public class TurretSubsystem implements Loggable, Subsystem {
     @Log.Number(name = "target servo Pos")
     public static double targetServoPos = 0;
 
-    public static double FLIGHT_TIME = 0.57;
+    public static double FLIGHT_TIME = 0.64;
 
     @Log.Number(name = "xvelo")
     public static double xVelo = 0;
@@ -83,12 +83,12 @@ public class TurretSubsystem implements Loggable, Subsystem {
 
     public static double HOOD_INCREMENT = 0.01; // amount to manually adjust hood by for tuning
     public static double HOOD_POSITION_TO_ANGLE_CONSTANT = 43.42105; // did math to get this it is how the position relates to the angle in degrees
-    public static double hoodCompScalar = -0.0348; // the ratio between our error in velocity ~in the couple of hundreds and the change in hood angle 21-38 degrees;
+    public static double hoodCompScalar = -0.038; // the ratio between our error in velocity ~in the couple of hundreds and the change in hood angle 21-38 degrees;
     public static double HOOD_MIN = 0.1;
     public static double HOOD_MAX = 0.5;
     public static double INCREASE = 15; // extremely jank increment and  decrement
 
-    //@Log.Number(name = "hood calculated Pos")
+    @Log.Number(name = "hood calculated Pos")
     public static double hoodTargetPos = 0.5;
 
     public static double actualTarget = 0; // target for manual velocity tuning
@@ -99,12 +99,12 @@ public class TurretSubsystem implements Loggable, Subsystem {
 
     public static double HOOD_REGRESSION_A = -0.000211401; // 0.00000232206; // slope of hood regression
     public static double HOOD_REGRESSION_B = 0.0260897; // -0.0003136;
-    public static double HOOD_REGRESSION_C = 0.243456; // 0.0153873;
+    public static double HOOD_REGRESSION_C = 0.233456; // 0.0153873;
     //  public static double HOOD_REGRESSION_D = -0.315317;
     //  public static double HOOD_REGRESSION_E = 3.07; // offset to the slope (y intercept)
     public static double LAUNCHER_REGRESSION_A = -0.0662139; //0.00657618; // slope of launcher regression
     public static double LAUNCHER_REGRESSION_B = 9.58113; //-0.960648;
-    public static double LAUNCHER_REGRESSION_C = 895.08219; //51.54356;
+    public static double LAUNCHER_REGRESSION_C = 883.08219; //51.54356;
 
     // public static double LAUNCHER_REGRESSION_D = -1197.91667; // offset to the launcher regression slope (y-intercept)
 
@@ -140,7 +140,7 @@ public class TurretSubsystem implements Loggable, Subsystem {
 
     public static double kStaticFriction = 0.67; // measured 10/12
 
-    public static double kDynamicFriction = 0.55; // measured 10/12
+    public static double kDynamicFriction = 0.53; // measured 10/12
 
     // This one tends to be somewhere between 0.0035 to 0.005 or so.
     public static double kVelocityConstant = 0.0043;
@@ -235,7 +235,7 @@ public class TurretSubsystem implements Loggable, Subsystem {
 
         double sotmDistance = robotPose.distance(sotmTargetPose);
 
-        return clamp(sotmDistance, 23, 48);
+        return clamp(sotmDistance, 24, 48);
     }
 
     // increment ignore how sus this implementation is btw
