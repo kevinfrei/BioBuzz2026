@@ -43,8 +43,8 @@ public class TurretSubsystem implements Loggable, Subsystem {
 
     public static double TARGET_SWITCH_THRESHOLD = 72;
     public static double TURRET_CENTER = 0.5;
-    public static double TURRET_MIN = 0;
-    public static double TURRET_MAX = 1;
+    public static double TURRET_MIN = 0.02;
+    public static double TURRET_MAX = 0.98;
 
     @Log.Number(name = "target servo Pos")
     public static double targetServoPos = 0;
@@ -75,7 +75,7 @@ public class TurretSubsystem implements Loggable, Subsystem {
     //@Log(name = "sotm targetPose")
     public static Pose sotmTargetPose = new Pose(0, 0);
 
-    //@Log.Number(name = "final hood pose")
+    @Log.Number(name = "final hood pose")
     public static double hoodAutoPos = 0.5; // final value we feed into the hood for position
 
     //@Log.Number(name = "Manual hood pos")
@@ -97,18 +97,19 @@ public class TurretSubsystem implements Loggable, Subsystem {
     @Log.Number(name = "Auto Velocity")
     public static double autoVelocity = 2000;
 
-    public static double HOOD_REGRESSION_A = 0.00000232206; // slope of hood regression
-    public static double HOOD_REGRESSION_B = -0.0003136;
-    public static double HOOD_REGRESSION_C = 0.0153873;
-    public static double HOOD_REGRESSION_D = -0.315317;
-    public static double HOOD_REGRESSION_E = 3.07; // offset to the slope (y intercept)
-    public static double LAUNCHER_REGRESSION_A = 0.00657618; // slope of launcher regression
-    public static double LAUNCHER_REGRESSION_B = -0.960648;
-    public static double LAUNCHER_REGRESSION_C = 51.54356;
-    public static double LAUNCHER_REGRESSION_D = -1197.91667; // offset to the launcher regression slope (y-intercept)
+    public static double HOOD_REGRESSION_A = -0.000211401; // 0.00000232206; // slope of hood regression
+    public static double HOOD_REGRESSION_B = 0.0260897; // -0.0003136;
+    public static double HOOD_REGRESSION_C = 0.243456; // 0.0153873;
+    //  public static double HOOD_REGRESSION_D = -0.315317;
+    //  public static double HOOD_REGRESSION_E = 3.07; // offset to the slope (y intercept)
+    public static double LAUNCHER_REGRESSION_A = -0.0662139; //0.00657618; // slope of launcher regression
+    public static double LAUNCHER_REGRESSION_B = 9.58113; //-0.960648;
+    public static double LAUNCHER_REGRESSION_C = 895.08219; //51.54356;
 
-    public static double LAUNCHER_REGRESSION_E = 11400.0909;
-    public static double LAUNCHER_REGRESSION_E_SOTM = 11327.0909;
+    // public static double LAUNCHER_REGRESSION_D = -1197.91667; // offset to the launcher regression slope (y-intercept)
+
+    //  public static double LAUNCHER_REGRESSION_E = 11400.0909;
+    // public static double LAUNCHER_REGRESSION_E_SOTM = 11327.0909;
 
     @Log.Number(name = "rawdistance")
     public static double distanceToTarget = 0; // distance to the hive we are aiming at in inches
@@ -132,17 +133,17 @@ public class TurretSubsystem implements Loggable, Subsystem {
     // It's output is a power value in the -1 to +1 range.
     // So, P is probably in the range of .001-ish.
     // For a velocity-targeting PIDF, we probably want an I value, not a D value.
-    public static PIDFCoefficients launchPID = new PIDFCoefficients(0.0034, 0.00000125, 0.0, 0); // 10/3/26 added a p value seems pretty decent
+    public static PIDFCoefficients launchPID = new PIDFCoefficients(0.0012, 0.0002, 0.0, 0); // 10/3/26 added a p value seems pretty decent
     private Hardware hardware;
     // Stuff used for the Feed Forward function.
     // This one is highly variable, based on the amount of friction in the system
 
     public static double kStaticFriction = 0.67; // measured 10/12
 
-    public static double kDynamicFriction = 0.476; // measured 10/12
+    public static double kDynamicFriction = 0.55; // measured 10/12
 
     // This one tends to be somewhere between 0.0035 to 0.005 or so.
-    public static double kVelocityConstant = 0.0042;
+    public static double kVelocityConstant = 0.0043;
     public static double MotorResistance = 12 / 9.2;
 
     public static double GetFrictionConstant(boolean inMotion) {
@@ -334,11 +335,9 @@ public class TurretSubsystem implements Loggable, Subsystem {
         double x = hoodSOTM ? sotmDistanceToTarget : distanceToTarget;
 
         hoodTargetPos =
-            HOOD_REGRESSION_A * Math.pow(x, 4) +
-            HOOD_REGRESSION_B * Math.pow(x, 3) +
-            HOOD_REGRESSION_C * Math.pow(x, 2) +
-            HOOD_REGRESSION_D * x +
-            HOOD_REGRESSION_E; // we run our distance into our regression formula
+            HOOD_REGRESSION_A * Math.pow(x, 2) + HOOD_REGRESSION_B * x + HOOD_REGRESSION_C; //* Math.pow() +
+        // HOOD_REGRESSION_D * x +
+        //    HOOD_REGRESSION_E; // we run our distance into our regression formula
 
         return hoodTargetPos;
     }
@@ -401,12 +400,12 @@ public class TurretSubsystem implements Loggable, Subsystem {
         double x = velocitySOTM ? sotmDistanceToTarget : distanceToTarget;
 
         autoVelocity =
-            LAUNCHER_REGRESSION_A * Math.pow(x, 4) +
-            LAUNCHER_REGRESSION_B * Math.pow(x, 3) +
-            LAUNCHER_REGRESSION_C * Math.pow(x, 2) +
-            LAUNCHER_REGRESSION_D * x +
-            // LAUNCHER_REGRESSION_E; // comment when use SOTM
-            LAUNCHER_REGRESSION_E_SOTM;
+            LAUNCHER_REGRESSION_A * Math.pow(x, 2) +
+            LAUNCHER_REGRESSION_B * x +
+            LAUNCHER_REGRESSION_C; //* Math.pow(x, 2) +
+        //   LAUNCHER_REGRESSION_D * x +
+        // LAUNCHER_REGRESSION_E; // comment when use SOTM
+        //  LAUNCHER_REGRESSION_E_SOTM;
         return autoVelocity;
     }
 
