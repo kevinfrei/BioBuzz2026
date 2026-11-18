@@ -19,6 +19,10 @@ public class AutoPaths {
     private final Pose point3Control1 = poseFactory.of(26.9306, 53.832, 0);
     private final Pose point4 = poseFactory.of(14.0421, 93.099, -90);
     private final Pose point4Control1 = poseFactory.of(15.5412, 36.8921, 0);
+    private final Pose northStart = poseFactory.of(10, 135.7, 0);
+    private final Pose northToLaunchControl = poseFactory.of(22.91, 121.04, 0);
+    private final Pose northPark = poseFactory.of(10, 115.11, 0);
+    private final Pose northLaunch = poseFactory.of(59.46, 135.98, 90);
 
     public Path pathStartToGardenLaunch() {
         return Paths.curve(start, point1Control1, point1).constant(point1);
@@ -34,5 +38,16 @@ public class AutoPaths {
 
     public Path pathGardenLaunchToPark() {
         return Paths.curve(point3, point4Control1, point4).constant(point4);
+    }
+
+    public Path NorthStartToLaunch() {
+        return Paths.curve(northStart, northToLaunchControl, northLaunch).linear(
+            northStart,
+            northLaunch
+        );
+    }
+
+    public Path NorthLaunchToPark() {
+        return Paths.curve(northLaunch, northPark).constant(northLaunch);
     }
 }
