@@ -28,8 +28,8 @@ import org.firstinspires.ftc.teamcode.sixteen750.Setup;
 public class TurretSubsystem implements Loggable, Subsystem {
 
     final Robot robot;
-    Pose HIVE_TARGET1 = new Pose(59, 54);
-    Pose HIVE_TARGET2 = new Pose(59, 90);
+    Pose HIVE_TARGET1 = new Pose(60, 54);
+    Pose HIVE_TARGET2 = new Pose(60, 90);
 
     public static boolean turretSOTM = true;
     public static boolean velocitySOTM = false;
@@ -83,7 +83,7 @@ public class TurretSubsystem implements Loggable, Subsystem {
 
     public static double HOOD_INCREMENT = 0.01; // amount to manually adjust hood by for tuning
     public static double HOOD_POSITION_TO_ANGLE_CONSTANT = 43.42105; // did math to get this it is how the position relates to the angle in degrees
-    public static double hoodCompScalar = -0.038; // the ratio between our error in velocity ~in the couple of hundreds and the change in hood angle 21-38 degrees;
+    public static double hoodCompScalar = -0.047; // the ratio between our error in velocity ~in the couple of hundreds and the change in hood angle 21-38 degrees;
     public static double HOOD_MIN = 0.1;
     public static double HOOD_MAX = 0.5;
     public static double INCREASE = 15; // extremely jank increment and  decrement
@@ -140,7 +140,7 @@ public class TurretSubsystem implements Loggable, Subsystem {
 
     public static double kStaticFriction = 0.67; // measured 10/12
 
-    public static double kDynamicFriction = 0.53; // measured 10/12
+    public static double kDynamicFriction = 0.49; // measured 10/12
 
     // This one tends to be somewhere between 0.0035 to 0.005 or so.
     public static double kVelocityConstant = 0.0043;

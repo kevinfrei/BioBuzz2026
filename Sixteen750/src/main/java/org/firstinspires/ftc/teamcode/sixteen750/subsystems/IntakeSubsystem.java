@@ -23,11 +23,11 @@ public class IntakeSubsystem implements Loggable, Subsystem {
     public static double INTAKE_FEED_VELOCITY = 0.6;
     public static double TRANSFER1_FEED_VELOCITY = .98;
     public static double TRANSFER2_FEED_VELOCITY = 0.98;
-    public static double BLOCK_POSITION = 0.5;
+    public static double BLOCK_POSITION = 0.51;
     public static double REGURGITATE_VELOCITY = -0.7;
 
     public static double FIRE_POSITION = 0.3;
-    public static double RAMP_UP_POS = 0.28;
+    public static double RAMP_UP_POS = 0.3;
     public static double RAMP_DOWN_POS = 0.965;
     boolean hasHardware;
 

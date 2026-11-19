@@ -85,7 +85,7 @@ public class Poses {
         public static double SideFlowerIntHead = Math.toRadians(90);
         public static Pose SidePark = new Pose(14, 122);
         public static double SideParkHead = Math.toRadians(90);
-        public static Pose MidPark = new Pose(15, 93);
+        public static Pose MidPark = new Pose(15, 94.5);
         public static double MidParkHead = Math.toRadians(0);
     }
 }

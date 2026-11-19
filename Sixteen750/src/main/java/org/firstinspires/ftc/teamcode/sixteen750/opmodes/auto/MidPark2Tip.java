@@ -42,13 +42,13 @@ public class MidPark2Tip extends CommandOpMode {
         CommandScheduler.scheduleForState(
             new SequentialCommandGroup(
                 new PedroPathCommand(robot.follower, p.DStartToLaunch1()),
-                new WaitCommand(1),
+                new WaitCommand(1.2),
                 a.Fire(robot),
                 new PedroPathCommand(robot.follower, p.DLaunch1ToGardenPreInt()).alongWith(
                     t.Intake(robot)
                 ),
                 new PedroPathCommand(robot.follower, p.DGardenPreIntToGardenInt()).withTimeout(2),
-                new WaitCommand(1.3),
+                new WaitCommand(1),
                 new PedroPathCommand(robot.follower, p.DGardenIntToLaunch2()),
                 new WaitCommand(0.5),
                 a.Fire(robot),
