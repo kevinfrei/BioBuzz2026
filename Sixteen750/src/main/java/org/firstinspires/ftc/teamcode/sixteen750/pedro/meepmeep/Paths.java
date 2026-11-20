@@ -153,4 +153,38 @@ public class Paths {
     public Path DLaunch3ToMidPark() {
         return line(p2.Launch3, p2.MidPark).constant(p2.MidParkHead);
     }
+
+    Poses.Synced3TipParkPose p3 = new Poses.Synced3TipParkPose();
+
+    public Path PStartToLaunch() {
+        return line(sp.TripStart, p3.Launch1).constant(p3.Launch1Head);
+    }
+
+    public Path PLaunch1ToSideFlowerPreInt() {
+        return line(p3.Launch1, p3.SideFlowerPreInt).constant(p3.SideFlowerIntHead);
+    }
+
+    public Path PLSideFlowerPreIntToSideFlowerInt() {
+        return line(p3.SideFlowerPreInt, p3.SideFlowerInt).constant(p3.SideFlowerIntHead);
+    }
+
+    public Path PSideFlowerIntToLaunch() {
+        return line(p3.SideFlowerInt, p3.Launch1).linear(p3.SideFlowerIntHead, p3.Launch1Head);
+    }
+
+    public Path PLaunchToSweepInt() {
+        return curve(
+            p3.Launch1,
+            p3.SweepIntCtrl1,
+            p3.SweepIntCtrl2,
+            p3.SweepIntCtrl3,
+            p3.SweepIntCtrl4,
+            p3.SweepIntCtrl5,
+            p3.SweepInt
+        ).tangent();
+    }
+
+    public Path PSweepIntToPark() {
+        return line(p3.SweepInt, p3.Park).linear(p3.SweepIntHead, p3.ParkHead);
+    }
 }

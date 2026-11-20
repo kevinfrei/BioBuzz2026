@@ -18,6 +18,12 @@ public class Poses {
             return new Pose(7, 64, Math.toRadians(0));
         }
 
+        public static Pose TripStart = new Pose(64, 130);
+
+        public static Pose getTripStart() {
+            return new Pose(58.3, 136.8, Math.toRadians(270));
+        }
+
         public static Pose SideStart = new Pose(31, 7);
 
         public static Pose getSideStart() {
@@ -87,5 +93,24 @@ public class Poses {
         public static double SideParkHead = Math.toRadians(90);
         public static Pose MidPark = new Pose(15, 94.5);
         public static double MidParkHead = Math.toRadians(0);
+    }
+
+    @Configurable
+    public static class Synced3TipParkPose {
+
+        public static Pose Launch1 = new Pose(62, 121);
+        public static double Launch1Head = Math.toRadians(270);
+        public static Pose SideFlowerPreInt = new Pose(47, 118);
+        public static Pose SideFlowerInt = new Pose(47, 131.0);
+        public static double SideFlowerIntHead = Math.toRadians(90);
+        public static Pose SweepInt = new Pose(56, 12);
+        public static Pose SweepIntCtrl1 = new Pose(46, 64);
+        public static Pose SweepIntCtrl2 = new Pose(83.6, 41);
+        public static Pose SweepIntCtrl3 = new Pose(46.4, 4.5);
+        public static Pose SweepIntCtrl4 = new Pose(24.5, 81.3);
+        public static Pose SweepIntCtrl5 = new Pose(27.4, 12.5);
+        public static double SweepIntHead = Math.toRadians(0);
+        public static Pose Park = new Pose(12.6, 93.1);
+        public static double ParkHead = Math.toRadians(270);
     }
 }

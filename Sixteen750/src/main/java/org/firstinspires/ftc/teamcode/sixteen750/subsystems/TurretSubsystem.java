@@ -91,7 +91,7 @@ public class TurretSubsystem implements Loggable, Subsystem {
     @Log.Number(name = "hood calculated Pos")
     public static double hoodTargetPos = 0.5;
 
-    public static double actualTarget = 0; // target for manual velocity tuning
+    public static double actualTarget = 0; // target  for manual velocity tuning
     public static double launcherVelocity = 1500;
 
     @Log.Number(name = "Auto Velocity")
@@ -104,7 +104,7 @@ public class TurretSubsystem implements Loggable, Subsystem {
     //  public static double HOOD_REGRESSION_E = 3.07; // offset to the slope (y intercept)
     public static double LAUNCHER_REGRESSION_A = -0.0662139; //0.00657618; // slope of launcher regression
     public static double LAUNCHER_REGRESSION_B = 9.58113; //-0.960648;
-    public static double LAUNCHER_REGRESSION_C = 883.08219; //51.54356;
+    public static double LAUNCHER_REGRESSION_C = 864.08219; //51.54356;
 
     // public static double LAUNCHER_REGRESSION_D = -1197.91667; // offset to the launcher regression slope (y-intercept)
 
@@ -140,7 +140,7 @@ public class TurretSubsystem implements Loggable, Subsystem {
 
     public static double kStaticFriction = 0.67; // measured 10/12
 
-    public static double kDynamicFriction = 0.49; // measured 10/12
+    public static double kDynamicFriction = 0.47; // measured 10/12
 
     // This one tends to be somewhere between 0.0035 to 0.005 or so.
     public static double kVelocityConstant = 0.0043;
