@@ -1,37 +1,233 @@
 {
   "values": {
-    "xLeftEdge": { "val": 11.25 }
+    "xLeftEdge": {
+      "val": 11.25
+    }
   },
   "poses": {
     "start": {
-      "X": { "ref": "xLeftEdge" },
-      "Y": { "val": 88 },
-      "heading": { "angle": { "val": 90 }, "inRadians": false }
+      "X": {
+        "val": 11.265
+      },
+      "Y": {
+        "val": 87.872
+      },
+      "heading": {
+        "angle": {
+          "val": 90
+        },
+        "inRadians": false
+      }
     },
     "point2": {
-      "X": { "val": 12.5 },
-      "Y": { "val": 11.75 },
-      "heading": { "angle": { "val": -105 }, "inRadians": false }
+      "X": {
+        "val": 12.5416
+      },
+      "Y": {
+        "val": 12.1836
+      },
+      "heading": {
+        "angle": {
+          "val": -90
+        },
+        "inRadians": false
+      }
     },
     "point3Start": {
-      "X": { "val": 12.5 },
-      "Y": { "val": 11.75 },
-      "heading": { "angle": { "val": -90 }, "inRadians": false }
+      "X": {
+        "val": 16.516
+      },
+      "Y": {
+        "val": 12.1836
+      },
+      "heading": {
+        "angle": {
+          "val": -90
+        },
+        "inRadians": false
+      }
     },
     "point3": {
-      "X": { "val": 58.5 },
-      "Y": { "val": 11.5 },
-      "heading": { "angle": { "val": -90 }, "inRadians": false }
+      "X": {
+        "val": 57.6944
+      },
+      "Y": {
+        "val": 14.8357
+      },
+      "heading": {
+        "angle": {
+          "val": -90
+        },
+        "inRadians": false
+      }
     },
     "point4": {
-      "X": { "val": 14 },
-      "Y": { "val": 93 },
-      "heading": { "angle": { "val": -90 }, "inRadians": false }
+      "X": {
+        "val": 14.0421
+      },
+      "Y": {
+        "val": 93.099
+      },
+      "heading": {
+        "angle": {
+          "val": -90
+        },
+        "inRadians": false
+      }
     },
     "gardenLaunch": {
-      "X": { "val": 58.25 },
-      "Y": { "val": 11.1 },
-      "heading": { "angle": { "val": -90 }, "inRadians": false }
+      "X": {
+        "val": 58.25
+      },
+      "Y": {
+        "val": 11.1
+      },
+      "heading": {
+        "angle": {
+          "val": -90
+        },
+        "inRadians": false
+      }
+    },
+    "northStart": {
+      "X": {
+        "val": 10
+      },
+      "Y": {
+        "val": 135.7
+      },
+      "heading": {
+        "angle": {
+          "val": 90
+        },
+        "inRadians": false
+      }
+    },
+    "northToLaunchControl": {
+      "X": {
+        "val": 20.3
+      },
+      "Y": {
+        "val": 94.8
+      },
+      "heading": {
+        "angle": {
+          "val": 0
+        },
+        "inRadians": false
+      }
+    },
+    "northPark": {
+      "X": {
+        "val": 15.4
+      },
+      "Y": {
+        "val": 122.11
+      },
+      "heading": {
+        "angle": {
+          "val": 90
+        },
+        "inRadians": false
+      }
+    },
+    "northLaunch": {
+      "X": {
+        "val": 62.46
+      },
+      "Y": {
+        "val": 130.98
+      },
+      "heading": {
+        "angle": {
+          "val": 90
+        },
+        "inRadians": false
+      }
+    },
+    "point1": {
+      "X": {
+        "val": 57.663
+      },
+      "Y": {
+        "val": 15.2174
+      },
+      "heading": {
+        "angle": {
+          "val": -90
+        },
+        "inRadians": false
+      }
+    },
+    "point1Control1": {
+      "X": {
+        "val": 16.565
+      },
+      "Y": {
+        "val": 20.2398
+      },
+      "heading": {
+        "angle": {
+          "val": 0
+        },
+        "inRadians": false
+      }
+    },
+    "point2Control1": {
+      "X": {
+        "val": 14.2309
+      },
+      "Y": {
+        "val": 39.9398
+      },
+      "heading": {
+        "angle": {
+          "val": 0
+        },
+        "inRadians": false
+      }
+    },
+    "point3Control1": {
+      "X": {
+        "val": 26.9306
+      },
+      "Y": {
+        "val": 53.832
+      },
+      "heading": {
+        "angle": {
+          "val": 0
+        },
+        "inRadians": false
+      }
+    },
+    "point4Control1": {
+      "X": {
+        "val": 15.5412
+      },
+      "Y": {
+        "val": 36.8921
+      },
+      "heading": {
+        "angle": {
+          "val": 0
+        },
+        "inRadians": false
+      }
+    },
+    "northLaunchControl": {
+      "X": {
+        "val": 20.3
+      },
+      "Y": {
+        "val": 94.8
+      },
+      "heading": {
+        "angle": {
+          "val": 0
+        },
+        "inRadians": false
+      }
     }
   },
   "interpolations": {},
@@ -41,15 +237,20 @@
       "curves": [
         {
           "points": [
-            { "ref": "start" },
             {
-              "X": { "val": 16.5 },
-              "Y": { "val": 20.25 }
+              "ref": "start"
             },
-            { "ref": "gardenLaunch" }
+            {
+              "ref": "point1Control1"
+            },
+            {
+              "ref": "point1"
+            }
           ],
           "interpolation": {
-            "heading": { "ref": "start" }
+            "heading": {
+              "ref": "point1"
+            }
           }
         }
       ]
@@ -58,14 +259,21 @@
       "curves": [
         {
           "points": [
-            { "ref": "gardenLaunch" },
             {
-              "X": { "val": 26 },
-              "Y": { "val": 62.5 }
+              "ref": "point1"
             },
-            { "ref": "point2" }
+            {
+              "ref": "point2Control1"
+            },
+            {
+              "ref": "point2"
+            }
           ],
-          "interpolation": { "reversed": false }
+          "interpolation": {
+            "heading": {
+              "ref": "point2"
+            }
+          }
         }
       ]
     },
@@ -73,16 +281,23 @@
       "curves": [
         {
           "points": [
-            { "ref": "point3Start" },
             {
-              "X": { "val": 27 },
-              "Y": { "val": 54 }
+              "ref": "point3Start"
             },
-            { "ref": "point3" }
+            {
+              "ref": "point3Control1"
+            },
+            {
+              "ref": "point3"
+            }
           ],
           "interpolation": {
-            "start": { "ref": "point3Start" },
-            "end": { "ref": "point3" },
+            "start": {
+              "ref": "point3Start"
+            },
+            "end": {
+              "ref": "point3"
+            },
             "longWay": false
           }
         }
@@ -92,15 +307,64 @@
       "curves": [
         {
           "points": [
-            { "ref": "point3" },
             {
-              "X": { "val": 15.5 },
-              "Y": { "val": 37 }
+              "ref": "point3"
             },
-            { "ref": "point4" }
+            {
+              "ref": "point4Control1"
+            },
+            {
+              "ref": "point4"
+            }
           ],
           "interpolation": {
-            "heading": { "ref": "point4" }
+            "heading": {
+              "ref": "point4"
+            }
+          }
+        }
+      ]
+    },
+    "NorthStartToLaunch": {
+      "curves": [
+        {
+          "points": [
+            {
+              "ref": "northStart"
+            },
+            {
+              "ref": "northToLaunchControl"
+            },
+            {
+              "ref": "northLaunch"
+            }
+          ],
+          "interpolation": {
+            "heading": {
+              "ref": "northStart"
+            }
+          }
+        }
+      ]
+    },
+    "NorthLaunchToPark": {
+      "curves": [
+        {
+          "points": [
+            {
+              "ref": "northLaunch"
+            },
+            {
+              "ref": "northLaunchControl"
+            },
+            {
+              "ref": "northPark"
+            }
+          ],
+          "interpolation": {
+            "heading": {
+              "ref": "northLaunch"
+            }
           }
         }
       ]
