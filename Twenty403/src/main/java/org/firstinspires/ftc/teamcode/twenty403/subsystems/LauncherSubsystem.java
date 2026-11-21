@@ -19,10 +19,10 @@ import org.firstinspires.ftc.teamcode.twenty403.Setup;
 @Configurable
 public class LauncherSubsystem implements Loggable, Subsystem {
 
-    public static double TARGET_MOTOR_VELOCITY = 1200; //.58; // 0.5 // /1.0
+    public static double TARGET_MOTOR_VELOCITY = 1200;
     public static double WINDMILL_SPIN = -0.15;
     public static double REVERSE_WINDMILL = 0.15;
-    public static double TARGET_WINDMILL = 20;
+    public static double TARGET_WINDMILL = 40;
     // GoBilda says stall current of 9.2A at 12V, so V = I * R, R = 12 / 9.2 (about 1.3 ohms)
     // As the motor heats up, resistance also increase, so we could increase this a little bit
     // or maybe increase it over time to counteract that, but this is probably good enough.
