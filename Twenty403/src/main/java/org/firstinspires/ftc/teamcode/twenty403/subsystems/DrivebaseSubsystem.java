@@ -32,6 +32,7 @@ public class DrivebaseSubsystem implements Subsystem, Loggable {
 
     private final Follower follower;
     private double fwdJoystick, strafeJoystick, rotateJoystick;
+    private boolean autoAim = false;
 
     public DrivebaseSubsystem(Follower f) {
         follower = f;
@@ -63,15 +64,26 @@ public class DrivebaseSubsystem implements Subsystem, Loggable {
         H = (pose.heading() * 180) / Math.PI;
         busy = follower.isBusy();
         if (!follower.isBusy()) {
+            double rotate = getRotation();
             follower.manual(
-                ManualDrive.fieldCentric(
-                    fwdJoystick,
-                    strafeJoystick,
-                    rotateJoystick,
-                    pose.heading()
-                )
+                ManualDrive.fieldCentric(fwdJoystick, strafeJoystick, rotate, pose.heading())
             );
         }
         follower.update();
+    }
+
+    public void enableAutoAim() {
+        autoAim = true;
+    }
+
+    public void disableAutoAim() {
+        autoAim = false;
+    }
+
+    private double getRotation() {
+        if (autoAim == false) {
+            return rotateJoystick;
+        }
+        return 0.3;
     }
 }

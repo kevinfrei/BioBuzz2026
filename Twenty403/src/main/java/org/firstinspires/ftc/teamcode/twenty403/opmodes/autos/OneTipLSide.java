@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.twenty403.commands.PedroPathCommand;
 import org.firstinspires.ftc.teamcode.twenty403.commands.auto.AutoCommands;
 import org.firstinspires.ftc.teamcode.twenty403.commands.auto.AutoPaths;
 
-@Autonomous(name = "OneTipLSide", preselectTeleOp = "2 Controller Drive \uD83D\uDDFF")
+@Autonomous(name = "OneTipChicago", preselectTeleOp = "2 Controller Drive \uD83D\uDDFF")
 @SuppressWarnings("unused")
 public class OneTipLSide extends CommandOpMode {
 
@@ -34,7 +34,7 @@ public class OneTipLSide extends CommandOpMode {
         robot.follower.setPose(paths.NorthStartToLaunch().get(0));
         CommandScheduler.scheduleForState(
             new SequentialCommandGroup(
-                new WaitCommand(20),
+                new WaitCommand(14),
                 new PedroPathCommand(robot.follower, paths.NorthStartToLaunch()),
                 AutoCommands.AutoFirePollen(robot),
                 new PedroPathCommand(robot.follower, paths.NorthLaunchToPark()),

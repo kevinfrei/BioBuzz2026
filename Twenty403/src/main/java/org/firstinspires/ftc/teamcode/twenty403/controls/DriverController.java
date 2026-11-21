@@ -27,6 +27,7 @@ public class DriverController {
     public CommandButton stopintake;
     public CommandButton launchFaster;
     public CommandButton launchSlower;
+    public CommandButton autoAim;
 
     public DriverController(CommandGamepad g, Robot r) {
         this.robot = r;
@@ -59,6 +60,7 @@ public class DriverController {
         launchFaster = gamepad.dpadUp;
         launchSlower = gamepad.dpadDown;
         reversewindmill = gamepad.ps_square;
+        autoAim = gamepad.ps_circle;
     }
 
     public void bindDriveControls() {
@@ -66,6 +68,8 @@ public class DriverController {
             new JoystickDriveCommand(robot.drivebaseSubsystem, driveLeftStick, driveRightStick)
         );
         resetGyroButton.whenPressed(robot.drivebaseSubsystem::ResetGyro);
+        autoAim.whenPressed(robot.drivebaseSubsystem::enableAutoAim);
+        autoAim.whenReleased(robot.drivebaseSubsystem::disableAutoAim);
     }
 
     public void bindLaunchControls() {

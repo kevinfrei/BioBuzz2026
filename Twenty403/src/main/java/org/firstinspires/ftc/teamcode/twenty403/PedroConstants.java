@@ -73,8 +73,8 @@ public class PedroConstants {
             AdafruitCustomIMU imu = new AdafruitCustomIMU(ext_imu);
             c.imu.set(imu);
         }
-        c.xPodOffset.set(-0.413);
-        c.yPodOffset.set(-5.67);
+        c.xPodOffset.set(-6.7);
+        c.yPodOffset.set(-3.5);
         c.forwardTicksToInches.set(0.0020135);
         c.strafeTicksToInches.set(0.0020135);
         c.xPodDirection.set(Encoder.REVERSE);
