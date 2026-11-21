@@ -159,32 +159,44 @@ public class Paths {
     public Path PStartToLaunch() {
         return line(sp.TripStart, p3.Launch1).constant(p3.Launch1Head);
     }
-
-    public Path PLaunch1ToSideFlowerPreInt() {
-        return line(p3.Launch1, p3.SideFlowerPreInt).constant(p3.SideFlowerIntHead);
+    public Path PLaunch1ToGardenPreInt() {
+        return line(p3.Launch1, p3.GardenPreInt).linear(p3.Launch1Head, p3.GardenIntHead);
     }
 
-    public Path PLSideFlowerPreIntToSideFlowerInt() {
+    public Path PGardenPreIntToGardenInt() {
+        return line(p3.GardenPreInt, p3.GardenInt).constant(p3.GardenIntHead);
+    }
+
+    public Path PGardenIntToLaunch2() {
+        return line(p3.GardenInt, p3.Launch2).linear(p3.GardenIntHead, p3.Launch2Head);
+    }
+    public Path PLaunch2ToSideFlowerPreInt() {
+        return line(p3.Launch2, p3.SideFlowerPreInt).constant(p3.SideFlowerIntHead);
+    }
+
+    public Path PSideFlowerPreIntToSideFlowerInt() {
         return line(p3.SideFlowerPreInt, p3.SideFlowerInt).constant(p3.SideFlowerIntHead);
     }
 
-    public Path PSideFlowerIntToLaunch() {
-        return line(p3.SideFlowerInt, p3.Launch1).linear(p3.SideFlowerIntHead, p3.Launch1Head);
+    public Path PSideFlowerIntToLaunch3() {
+        return line(p3.SideFlowerInt, p3.Launch3).linear(p3.SideFlowerIntHead, p3.Launch3Head);
     }
-
-    public Path PLaunchToSweepInt() {
+    public Path PLaunch3ToSweepInt() {
         return curve(
             p3.Launch1,
             p3.SweepIntCtrl1,
             p3.SweepIntCtrl2,
             p3.SweepIntCtrl3,
-            p3.SweepIntCtrl4,
-            p3.SweepIntCtrl5,
             p3.SweepInt
         ).tangent();
     }
-
-    public Path PSweepIntToPark() {
-        return line(p3.SweepInt, p3.Park).linear(p3.SweepIntHead, p3.ParkHead);
+    public Path PSweepIntToCornerInt() {
+        return line(p3.SweepInt, p3.CornerInt).constant(p3.CornerIntHead);
+    }
+    public Path PCornerIntToLaunch4() {
+        return line(p3.CornerInt, p3.Launch4).linear(p3.CornerIntHead, p3.Launch4Head);
+    }
+    public Path PLaunch4ToPark() {
+        return line(p3.Launch4, p3.Park).constant(p3.ParkHead);
     }
 }

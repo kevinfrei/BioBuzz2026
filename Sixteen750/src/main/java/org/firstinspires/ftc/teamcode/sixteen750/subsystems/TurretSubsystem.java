@@ -42,7 +42,7 @@ public class TurretSubsystem implements Loggable, Subsystem {
     public static double ejectiontime = .07;
 
     public static double TARGET_SWITCH_THRESHOLD = 72;
-    public static double TURRET_CENTER = 0.5;
+    public static double TURRET_CENTER = 0.52;
     public static double TURRET_MIN = 0.02;
     public static double TURRET_MAX = 0.98;
 
