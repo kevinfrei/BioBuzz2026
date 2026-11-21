@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.twenty403.opmodes.autos;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.technototes.library.command.CommandScheduler;
 import com.technototes.library.command.SequentialCommandGroup;
 import com.technototes.library.command.WaitCommand;
@@ -11,6 +12,7 @@ import org.firstinspires.ftc.teamcode.twenty403.Robot;
 import org.firstinspires.ftc.teamcode.twenty403.commands.auto.DriveAutoCommand;
 import org.firstinspires.ftc.teamcode.twenty403.controls.DriverController;
 
+@Disabled
 @Autonomous(name = "DriveForward", preselectTeleOp = "Two Controller Drive \uD83D\uDDFF")
 @SuppressWarnings("unused")
 public class MoveForward extends CommandOpMode {
