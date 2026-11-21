@@ -70,7 +70,7 @@ public class Poses {
 
         public static Pose PartnerPark = new Pose(10, 79);
         public static double PartnerParkHead = Math.toRadians(0);
-        public static Pose Launch1 = new Pose(52, 20);
+        public static Pose Launch1 = new Pose(52, 25);
         public static double Launch1Head = Math.toRadians(90);
         public static Pose GardenPreInt = new Pose(7, 19);
         public static Pose GardenInt = new Pose(6.7, 7.4);
@@ -90,7 +90,7 @@ public class Poses {
         public static Pose SideFlowerInt = new Pose(47, 131.0);
         public static double SideFlowerIntHead = Math.toRadians(90);
         public static Pose SidePark = new Pose(14, 122);
-        public static double SideParkHead = Math.toRadians(90);
+        public static double SideParkHead = Math.toRadians(0);
         public static Pose MidPark = new Pose(15, 94.5);
         public static double MidParkHead = Math.toRadians(0);
     }
@@ -109,7 +109,7 @@ public class Poses {
         public static Pose SideFlowerInt = new Pose(47, 131.0);
         public static double SideFlowerIntHead = Math.toRadians(90);
         public static Pose Launch3 = new Pose(58, 118);
-        public static double Launch3Head = Math.toRadians(290);
+        public static double Launch3Head = Math.toRadians(180);
         public static Pose SweepInt = new Pose(58, 12);
         public static Pose SweepIntCtrl1 = new Pose(73, 46);
         public static Pose SweepIntCtrl2 = new Pose(40, 26);

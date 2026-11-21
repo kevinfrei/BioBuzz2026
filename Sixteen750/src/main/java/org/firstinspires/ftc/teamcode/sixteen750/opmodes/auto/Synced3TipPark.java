@@ -44,39 +44,38 @@ public class Synced3TipPark extends CommandOpMode {
         CommandScheduler.scheduleForState(
             new SequentialCommandGroup(
                 new PedroPathCommand(robot.follower, p.PStartToLaunch()),
-                new WaitCommand(2.5),
+                new WaitCommand(2.3),
                 a.Fire(robot),
                 new PedroPathCommand(robot.follower, p.PLaunch1ToGardenPreInt()).alongWith(
                     t.Intake(robot)
                 ),
-                    new PedroPathCommand(robot.follower, p.PGardenPreIntToGardenInt()).withTimeout(2),
-                    new WaitCommand(1),
-                    new PedroPathCommand(robot.follower, p.PGardenIntToLaunch2()).alongWith(
-                            t.Reject(robot)
-                    ),
-                    new WaitCommand(0.5),
-                    a.Fire(robot),
-                    new PedroPathCommand(robot.follower, p.PLaunch2ToSideFlowerPreInt()).alongWith(
-                            t.Intake(robot),
-                            t.RampDown(robot)
-                    ),
-                    new PedroPathCommand(
-                            robot.follower,
-                            p.PSideFlowerPreIntToSideFlowerInt()
-                    ).withTimeout(1.1),
-                    new WaitCommand(0.8),
-                    new PedroPathCommand(robot.follower, p.PSideFlowerIntToLaunch3()),
-                    new WaitCommand(0.3).alongWith(
-                            t.RampUp(robot)),
-                new PedroPathCommand(robot.follower, p.PLaunch3ToSweepInt()).alongWith(
-                        t.Intake(robot)
-                ).withTimeout(4),
-                new WaitCommand(2.4),
+                new PedroPathCommand(robot.follower, p.PGardenPreIntToGardenInt()).withTimeout(1.2),
+                new WaitCommand(.8),
+                new PedroPathCommand(robot.follower, p.PGardenIntToLaunch2()).alongWith(
+                    t.Reject(robot)
+                ),
+                new WaitCommand(0.5),
+                a.Fire(robot),
+                new PedroPathCommand(robot.follower, p.PLaunch2ToSideFlowerPreInt()).alongWith(
+                    t.Intake(robot),
+                    t.RampDown(robot)
+                ),
+                new PedroPathCommand(
+                    robot.follower,
+                    p.PSideFlowerPreIntToSideFlowerInt()
+                ).withTimeout(1),
+                new WaitCommand(0.8),
+                new PedroPathCommand(robot.follower, p.PSideFlowerIntToLaunch3()),
+                new WaitCommand(0.5).alongWith(t.RampUp(robot), a.Fire(robot)),
+                new PedroPathCommand(robot.follower, p.PLaunch3ToSweepInt())
+                    .alongWith(t.Intake(robot))
+                    .withTimeout(4),
+                new WaitCommand(2.2),
                 a.Fire(robot),
                 new PedroPathCommand(robot.follower, p.PSweepIntToCornerInt()).alongWith(
-                        t.Intake(robot)
+                    t.Intake(robot)
                 ),
-                    new PedroPathCommand(robot.follower, p.PCornerIntToLaunch4()),
+                new PedroPathCommand(robot.follower, p.PCornerIntToLaunch4()),
                 new WaitCommand(0.4),
                 a.Fire(robot),
                 new PedroPathCommand(robot.follower, p.PLaunch4ToPark()),

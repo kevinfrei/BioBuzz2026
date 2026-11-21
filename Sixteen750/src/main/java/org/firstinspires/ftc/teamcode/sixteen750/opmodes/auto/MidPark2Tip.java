@@ -42,7 +42,7 @@ public class MidPark2Tip extends CommandOpMode {
         CommandScheduler.scheduleForState(
             new SequentialCommandGroup(
                 new PedroPathCommand(robot.follower, p.DStartToLaunch1()),
-                new WaitCommand(1.2),
+                new WaitCommand(1.6),
                 a.Fire(robot),
                 new PedroPathCommand(robot.follower, p.DLaunch1ToGardenPreInt()).alongWith(
                     t.Intake(robot)
@@ -58,8 +58,8 @@ public class MidPark2Tip extends CommandOpMode {
                 ),
                 new PedroPathCommand(robot.follower, p.DNearFlowerPreIntToNearFlowerInt())
                     .alongWith(t.Intake(robot))
-                    .withTimeout(1.5),
-                new WaitCommand(1.1),
+                    .withTimeout(1.2),
+                new WaitCommand(1),
 
                 new PedroPathCommand(robot.follower, p.DNearFlowerIntToLaunch3()),
                 new WaitCommand(0.5),
@@ -70,8 +70,8 @@ public class MidPark2Tip extends CommandOpMode {
                 new PedroPathCommand(
                     robot.follower,
                     p.DSideFlowerPreIntToSideFlowerInt()
-                ).withTimeout(1.5),
-                new WaitCommand(1.1),
+                ).withTimeout(1.2),
+                new WaitCommand(.95),
                 new PedroPathCommand(robot.follower, p.DSideFlowerIntToLaunch3()),
                 new WaitCommand(0.3).alongWith(t.RampUp(robot)),
                 a.Fire(robot),
