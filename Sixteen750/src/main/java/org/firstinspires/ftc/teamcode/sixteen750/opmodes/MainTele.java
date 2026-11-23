@@ -21,6 +21,7 @@ import org.firstinspires.ftc.teamcode.sixteen750.Hardware;
 import org.firstinspires.ftc.teamcode.sixteen750.Robot;
 import org.firstinspires.ftc.teamcode.sixteen750.Setup;
 import org.firstinspires.ftc.teamcode.sixteen750.commands.PedroDriver;
+import org.firstinspires.ftc.teamcode.sixteen750.commands.TeleCommands;
 import org.firstinspires.ftc.teamcode.sixteen750.commands.driving.DrivingCommands;
 import org.firstinspires.ftc.teamcode.sixteen750.controls.DriverController;
 import org.firstinspires.ftc.teamcode.sixteen750.controls.OperatorController;
@@ -93,6 +94,7 @@ public class MainTele extends CommandOpMode implements Loggable {
             robot.follower.setPose(Robot.endOfAutoPose);
             robot.follower.setHeading(Robot.endHead);
         }
+        TeleCommands.Hold(robot);
     }
 
     @Override

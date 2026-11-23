@@ -42,14 +42,14 @@ public class TurretSubsystem implements Loggable, Subsystem {
     public static double ejectiontime = .07;
 
     public static double TARGET_SWITCH_THRESHOLD = 72;
-    public static double TURRET_CENTER = 0.538;
-    public static double TURRET_MIN = 0.03;
-    public static double TURRET_MAX = 0.97;
+    public static double TURRET_CENTER = 0.5;
+    public static double TURRET_MIN = 0.04;
+    public static double TURRET_MAX = 0.9;
 
     @Log.Number(name = "target servo Pos")
     public static double targetServoPos = 0;
 
-    public static double FLIGHT_TIME = 0.64;
+    public static double FLIGHT_TIME = 0.62;
 
     @Log.Number(name = "xvelo")
     public static double xVelo = 0;
@@ -104,7 +104,7 @@ public class TurretSubsystem implements Loggable, Subsystem {
     //  public static double HOOD_REGRESSION_E = 3.07; // offset to the slope (y intercept)
     public static double LAUNCHER_REGRESSION_A = -0.0662139; //0.00657618; // slope of launcher regression
     public static double LAUNCHER_REGRESSION_B = 9.58113; //-0.960648;
-    public static double LAUNCHER_REGRESSION_C = 875; //51.54356;
+    public static double LAUNCHER_REGRESSION_C = 840; //51.54356;
 
     // public static double LAUNCHER_REGRESSION_D = -1197.91667; // offset to the launcher regression slope (y-intercept)
 
@@ -133,14 +133,14 @@ public class TurretSubsystem implements Loggable, Subsystem {
     // It's output is a power value in the -1 to +1 range.
     // So, P is probably in the range of .001-ish.
     // For a velocity-targeting PIDF, we probably want an I value, not a D value.
-    public static PIDFCoefficients launchPID = new PIDFCoefficients(0.002, 0.0002, 0.0, 0); // 10/3/26 added a p value seems pretty decent
+    public static PIDFCoefficients launchPID = new PIDFCoefficients(0.0024, 0.00013, 0.0, 0); // 10/3/26 added a p value seems pretty decent
     private Hardware hardware;
     // Stuff used for the Feed Forward function.
     // This one is highly variable, based on the amount of friction in the system
 
     public static double kStaticFriction = 0.67; // measured 10/12
 
-    public static double kDynamicFriction = 0.35; // measured 10/12
+    public static double kDynamicFriction = 0.45; // measured 10/12
 
     // This one tends to be somewhere between 0.0035 to 0.005 or so.
     public static double kVelocityConstant = 0.0043;
