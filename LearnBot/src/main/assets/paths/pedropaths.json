@@ -1,27 +1,202 @@
 {
   "values": {
-    "center": {
-      "val": 72
+    "xLeftEdge": {
+      "val": 11.25
+    },
+    "yNorthEdge": {
+      "val": 137
+    },
+    "xEdge": {
+      "ref": "xLeftEdge"
+    },
+    "yEdge": {
+      "ref": "yNorthEdge"
+    },
+    "left": {
+      "ref": "xEdge"
     }
   },
   "poses": {
-    "centre": {
+    "gardenLaunch": {
       "X": {
-        "ref": "center"
+        "val": 58.25
       },
       "Y": {
-        "val": 72
+        "val": 11.1
       },
+      "heading": {
+        "angle": {
+          "val": -90
+        },
+        "inRadians": false
+      }
+    },
+    "northStart": {
+      "X": {
+        "val": 10
+      },
+      "Y": {
+        "val": 135.7
+      },
+      "heading": {
+        "angle": {
+          "val": 90
+        },
+        "inRadians": false
+      }
+    },
+    "northPark": {
+      "X": {
+        "val": 15.4
+      },
+      "Y": {
+        "val": 122.11
+      },
+      "heading": {
+        "angle": {
+          "val": 90
+        },
+        "inRadians": false
+      }
+    },
+    "northLaunch": {
+      "X": {
+        "val": 62.46
+      },
+      "Y": {
+        "val": 130.98
+      },
+      "heading": {
+        "angle": {
+          "val": 90
+        },
+        "inRadians": false
+      }
+    },
+    "northHive": {
+      "X": {
+        "val": 59
+      },
+      "Y": {
+        "val": 84
+      }
+    },
+    "southHive": {
+      "X": {
+        "val": 59
+      },
+      "Y": {
+        "val": 60
+      }
+    },
+    "gardenIntake": {
+      "X": {
+        "val": 12.54
+      },
+      "Y": {
+        "val": 12.1836
+      },
+      "heading": {
+        "angle": {
+          "val": -90
+        },
+        "inRadians": false
+      }
+    },
+    "southPark": {
+      "X": {
+        "val": 17.04
+      },
+      "Y": {
+        "val": 93.099
+      },
+      "heading": {
+        "angle": {
+          "val": -90
+        },
+        "inRadians": false
+      }
+    },
+    "southLaunch": {
+      "ref": "gardenLaunch"
+    },
+    "southIntake": {
+      "ref": "gardenIntake"
+    },
+    "loadZoneStart": {
+      "ref": "northStart"
+    },
+    "loadZonePark": {
+      "ref": "northPark"
+    },
+    "loadZoneLaunch": {
+      "ref": "northLaunch"
+    },
+    "loadZoneHive": {
+      "ref": "northHive"
+    },
+    "gardenHive": {
+      "ref": "southHive"
+    },
+    "gardenPark": {
+      "ref": "southPark"
+    },
+    "lzHive": {
+      "ref": "loadZoneHive"
+    },
+    "lzLaunch": {
+      "ref": "loadZoneLaunch"
+    },
+    "lzPark": {
+      "ref": "loadZonePark"
+    },
+    "lzStart": {
+      "ref": "loadZoneStart"
+    }
+  },
+  "interpolations": {
+    "faceNorthHive": {
+      "point": {
+        "ref": "northHive"
+      }
+    },
+    "faceSouthHive": {
+      "point": {
+        "ref": "southHive"
+      }
+    },
+    "faceLoadZoneHive": {
+      "ref": "faceNorthHive"
+    },
+    "faceLZHive": {
+      "ref": "faceLoadZoneHive"
+    },
+    "faceGardenHive": {
+      "ref": "faceSouthHive"
+    },
+    "tangent": {
+      "reversed": false
+    },
+    "revTangent": {
+      "reversed": true
+    },
+    "constant45": {
       "heading": {
         "angle": {
           "val": 45
         },
         "inRadians": false
       }
-    }
-  },
-  "interpolations": {
-    "90to45": {
+    },
+    "constantPi": {
+      "heading": {
+        "angle": {
+          "val": 3.1415926
+        },
+        "inRadians": true
+      }
+    },
+    "linear45to135": {
       "start": {
         "angle": {
           "val": 45
@@ -30,79 +205,265 @@
       },
       "end": {
         "angle": {
-          "val": 90
+          "val": 135
         },
         "inRadians": false
       },
       "longWay": false
+    },
+    "linear45around135": {
+      "start": {
+        "angle": {
+          "val": 45
+        },
+        "inRadians": false
+      },
+      "end": {
+        "angle": {
+          "val": 135
+        },
+        "inRadians": false
+      },
+      "longWay": true
+    },
+    "fourPiece": {
+      "pieces": [
+        {
+          "until": {
+            "val": 0.25
+          },
+          "interpolator": {
+            "reversed": false
+          }
+        },
+        {
+          "until": {
+            "val": 0.5
+          },
+          "interpolator": {
+            "ref": "faceSouthHive"
+          }
+        },
+        {
+          "until": {
+            "val": 0.75
+          },
+          "interpolator": {
+            "ref": "faceNorthHive"
+          }
+        },
+        {
+          "until": {
+            "val": 1
+          },
+          "interpolator": {
+            "start": {
+              "angle": {
+                "val": -215
+              },
+              "inRadians": false
+            },
+            "end": {
+              "angle": {
+                "val": 60
+              },
+              "inRadians": false
+            },
+            "longWay": false
+          }
+        }
+      ]
     }
   },
   "curves": {
-    "theCurve": {
+    "gardenLaunchToGarden": {
       "points": [
         {
-          "X": {
-            "val": 50
-          },
-          "Y": {
-            "val": 100
-          },
-          "heading": {
-            "angle": {
-              "val": 0
-            },
-            "inRadians": false
-          }
+          "ref": "southLaunch"
         },
         {
           "X": {
-            "val": 45
+            "val": 13.253
           },
           "Y": {
-            "val": 45
-          },
-          "heading": {
-            "angle": {
-              "val": 0
-            },
-            "inRadians": false
+            "val": 31.37
           }
         },
         {
-          "ref": "centre"
+          "ref": "gardenIntake"
         }
       ],
       "interpolation": {
-        "ref": "90to45"
+        "ref": "fourPiece"
       }
     },
-    "theLine": {
+    "gardenToGardenLaunch": {
       "points": [
         {
-          "ref": "centre"
+          "ref": "gardenIntake"
         },
         {
           "X": {
-            "val": 120
+            "val": 38.928
           },
           "Y": {
-            "val": 120
+            "val": 29.859
           }
+        },
+        {
+          "ref": "gardenLaunch"
         }
       ],
       "interpolation": {
-        "reversed": false
+        "heading": {
+          "ref": "southLaunch"
+        }
       }
+    },
+    "gardenLaunchToPark": {
+      "points": [
+        {
+          "ref": "gardenLaunch"
+        },
+        {
+          "X": {
+            "val": 24.792
+          },
+          "Y": {
+            "val": 28.803
+          },
+          "heading": {
+            "angle": {
+              "val": -285
+            },
+            "inRadians": false
+          }
+        },
+        {
+          "ref": "southPark"
+        }
+      ],
+      "interpolation": {
+        "pieces": [
+          {
+            "until": {
+              "val": 0.4
+            },
+            "interpolator": {
+              "start": {
+                "ref": "gardenLaunch"
+              },
+              "end": {
+                "angle": {
+                  "val": 135
+                },
+                "inRadians": false
+              },
+              "longWay": false
+            }
+          },
+          {
+            "until": {
+              "val": 1
+            },
+            "interpolator": {
+              "reversed": false
+            }
+          }
+        ]
+      }
+    },
+    "northStartToLaunch": {
+      "points": [
+        {
+          "ref": "lzStart"
+        },
+        {
+          "X": {
+            "val": 29
+          },
+          "Y": {
+            "val": 93
+          },
+          "heading": {
+            "angle": {
+              "val": 345
+            },
+            "inRadians": false
+          }
+        },
+        {
+          "ref": "loadZoneLaunch"
+        }
+      ],
+      "interpolation": {
+        "heading": {
+          "ref": "northStart"
+        }
+      }
+    },
+    "northLaunchToPark": {
+      "points": [
+        {
+          "ref": "northLaunch"
+        },
+        {
+          "X": {
+            "val": 63
+          },
+          "Y": {
+            "val": 118
+          },
+          "heading": {
+            "angle": {
+              "val": -45
+            },
+            "inRadians": false
+          }
+        },
+        {
+          "ref": "northPark"
+        }
+      ],
+      "interpolation": {
+        "reversed": true
+      }
+    },
+    "southLaunchToGarden": {
+      "ref": "gardenLaunchToGarden"
     }
   },
   "paths": {
-    "testPath": {
+    "northSingleVolley": {
       "curves": [
         {
-          "ref": "newCurve1"
+          "ref": "northStartToLaunch"
         },
         {
-          "ref": "theLine"
+          "ref": "northLaunchToPark"
+        }
+      ]
+    },
+    "southLaunch": {
+      "curves": [
+        {
+          "ref": "gardenLaunchToGarden"
+        },
+        {
+          "ref": "gardenToGardenLaunch"
+        },
+        {
+          "ref": "gardenLaunchToPark"
+        }
+      ]
+    },
+    "loadZoneSingleVolley": {
+      "curves": [
+        {
+          "ref": "northStartToLaunch"
+        },
+        {
+          "ref": "northLaunchToPark"
         }
       ]
     }
