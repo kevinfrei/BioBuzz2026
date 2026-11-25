@@ -133,7 +133,8 @@ public class TurretSubsystem implements Loggable, Subsystem {
     // It's output is a power value in the -1 to +1 range.
     // So, P is probably in the range of .001-ish.
     // For a velocity-targeting PIDF, we probably want an I value, not a D value.
-    public static PIDFCoefficients launchPID = new PIDFCoefficients(0.0024, 0.00013, 0.0, 0); // 10/3/26 added a p value seems pretty decent
+    // 11/24/26 auto-tuned with scripts/launcher.ts (was 0.0024, 0.00013, 0.0, 0)
+    public static PIDFCoefficients launchPID = new PIDFCoefficients(0.00384, 0.000208, 0.0, 0);
     private Hardware hardware;
     // Stuff used for the Feed Forward function.
     // This one is highly variable, based on the amount of friction in the system
@@ -143,7 +144,12 @@ public class TurretSubsystem implements Loggable, Subsystem {
     public static double kDynamicFriction = 0.45; // measured 10/12
 
     // This one tends to be somewhere between 0.0035 to 0.005 or so.
-    public static double kVelocityConstant = 0.0043;
+    // 11/24/26: measured ~0.006 at 1050-1300 t/s while feeding balls, but that ran ~15-45 t/s
+    // over target, so 0.0055 (was 0.0043)
+    public static double kVelocityConstant = 0.0055;
+    // Only integrate while within this many ticks/sec of target, so spin-up from rest doesn't
+    // wind up I and overshoot (it overshot to ~1380 t/s on a 1200 target without this).
+    public static double LAUNCHER_I_ZONE = 150;
     public static double MotorResistance = 12 / 9.2;
 
     public static double GetFrictionConstant(boolean inMotion) {
@@ -178,7 +184,7 @@ public class TurretSubsystem implements Loggable, Subsystem {
                     GetFrictionConstant(getActualVelocity() != 0) +
                     kVelocityConstant * target) /
                 hardware.voltage()
-        );
+        ).setIntegralZone(LAUNCHER_I_ZONE);
     }
 
     public void Launch() {

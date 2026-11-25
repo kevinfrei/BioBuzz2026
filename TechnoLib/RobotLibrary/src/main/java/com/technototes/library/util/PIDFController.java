@@ -15,6 +15,7 @@ public class PIDFController {
     private double minInput, maxInput;
     private boolean bounded;
     private boolean reset;
+    private double integralZone = Double.POSITIVE_INFINITY;
 
     // Constructor for PIDFController with PIDCoefficients
     // The feed-forward function takes values (in order) of *target* and *error*
@@ -44,6 +45,14 @@ public class PIDFController {
         minInput = min;
         maxInput = max;
         bounded = true;
+    }
+
+    // Only accumulate the integral while |error| <= zone (another anti-windup tool). Big errors,
+    // like spinning a flywheel up from rest, are left to P + feed-forward, so I doesn't wind up and
+    // overshoot once the target is reached. Default: no zone (always integrate).
+    public PIDFController setIntegralZone(double zone) {
+        integralZone = Math.abs(zone);
+        return this;
     }
 
     // Resets the integral sum of the controller
@@ -76,7 +85,9 @@ public class PIDFController {
             }
         }
 
-        integralSum += error * dt;
+        if (Math.abs(error) <= integralZone) {
+            integralSum += error * dt;
+        }
 
         double derivative = reset ? 0 : (error - lastError) / dt;
         reset = false;
