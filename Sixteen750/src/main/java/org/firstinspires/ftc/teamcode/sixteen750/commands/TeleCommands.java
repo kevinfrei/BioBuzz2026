@@ -6,6 +6,26 @@ import org.firstinspires.ftc.teamcode.sixteen750.Robot;
 
 public class TeleCommands {
 
+    // A command that runs its action EVERY loop until it's cancelled.
+    // Command.create(...) makes a one-shot (isFinished() is true). Bound with whileInverseToggled
+    // (which wraps it in a race group via cancelUpon), a one-shot only executes once every several
+    // scheduler loops: the command and its group each spend loops in FINISHED, RESET, STARTED and
+    // INITIALIZING before executing again. That made turret tracking (and auto-hood) update only
+    // a few times a second, which looked like turret jitter.
+    private static Command continuous(Runnable action) {
+        return new Command() {
+            @Override
+            public void execute() {
+                action.run();
+            }
+
+            @Override
+            public boolean isFinished() {
+                return false;
+            }
+        };
+    }
+
     public static Command LLRelocCommand(Robot r) {
         return Command.create(new LLRelocCommand(r));
     }
@@ -63,7 +83,7 @@ public class TeleCommands {
     }
 
     public static Command TrackHive(Robot r) {
-        return Command.create(r.turretsubsystem::setTurretTarget);
+        return continuous(r.turretsubsystem::setTurretTarget);
     }
 
     public static Command IncreaseFlywheel(Robot r) {
@@ -83,7 +103,7 @@ public class TeleCommands {
     }
 
     public static Command AutoHood(Robot r) {
-        return Command.create(r.turretsubsystem::setHoodAutoPos);
+        return continuous(r.turretsubsystem::setHoodAutoPos);
     }
 
     public static Command Launch(Robot r) {
