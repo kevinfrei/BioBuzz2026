@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.learnbot.opmodes;
 
+import com.pedropathing.follower.Follower;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.technototes.library.structure.CommandOpMode;
 import com.technototes.library.util.Alliance;
@@ -20,6 +21,11 @@ public class TestPedroAuto extends CommandOpMode {
     public void uponInit() {
         hardware = new Hardware(hardwareMap);
         robot = new Robot(hardware, Alliance.RED, StartingPosition.Net);
+        Follower f = hardware.follower;
+        f.remainingDistance();
+        f.completion();
+        f.parametricCompletion();
+        f.distanceToEndpoint();
         /*
         TestPaths p = new TestPaths(Pedro.getFollower());
         CommandScheduler.scheduleOnceForState(

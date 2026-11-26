@@ -1,7 +1,7 @@
 {
   "values": {
     "xLeftEdge": {
-      "val": 11.25
+      "val": 11
     },
     "yNorthEdge": {
       "val": 137
@@ -50,7 +50,7 @@
         "val": 15.4
       },
       "Y": {
-        "val": 122.11
+        "val": 122.1
       },
       "heading": {
         "angle": {
@@ -61,10 +61,10 @@
     },
     "northLaunch": {
       "X": {
-        "val": 62.46
+        "val": 62.5
       },
       "Y": {
-        "val": 130.98
+        "val": 131
       },
       "heading": {
         "angle": {
@@ -91,10 +91,10 @@
     },
     "gardenIntake": {
       "X": {
-        "val": 12.54
+        "val": 12.5
       },
       "Y": {
-        "val": 12.1836
+        "val": 12.2
       },
       "heading": {
         "angle": {
@@ -105,10 +105,10 @@
     },
     "southPark": {
       "X": {
-        "val": 17.04
+        "val": 17
       },
       "Y": {
-        "val": 93.099
+        "val": 93.1
       },
       "heading": {
         "angle": {
@@ -467,5 +467,7 @@
         }
       ]
     }
-  }
+  },
+  "timeStamp": 1795736095334,
+  "schema": 0
 }
