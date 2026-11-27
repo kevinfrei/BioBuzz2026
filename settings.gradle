@@ -17,7 +17,6 @@ include ':Twenty403'
 
 // These are other 'bots' that we should build until we're at competitions
 include ':LearnBot'                                                      // FLIP: BUILD ALL BOTS
-// include ':BuzzBall'                                                   // FLIP: BUILD ALL BOTS
 
 // include ':java2umltext'                                                // FLIP: UML
 // project(':java2umltext').projectDir = new File('scripts/java2umltext') // FLIP: UML
