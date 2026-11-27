@@ -1,16 +1,13 @@
 package org.firstinspires.ftc.teamcode.learnbot.opmodes;
 
-import com.bylazar.configurables.annotations.Configurable;
 import com.bylazar.telemetry.PanelsTelemetry;
 import com.bylazar.telemetry.TelemetryManager;
 import com.pedropathing.math.Pose;
 import com.pedropathing.paths.Path;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import org.firstinspires.ftc.teamcode.jsonloader.PedroViz;
+import com.qualcomm.robotcore.eventloop.opmode.Utility;
 
-@Configurable
-@TeleOp(name = "PedroVizTester")
+@Utility(name = "PedroVizTester")
 public class PedroVizTester extends LinearOpMode {
 
     public TelemetryManager ptel;
