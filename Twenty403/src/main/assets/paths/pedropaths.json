@@ -35,7 +35,7 @@
     },
     "point3Start": {
       "X": {
-        "val": 16.516
+        "val": 16.5416
       },
       "Y": {
         "val": 12.1836
@@ -105,10 +105,10 @@
     },
     "northToLaunchControl": {
       "X": {
-        "val": 20.3
+        "val": 61.81
       },
       "Y": {
-        "val": 94.8
+        "val": 98.04
       },
       "heading": {
         "angle": {
@@ -228,146 +228,179 @@
         },
         "inRadians": false
       }
+    },
+    "South": {
+      "X": {
+        "val": 7
+      },
+      "Y": {
+        "val": 80
+      },
+      "heading": {
+        "angle": {
+          "val": 0
+        },
+        "inRadians": false
+      }
+    },
+    "North": {
+      "X": {
+        "val": 7
+      },
+      "Y": {
+        "val": 135
+      },
+      "heading": {
+        "angle": {
+          "val": 0
+        },
+        "inRadians": false
+      }
     }
   },
   "interpolations": {},
-  "curves": {},
-  "paths": {
-    "pathStartToGardenLaunch": {
-      "curves": [
+  "curves": {
+    "StartToGardenLaunch": {
+      "points": [
         {
-          "points": [
-            {
-              "ref": "start"
-            },
-            {
-              "ref": "point1Control1"
-            },
-            {
-              "ref": "point1"
-            }
-          ],
-          "interpolation": {
-            "heading": {
-              "ref": "point1"
-            }
-          }
+          "ref": "start"
+        },
+        {
+          "ref": "point1Control1"
+        },
+        {
+          "ref": "point1"
         }
-      ]
+      ],
+      "interpolation": {
+        "heading": {
+          "ref": "point1"
+        }
+      }
     },
-    "pathGardenLaunchToGarden": {
-      "curves": [
+    "GardenLaunchToGarden": {
+      "points": [
         {
-          "points": [
-            {
-              "ref": "point1"
-            },
-            {
-              "ref": "point2Control1"
-            },
-            {
-              "ref": "point2"
-            }
-          ],
-          "interpolation": {
-            "heading": {
-              "ref": "point2"
-            }
-          }
+          "ref": "point1"
+        },
+        {
+          "ref": "point2Control1"
+        },
+        {
+          "ref": "point2"
         }
-      ]
+      ],
+      "interpolation": {
+        "heading": {
+          "ref": "point2"
+        }
+      }
     },
-    "pathGardenToGardenLaunch": {
-      "curves": [
+    "GardenToGardenLaunch": {
+      "points": [
         {
-          "points": [
-            {
-              "ref": "point3Start"
-            },
-            {
-              "ref": "point3Control1"
-            },
-            {
-              "ref": "point3"
-            }
-          ],
-          "interpolation": {
-            "start": {
-              "ref": "point3Start"
-            },
-            "end": {
-              "ref": "point3"
-            },
-            "longWay": false
-          }
+          "ref": "point3Start"
+        },
+        {
+          "ref": "point3Control1"
+        },
+        {
+          "ref": "point3"
         }
-      ]
+      ],
+      "interpolation": {
+        "start": {
+          "ref": "point3Start"
+        },
+        "end": {
+          "ref": "point3"
+        },
+        "longWay": false
+      }
     },
-    "pathGardenLaunchToPark": {
-      "curves": [
+    "GardenLaunchToPark": {
+      "points": [
         {
-          "points": [
-            {
-              "ref": "point3"
-            },
-            {
-              "ref": "point4Control1"
-            },
-            {
-              "ref": "point4"
-            }
-          ],
-          "interpolation": {
-            "heading": {
-              "ref": "point4"
-            }
-          }
+          "ref": "point3"
+        },
+        {
+          "ref": "point4Control1"
+        },
+        {
+          "ref": "point4"
         }
-      ]
+      ],
+      "interpolation": {
+        "heading": {
+          "ref": "point4"
+        }
+      }
     },
     "NorthStartToLaunch": {
+      "points": [
+        {
+          "ref": "northStart"
+        },
+        {
+          "ref": "northToLaunchControl"
+        },
+        {
+          "ref": "northLaunch"
+        }
+      ],
+      "interpolation": {
+        "heading": {
+          "ref": "northStart"
+        }
+      }
+    },
+    "NorthLaunchToPark": {
+      "points": [
+        {
+          "ref": "northLaunch"
+        },
+        {
+          "ref": "northLaunchControl"
+        },
+        {
+          "ref": "northPark"
+        }
+      ],
+      "interpolation": {
+        "heading": {
+          "ref": "northLaunch"
+        }
+      }
+    }
+  },
+  "paths": {
+    "OneTipChicago": {
       "curves": [
         {
-          "points": [
-            {
-              "ref": "northStart"
-            },
-            {
-              "ref": "northToLaunchControl"
-            },
-            {
-              "ref": "northLaunch"
-            }
-          ],
-          "interpolation": {
-            "heading": {
-              "ref": "northStart"
-            }
-          }
+          "ref": "NorthStartToLaunch"
+        },
+        {
+          "ref": "NorthLaunchToPark"
         }
       ]
     },
-    "NorthLaunchToPark": {
+    "TwoTipAuto": {
       "curves": [
         {
-          "points": [
-            {
-              "ref": "northLaunch"
-            },
-            {
-              "ref": "northLaunchControl"
-            },
-            {
-              "ref": "northPark"
-            }
-          ],
-          "interpolation": {
-            "heading": {
-              "ref": "northLaunch"
-            }
-          }
+          "ref": "StartToGardenLaunch"
+        },
+        {
+          "ref": "GardenLaunchToGarden"
+        },
+        {
+          "ref": "GardenToGardenLaunch"
+        },
+        {
+          "ref": "GardenLaunchToPark"
         }
       ]
     }
-  }
+  },
+  "timeStamp": 1795810996848,
+  "schema": 0
 }

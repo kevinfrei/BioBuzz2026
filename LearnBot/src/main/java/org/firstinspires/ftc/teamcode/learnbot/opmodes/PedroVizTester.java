@@ -6,6 +6,7 @@ import com.pedropathing.math.Pose;
 import com.pedropathing.paths.Path;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.Utility;
+import org.firstinspires.ftc.teamcode.jsonloader.PedroViz;
 
 @Utility(name = "PedroVizTester")
 public class PedroVizTester extends LinearOpMode {

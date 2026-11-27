@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.twenty403.opmodes.autos;
 
 import com.bylazar.configurables.annotations.Configurable;
 import com.bylazar.telemetry.PanelsTelemetry;
+import com.bylazar.telemetry.TelemetryManager;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.technototes.library.command.CommandScheduler;
@@ -10,6 +11,7 @@ import com.technototes.library.command.SequentialCommandGroup;
 import com.technototes.library.command.WaitCommand;
 import com.technototes.library.structure.CommandOpMode;
 import com.technototes.library.util.Alliance;
+import org.firstinspires.ftc.teamcode.jsonloader.PedroViz;
 import org.firstinspires.ftc.teamcode.twenty403.Hardware;
 import org.firstinspires.ftc.teamcode.twenty403.Robot;
 import org.firstinspires.ftc.teamcode.twenty403.commands.PedroPathCommand;
@@ -26,6 +28,7 @@ public class TwoTipAuto extends CommandOpMode {
     public Hardware hardware;
     public AutoPaths paths;
     private PanelsTelemetry panelsTelemetry;
+    private TelemetryManager ptel;
     private Limelight3A limelight;
 
     @Override
@@ -34,24 +37,31 @@ public class TwoTipAuto extends CommandOpMode {
         robot = new Robot(hardware, Alliance.BLUE);
         paths = new AutoPaths();
         panelsTelemetry = PanelsTelemetry.INSTANCE;
-        //robot.follower.setPose(PedroConstants.Poses.South);
-        robot.follower.setPose(paths.pathStartToGardenLaunch().get(0));
+        ptel = panelsTelemetry.getTelemetry();
+        String loadStatus = PedroViz.LoadJSON(this.hardwareMap);
+        ptel.addData("Pedro init", loadStatus == null ? "<null>" : loadStatus);
+        ptel.addLine(PedroViz.status);
+        ptel.update(this.telemetry);
+        robot.follower.setPose(PedroViz.getCurve("StartToGardenLaunch").get(0));
         CommandScheduler.scheduleForState(
             new SequentialCommandGroup(
-                new PedroPathCommand(robot.follower, paths.pathStartToGardenLaunch()),
+                new PedroPathCommand(robot.follower, PedroViz.getCurve("StartToGardenLaunch")),
                 AutoCommands.AutoFirePollen(robot),
                 AutoCommands.Intake(robot),
                 new ParallelRaceGroup(
                     new SequentialCommandGroup(
-                        new PedroPathCommand(robot.follower, paths.pathGardenLaunchToGarden()),
+                        new PedroPathCommand(
+                            robot.follower,
+                            PedroViz.getCurve("GardenLaunchToGarden")
+                        ),
                         new WaitCommand(1.5),
                         AutoCommands.StopIntake(robot)
                     ),
                     new WaitCommand(GARDEN_INTAKE_TIMEOUT)
                 ),
-                new PedroPathCommand(robot.follower, paths.pathGardenToGardenLaunch()),
+                new PedroPathCommand(robot.follower, PedroViz.getCurve("GardenToGardenLaunch")),
                 AutoCommands.AutoFirePollen(robot),
-                new PedroPathCommand(robot.follower, paths.pathGardenLaunchToPark()),
+                new PedroPathCommand(robot.follower, PedroViz.getCurve("GardenLaunchToPark")),
                 CommandScheduler::terminateOpMode
             ),
             OpModeState.RUN
