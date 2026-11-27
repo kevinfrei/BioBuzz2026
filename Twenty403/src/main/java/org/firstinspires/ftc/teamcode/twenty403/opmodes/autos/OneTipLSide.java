@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.twenty403.opmodes.autos;
 
 import com.bylazar.telemetry.PanelsTelemetry;
+import com.bylazar.telemetry.TelemetryManager;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.technototes.library.command.CommandScheduler;
@@ -8,6 +9,7 @@ import com.technototes.library.command.SequentialCommandGroup;
 import com.technototes.library.command.WaitCommand;
 import com.technototes.library.structure.CommandOpMode;
 import com.technototes.library.util.Alliance;
+import org.firstinspires.ftc.teamcode.jsonloader.PedroViz;
 import org.firstinspires.ftc.teamcode.twenty403.Hardware;
 import org.firstinspires.ftc.teamcode.twenty403.Robot;
 import org.firstinspires.ftc.teamcode.twenty403.commands.PedroPathCommand;
@@ -22,6 +24,7 @@ public class OneTipLSide extends CommandOpMode {
     public Hardware hardware;
     public AutoPaths paths;
     private PanelsTelemetry panelsTelemetry;
+    private TelemetryManager ptel;
     private Limelight3A limelight;
 
     @Override
@@ -30,14 +33,18 @@ public class OneTipLSide extends CommandOpMode {
         robot = new Robot(hardware, Alliance.BLUE);
         paths = new AutoPaths();
         panelsTelemetry = PanelsTelemetry.INSTANCE;
-        //robot.follower.setPose(PedroConstants.Poses.South);
-        robot.follower.setPose(paths.NorthStartToLaunch().get(0));
+        ptel = panelsTelemetry.getTelemetry();
+        String loadStatus = PedroViz.LoadJSON(this.hardwareMap);
+        ptel.addData("Pedro init", loadStatus == null ? "<null>" : loadStatus);
+        ptel.addLine(PedroViz.status);
+        ptel.update(this.telemetry);
+        robot.follower.setPose(PedroViz.getCurve("NorthStartToLaunch").get(0));
         CommandScheduler.scheduleForState(
             new SequentialCommandGroup(
                 new WaitCommand(14),
-                new PedroPathCommand(robot.follower, paths.NorthStartToLaunch()),
+                new PedroPathCommand(robot.follower, PedroViz.getCurve("NorthStartToLaunch")),
                 AutoCommands.AutoFirePollen(robot),
-                new PedroPathCommand(robot.follower, paths.NorthLaunchToPark()),
+                new PedroPathCommand(robot.follower, PedroViz.getCurve("NorthLaunchToPark")),
                 CommandScheduler::terminateOpMode
             ),
             OpModeState.RUN

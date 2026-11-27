@@ -128,10 +128,4 @@ public class PedroConstants {
         c.naturalForwardDeceleration.set(22.877857124548935);
         c.naturalStrafeDeceleration.set(49.9171803190927);
     });
-
-    public static class Poses {
-
-        public static Pose South = new Pose(7, 80, 0);
-        public static Pose North = new Pose(7, 135, 0);
-    }
 }
