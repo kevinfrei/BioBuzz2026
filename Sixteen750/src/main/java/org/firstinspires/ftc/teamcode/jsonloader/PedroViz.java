@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.jsonloader;
 import android.content.Context;
 import android.content.res.AssetManager;
 import androidx.annotation.*;
-import com.bylazar.configurables.annotations.Configurable;
 import com.google.gson.*;
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.reflect.TypeToken;
@@ -18,17 +17,16 @@ import java.lang.reflect.*;
 import java.util.*;
 import java.util.stream.*;
 
-@Configurable
-public class PedroJsonLoader {
+public class PedroViz {
 
-    public static String ExternalFileName = "paths/pedropaths.json";
-    public static String AssetFileName = "paths/pedropaths.json";
+    public static final String ExternalFileName = "paths/pedropaths.json";
+    public static final String AssetFileName = "paths/pedropaths.json";
     public static String status = "";
-    public static PedroItems items;
-    static NamedItems dto;
+    private static String selected = "";
+    private static PedroItems items;
 
-    public HardwareMap hardwareMap;
-    public boolean loaded;
+    private final Context context;
+    public final boolean loaded;
 
     static <T> int getSz(Map<String, T> m) {
         return m == null ? -1 : m.size();
@@ -40,7 +38,7 @@ public class PedroJsonLoader {
     }
 
     @Nullable
-    private InputStream getAdbDeployedFileStream(@NonNull Context context) {
+    private InputStream getAdbStream() {
         try {
             File adbFile = new File(context.getExternalFilesDir(null), ExternalFileName);
             //noinspection IOStreamConstructor
@@ -50,7 +48,7 @@ public class PedroJsonLoader {
     }
 
     @Nullable
-    private InputStream getAssetFileStream(@NonNull Context context) {
+    private InputStream getAssetStream() {
         AssetManager assetManager = context.getAssets();
         try {
             return assetManager.open(AssetFileName);
@@ -58,62 +56,84 @@ public class PedroJsonLoader {
         return null;
     }
 
-    @Nullable
-    private InputStream getJsonFileStream() {
-        Context context = hardwareMap.appContext;
-        InputStream adbStream = getAdbDeployedFileStream(context);
-        if (adbStream != null) {
-            return adbStream;
-        }
-        InputStream assetStream = getAssetFileStream(context);
-        if (assetStream != null) {
-            return assetStream;
-        }
-        status = "No pedropath.json file found";
-        return null;
-    }
-
-    // TODO: add loading from the 'upload only the paths' path, too...
-    public boolean loadPathFromJson() {
-        InputStream inputStream = getJsonFileStream();
+    private NamedItems loadJson(@Nullable InputStream inputStream) {
         if (inputStream == null) {
-            return false;
+            return null;
         }
         try (Reader reader = new InputStreamReader(inputStream)) {
             Gson gson = new Gson();
-            dto = gson.fromJson(reader, NamedItems.class);
-            if (dto == null) {
-                status = "DTO JSON loading failed";
-                return false;
-            }
-            items = new PedroItems(dto);
-            status = Stream.concat(
-                Stream.of(
-                    sfmt(
-                        "vals:%d poses:%d interps:%d curves:%d paths:%d errs:%d",
-                        getSz(items.values),
-                        getSz(items.poses),
-                        getSz(items.interpolations),
-                        getSz(items.curves),
-                        getSz(items.paths),
-                        items.errors.size()
-                    )
-                ),
-                items.errors.stream().map(s -> sfmt("Error: %s", s.trim()))
-            ).collect(Collectors.joining("\n"));
-            return true;
+            return gson.fromJson(reader, NamedItems.class);
         } catch (Exception e) {
             StringWriter sw = new StringWriter();
             PrintWriter pw = new PrintWriter(sw);
             e.printStackTrace(pw);
             status += sw.toString();
-            return false;
+            return null;
         }
     }
 
-    public PedroJsonLoader(HardwareMap map) {
-        this.hardwareMap = map;
-        this.loaded = loadPathFromJson();
+    private NamedItems selectedLatest(@Nullable NamedItems adb, @Nullable NamedItems asset) {
+        if (adb == null && asset == null) {
+            selected = "empty";
+            return null;
+        }
+        if (asset == null) {
+            selected = "adb";
+            return adb;
+        }
+        if (adb == null || adb.timeStamp < asset.timeStamp) {
+            selected = "asset";
+            return asset;
+        }
+        selected = "adb";
+        return adb;
+    }
+
+    // TODO: add loading from the 'upload only the paths' path, too...
+    private boolean loadPathFromJson() {
+        InputStream adb = getAdbStream();
+        InputStream asset = getAssetStream();
+        if (adb == null && asset == null) {
+            status = "No pedropath.json file found";
+            return false;
+        }
+        NamedItems latest = selectedLatest(loadJson(adb), loadJson(asset));
+        if (latest == null) {
+            status = "Invalid pedropath.json file(s)";
+            return false;
+        }
+        items = new PedroItems(latest);
+        status = Stream.concat(
+            Stream.of(
+                sfmt(
+                    "vals:%d poses:%d interps:%d curves:%d paths:%d errs:%d",
+                    getSz(items.values),
+                    getSz(items.poses),
+                    getSz(items.interpolations),
+                    getSz(items.curves),
+                    getSz(items.paths),
+                    items.errors.size()
+                )
+            ),
+            items.errors.stream().map(s -> sfmt("Error: %s", s.trim()))
+        ).collect(Collectors.joining("\n"));
+        return true;
+    }
+
+    private PedroViz(Context ctxt) {
+        context = ctxt;
+        loaded = loadPathFromJson();
+    }
+
+    /**
+     * Load the asset or adb json file.
+     * @param map The HardwareMap for the robot
+     * @return null for error, 'asset' or 'adb' for success
+     */
+    @Nullable
+    public static String LoadJSON(HardwareMap map) {
+        PedroViz loader = new PedroViz(map.appContext);
+        return loader.loaded ? selected : null;
     }
 
     /**
@@ -162,6 +182,8 @@ public class PedroJsonLoader {
 
     static class NamedItems {
 
+        public int schema;
+        public double timeStamp;
         public Map<String, RValue<DTOValue>> values;
         public Map<String, RValue<DTOPose>> poses;
         public Map<String, RValue<DTOInterpolator>> interpolations;
@@ -222,7 +244,7 @@ public class PedroJsonLoader {
         }
     }
 
-    public static class PedroItems {
+    static class PedroItems {
 
         Map<String, Double> values;
         Map<String, Pose> poses;
@@ -335,12 +357,8 @@ public class PedroJsonLoader {
                 RValue<DTOPose> poseRef = rval.getValue();
                 Pose evaluated = getPose(poseRef);
                 if (evaluated != null) {
-                    // We've got the full value.
-                    // Take care of it, and any transitive definitions.
                     TransitiveAssignment(poses, pending, name, evaluated);
                 } else {
-                    // We haven't seen this value yet:
-                    // Add the name to the pending list for the ref, and keep going
                     pending.computeIfAbsent(poseRef.getRef(), k -> new ArrayList<>()).add(name);
                 }
             }
@@ -400,12 +418,8 @@ public class PedroJsonLoader {
                 RValue<DTOInterpolator> interpRef = rval.getValue();
                 InterpDescr evaluated = getInterpolator(interpRef);
                 if (evaluated != null) {
-                    // We've got the full value.
-                    // Take care of it, and any transitive definitions.
                     TransitiveAssignment(interpolations, pending, name, evaluated);
                 } else {
-                    // We haven't seen this value yet:
-                    // Add the name to the pending list for the ref, and keep going
                     pending.computeIfAbsent(interpRef.ref, k -> new ArrayList<>()).add(name);
                 }
             }
@@ -431,12 +445,8 @@ public class PedroJsonLoader {
                 RValue<DTOCurve> curveRef = rval.getValue();
                 Path evaluated = getCurve(curveRef);
                 if (evaluated != null) {
-                    // We've got the full value.
-                    // Take care of it, and any transitive definitions.
                     TransitiveAssignment(curves, pending, name, evaluated);
                 } else {
-                    // We haven't seen this value yet:
-                    // Add the name to the pending list for the ref, and keep going
                     pending.computeIfAbsent(curveRef.ref, k -> new ArrayList<>()).add(name);
                 }
             }
